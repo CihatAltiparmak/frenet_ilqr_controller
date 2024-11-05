@@ -69,7 +69,8 @@ FrenetTrajectory FrenetTrajectoryGenerator::get_frenet_trajectory(
 
   FrenetTrajectory frenet_trajectory;
 
-  for (double t = 0; t < 1.0; t += 0.1) {
+  // assert dt is smaller than time_interval
+  for (double t = 0; t < frenet_planner_config_.time_interval; t += frenet_planner_config_.dt) {
     StateLongtitutal state_longtitutal;
     state_longtitutal[0] = longtitutal_velocity_planner.x(t);
     state_longtitutal[1] = longtitutal_velocity_planner.dx(t);

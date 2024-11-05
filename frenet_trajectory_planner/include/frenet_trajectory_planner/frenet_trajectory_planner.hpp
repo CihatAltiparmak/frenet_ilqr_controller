@@ -22,6 +22,10 @@ public:
   CartesianTrajectory plan(
     const CartesianState & robot_cartesian_state,
     const CartesianPoint & start_point, const CartesianPoint & final_point);
+  CartesianTrajectory plan(
+    const CartesianState & robot_cartesian_state,
+    const std::vector<CartesianPoint> & waypoint_list,
+    const double max_time_per_point);
 
 private:
   FrenetTrajectoryPlannerConfig frenet_planner_config_;
@@ -56,9 +60,6 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan(
 
   auto robot_frenet_state = cartesian2frenet_converter.convert_state(robot_cartesian_state);
 
-  std::cerr << frenet2cartesian_converter.convert_state(robot_frenet_state) << ", " <<
-    robot_frenet_state << std::endl;
-
   auto frenet_trajectory_generator = FrenetTrajectoryGenerator(frenet_planner_config_);
   // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
   auto all_frenet_trajectories = frenet_trajectory_generator.get_all_possible_frenet_trajectories(
@@ -85,6 +86,28 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan(
     best_frenet_trajectory);
 
   return best_cartesian_trajectory;
+}
+
+CartesianTrajectory FrenetTrajectoryPlanner::plan(
+  const CartesianState & robot_cartesian_state,
+  const std::vector<CartesianPoint> & waypoint_list,
+  const double max_time_per_point)
+{
+
+  // assert there are at least 2 waypoint in waypoint list
+  CartesianTrajectory planned_cartesian_trajectory = {robot_cartesian_state};
+  for (int i = 0; i < waypoint_list.size() - 1; i++) {
+    auto cartesian_trajectory = this->plan(
+      planned_cartesian_trajectory.back(), waypoint_list[i], waypoint_list[i + 1]);
+
+    planned_cartesian_trajectory.reserve(
+      planned_cartesian_trajectory.size() + cartesian_trajectory.size());
+    planned_cartesian_trajectory.insert(
+      planned_cartesian_trajectory.end(),
+      cartesian_trajectory.begin() + 1, cartesian_trajectory.end());
+  }
+
+  return planned_cartesian_trajectory;
 }
 
 }
