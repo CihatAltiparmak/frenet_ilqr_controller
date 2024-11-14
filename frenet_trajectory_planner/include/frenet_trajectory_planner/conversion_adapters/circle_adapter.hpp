@@ -59,7 +59,7 @@ CircleAdapter::CircleAdapter(
   const Vector2d & y, const double alpha, const int sign_indicactor)
 : BaseAdapter(), c_(c), r_(r), x_(x), y_(y), alpha_(alpha), sign_indicactor_(sign_indicactor)
 {
-
+  arclength_ = alpha_ * r_;
 }
 
 CartesianState CircleAdapter::convert_frenet2cartesian(const FrenetState & frenet_state)

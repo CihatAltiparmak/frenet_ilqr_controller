@@ -30,6 +30,8 @@ LineAdapter::LineAdapter(const CartesianPoint & start_point, const CartesianPoin
 
   auto line_vec = final_point - start_point;
   t_frenet_ = line_vec / line_vec.norm();
+
+  arclength_ = line_vec.norm();
 }
 
 CartesianState LineAdapter::convert_frenet2cartesian(const FrenetState & frenet_state)

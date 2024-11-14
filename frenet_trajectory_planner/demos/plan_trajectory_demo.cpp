@@ -8,8 +8,6 @@ int main()
 
   frenet_trajectory_planner::CartesianState robot_cartesian_state =
     frenet_trajectory_planner::CartesianState::Zero();
-  // robot_cartesian_state[0] = 5;
-  // robot_cartesian_state[3] = -5;
   robot_cartesian_state[1] = 1;
   frenet_trajectory_planner::CartesianPoint start_point;
   start_point << 1, 1;
@@ -18,7 +16,7 @@ int main()
 
 
   auto frenet_trajectory_planner = frenet_trajectory_planner::FrenetTrajectoryPlanner();
-  auto planned_cartesian_trajectory = frenet_trajectory_planner.plan_alpha(
+  auto planned_cartesian_trajectory = frenet_trajectory_planner.plan(
     robot_cartesian_state,
     start_point, final_point);
 
