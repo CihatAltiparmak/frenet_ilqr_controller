@@ -24,9 +24,6 @@ public:
     const CartesianState & robot_cartesian_state,
     const CartesianPoint & start_point, const CartesianPoint & final_point);
 
-  CartesianTrajectory plan_alpha(
-    const CartesianState & robot_cartesian_state,
-    const CartesianPoint & start_point, const CartesianPoint & final_point);
   FrenetTrajectory plan_best_frenet_trajectory(const FrenetState & robot_frenet_state);
 
   std::vector<std::pair<double, std::unique_ptr<BaseAdapter>>> create_segments(
