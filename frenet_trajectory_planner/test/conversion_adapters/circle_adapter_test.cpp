@@ -41,12 +41,12 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convert_
     Vector2d y;
     y << 0, 1;
     double alpha = M_PI / 2;
-    
+
     [[maybe_unused]] auto adapter = frenet_trajectory_planner::CircleAdapter(
       x_start, x_finish, c, r,
       x, y, alpha);
-  
-    frenet_trajectory_planner::FrenetState frenet_state = 
+
+    frenet_trajectory_planner::FrenetState frenet_state =
       frenet_trajectory_planner::FrenetState::Zero();
 
     // frenet_state[1] = 1;
@@ -65,12 +65,12 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convert_
 
     auto cartesian_state = adapter.convert_frenet2cartesian(frenet_state);
     auto frenet_state2 = adapter.convert_cartesian2frenet(cartesian_state);
-    ASSERT_NEAR(cartesian_state[3], M_PI / 4, 1e-10) 
-      << "This is actual cartesian state: \n" 
+    ASSERT_NEAR(cartesian_state[3], M_PI / 4, 1e-10)
+      << "This is actual cartesian state: \n"
       << cartesian_state
       << "\nfrenetstate\n"
-      << frenet_state 
-      << "\nconverted frenet state\n" 
+      << frenet_state
+      << "\nconverted frenet state\n"
       << frenet_state2;
 
   }

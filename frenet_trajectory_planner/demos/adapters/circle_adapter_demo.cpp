@@ -4,9 +4,10 @@
 #include <vector>
 #include <iostream>
 
-int main() {
-    using frenet_trajectory_planner::CartesianPoint;
-    {
+int main()
+{
+  using frenet_trajectory_planner::CartesianPoint;
+  {
     CartesianPoint x_start;
     x_start << 1, 1;
     CartesianPoint x_finish;
@@ -19,12 +20,12 @@ int main() {
     Vector2d y;
     y << 0, 1;
     double alpha = M_PI / 2;
-    
+
     [[maybe_unused]] auto adapter = frenet_trajectory_planner::CircleAdapter(
       x_start, x_finish, c, r,
       x, y, alpha);
-  
-    frenet_trajectory_planner::FrenetState frenet_state = 
+
+    frenet_trajectory_planner::FrenetState frenet_state =
       frenet_trajectory_planner::FrenetState::Zero();
 
     // frenet_state[1] = 1;
@@ -62,18 +63,18 @@ int main() {
     auto cartesian_state = adapter.convert_frenet2cartesian(frenet_state);
     auto frenet_state2 = adapter.convert_cartesian2frenet(cartesian_state);
 
-    std::cout 
-      << "This is actual cartesian state: " << std::endl 
+    std::cout
+      << "This is actual cartesian state: " << std::endl
       << cartesian_state << std::endl;
-      
+
     std::cout << "frenetstate: " << std::endl
-      << frenet_state << std::endl;
-      
+              << frenet_state << std::endl;
+
     std::cout << "converted frenet state: " << std::endl
-      << frenet_state2 << std::endl;
+              << frenet_state2 << std::endl;
 
     std::cout << "error: " << std::endl
-      << (frenet_state2 - frenet_state).norm() << std::endl;
+              << (frenet_state2 - frenet_state).norm() << std::endl;
 
   }
 }
