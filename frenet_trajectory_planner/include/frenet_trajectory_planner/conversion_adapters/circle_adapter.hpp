@@ -1,11 +1,9 @@
 #pragma once
 #include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
 #include <frenet_trajectory_planner/type_definitions.hpp>
-#include <cmath>
 
 #include <Eigen/Dense>
 #include <cmath>
-#include <iostream>
 
 using namespace Eigen;
 
@@ -119,7 +117,6 @@ FrenetState CircleAdapter::convert_cartesian2frenet(const CartesianState & carte
         {1,
           4})) * cartesian_state({1, 4})) / (xcMc_norm_squared * xcMc_norm);
 
-  // frenet_state[1] = r_ * (_part2.dot(cartesian_state({1, 4})) / (_part2.squaredNorm() * _part2.norm())) * _part2.dot(y_cosMx_sin);
   frenet_state[1] = (r_ / xcMc.norm()) * (y_cosMx_sin.dot(cartesian_state({1, 4})));
   frenet_state[2] = frenet_state[1] *
     x_cosPy_sin.dot(cartesian_state({1, 4})) / xcMc_norm + r_ * y_cosMx_sin.dot(_part3);

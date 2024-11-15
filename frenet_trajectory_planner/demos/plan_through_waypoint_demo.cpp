@@ -12,10 +12,6 @@ int main()
   robot_cartesian_state[3] = -0.5;
   robot_cartesian_state[0] = 1;
   robot_cartesian_state[1] = 1;
-  frenet_trajectory_planner::CartesianPoint start_point;
-  start_point << 1, 1;
-  frenet_trajectory_planner::CartesianPoint final_point;
-  final_point << 5, 1;
 
   std::vector<CartesianPoint> waypoint_list;
   {

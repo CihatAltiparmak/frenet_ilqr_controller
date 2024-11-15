@@ -1,7 +1,6 @@
 #pragma once
 #include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
 #include <frenet_trajectory_planner/type_definitions.hpp>
-#include <cmath>
 
 #include <Eigen/Dense>
 #include <cmath>
