@@ -1,7 +1,6 @@
 #pragma once
 #include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
 #include <frenet_trajectory_planner/type_definitions.hpp>
-#include <cmath>
 
 #include <Eigen/Dense>
 #include <cmath>
@@ -30,6 +29,8 @@ LineAdapter::LineAdapter(const CartesianPoint & start_point, const CartesianPoin
 
   auto line_vec = final_point - start_point;
   t_frenet_ = line_vec / line_vec.norm();
+
+  arclength_ = line_vec.norm();
 }
 
 CartesianState LineAdapter::convert_frenet2cartesian(const FrenetState & frenet_state)
