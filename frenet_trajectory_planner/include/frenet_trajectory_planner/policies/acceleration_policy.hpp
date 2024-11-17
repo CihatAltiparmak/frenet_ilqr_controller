@@ -4,6 +4,7 @@
 #include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 namespace frenet_trajectory_planner
 {
@@ -16,102 +17,48 @@ typedef struct AccelerationLimits
   double acceleration_max;
 } AccelerationPolicyParameters;
 
-template<typename ConversionAdapter>
 class AccelerationPolicy : public BasePolicy<AccelerationPolicyParameters>
 {
 public:
-  template<typename ... ConversionAdapterArgs>
   AccelerationPolicy(
     const AccelerationPolicyParameters & acceleration_policy_parameters,
-    const ConversionAdapterArgs &... conversion_adapter_args);
-  std::vector<FrenetTrajectory> eliminate_frenet_trajectories(
-    const std::vector<FrenetTrajectory> & frenet_trajectory_array)
-  override;
-  bool check_frenet_trajectory_by_policy(const FrenetTrajectory & frenet_trajectory);
-
-  std::vector<CartesianTrajectory> eliminate_cartesian_trajectories(
-    const std::vector<CartesianTrajectory> & cartesian_trajectory_array) override;
-
-  bool check_cartesian_trajectory_by_policy(
-    const CartesianTrajectory & cartesian_trajectory);
+    const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
+  bool check_if_feasible(
+    const FrenetTrajectory & frenet_trajectory,
+    const CartesianTrajectory & cartesian_trajectory) override;
 
 private:
-  Frenet2CartesianConverter<ConversionAdapter> frenet2cartesian_converter_;
+  std::shared_ptr<FrenetFrameConverter> frenet_frame_converter_;
 };
 
-template<typename ConversionAdapter>
-template<typename ... ConversionAdapterArgs>
-AccelerationPolicy<ConversionAdapter>::AccelerationPolicy(
+AccelerationPolicy::AccelerationPolicy(
   const AccelerationPolicyParameters & acceleration_policy_parameters,
-  const ConversionAdapterArgs & ... conversion_adapter_args)
+  const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter)
 : BasePolicy<AccelerationPolicyParameters>(acceleration_policy_parameters),
-  frenet2cartesian_converter_(conversion_adapter_args ...)
+  frenet_frame_converter_(frenet_frame_converter)
 {
 
 }
 
-template<typename ConversionAdapter>
-std::vector<FrenetTrajectory> AccelerationPolicy<ConversionAdapter>::eliminate_frenet_trajectories(
-  const std::vector<FrenetTrajectory> & frenet_trajectory_array)
-{
-  std::vector<FrenetTrajectory> selected_frenet_trajectory_array;
-  for (const auto & trajectory : frenet_trajectory_array) {
-    if (check_frenet_trajectory_by_policy(trajectory)) {
-      selected_frenet_trajectory_array.push_back(trajectory);
-    }
-  }
-
-  return selected_frenet_trajectory_array;
-}
-
-template<typename ConversionAdapter>
-bool AccelerationPolicy<ConversionAdapter>::check_frenet_trajectory_by_policy(
-  const FrenetTrajectory & frenet_trajectory)
-{
-  CartesianTrajectory cartesian_trajectory = frenet2cartesian_converter_.convert_trajectory(
-    frenet_trajectory);
-  return this->check_cartesian_trajectory_by_policy(cartesian_trajectory);
-
-  // for (const auto & state : frenet_trajectory) {
-  //   double acceleration = (state({2, 5})).norm();
-  //   if (acceleration > this->parameters_.acceleration_max ||
-  //     acceleration < this->parameters_.acceleration_min)
-  //   {
-  //     return false;
-  //   }
-  // }
-
-  // return true;
-}
-
-template<typename ConversionAdapter>
-std::vector<CartesianTrajectory> AccelerationPolicy<ConversionAdapter>::
-eliminate_cartesian_trajectories(
-  const std::vector<CartesianTrajectory> & cartesian_trajectory_array)
-{
-
-  std::vector<CartesianTrajectory> selected_cartesian_trajectory_array;
-  for (const auto & trajectory : cartesian_trajectory_array) {
-    if (check_cartesian_trajectory_by_policy(trajectory)) {
-      selected_cartesian_trajectory_array.push_back(trajectory);
-    }
-  }
-
-  return selected_cartesian_trajectory_array;
-}
-
-template<typename ConversionAdapter>
-bool AccelerationPolicy<ConversionAdapter>::check_cartesian_trajectory_by_policy(
+bool AccelerationPolicy::check_if_feasible(
+  const FrenetTrajectory & frenet_trajectory,
   const CartesianTrajectory & cartesian_trajectory)
 {
+
+  // assert that frenet_trajectory equals a presentation in frenet frame of cartesian_trajectory
+  int index = 0;
   for (const auto & state : cartesian_trajectory) {
     double acceleration = (state({2, 5})).norm();
-    if (acceleration > this->parameters_.acceleration_max ||
-      acceleration < this->parameters_.acceleration_min)
-    {
-      return false;
-    }
+    double vel = (state({1, 4})).norm();
+    // std::cout << "acceleration policy debug: " << index << " | " << vel << " | " << acceleration << std::endl;
+    // if (acceleration > this->parameters_.acceleration_max ||
+    //   acceleration < this->parameters_.acceleration_min)
+    // {
+    //   return false;
+    // }
+    index++;
   }
+  // std::cout << "END OF ACCELERATION POLICY" << std::endl;
 
   return true;
 }

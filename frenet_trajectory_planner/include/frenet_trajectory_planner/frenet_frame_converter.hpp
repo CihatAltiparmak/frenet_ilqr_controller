@@ -6,6 +6,7 @@
 #include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
 #include <vector>
 #include <memory>
+#include <iostream>
 
 namespace frenet_trajectory_planner
 {
@@ -62,6 +63,16 @@ void FrenetFrameConverter::create_segments(const std::vector<CartesianPoint> & w
     CartesianPoint new_q3 = ci + ri * (xi * std::cos(alphai) + yi * std::sin(alphai));
     CartesianPoint new_q4 = qip1;
 
+    std::cout << new_q1[0] << ", " << new_q1[1] << std::endl;
+    std::cout << new_q2[0] << ", " << new_q2[1] << std::endl;
+
+    // std::cerr << ri << std::endl
+    //           << "#####" << std::endl
+    //           << (new_q2 - ci).norm() << std::endl
+    //           << "#####" << std::endl
+    //           << (new_q3 - ci).norm() << std::endl;
+    // std::cerr << "--------------------" << std::endl;
+
     segments_.push_back(
       std::make_unique<LineAdapter>(new_q1, new_q2)
     );
@@ -74,6 +85,8 @@ void FrenetFrameConverter::create_segments(const std::vector<CartesianPoint> & w
 
   segments_.push_back(
     std::make_unique<LineAdapter>(last_waypoint, waypoint_list.back()));
+
+  std::cout << "END" << std::endl;
 }
 
 CartesianTrajectory FrenetFrameConverter::convert_frenet2cartesian(
