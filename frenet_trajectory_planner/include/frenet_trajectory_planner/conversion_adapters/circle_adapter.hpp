@@ -75,10 +75,13 @@ CartesianState CircleAdapter::convert_frenet2cartesian(const FrenetState & frene
     c_ + rPd * x_cosPy_sin;
   cartesian_state({1, 4}) =
     (frenet_state[1] * rPd / r_) * y_cosMx_sin +
-    (frenet_state[4]) * x_cosPy_sin;
+    (sign_indicactor_ * frenet_state[4]) * x_cosPy_sin;
   cartesian_state({2, 5}) =
-    (frenet_state[2] * rPd / r_) * y_cosMx_sin +
-    (-std::pow(frenet_state[1], 2) * rPd / std::pow(r_, 2) + frenet_state[5]) * x_cosPy_sin;
+    ((frenet_state[2] * rPd + sign_indicactor_ * 2 * frenet_state[1] * frenet_state[4]) / r_) *
+    y_cosMx_sin +
+    (-std::pow(
+      frenet_state[1],
+      2) * rPd / std::pow(r_, 2) + sign_indicactor_ * frenet_state[5]) * x_cosPy_sin;
 
   // cartesian_state[6] = std::atan2(t_frenet_[1], t_frenet_[0]) + std::atan2(
   //   frenet_state[4],

@@ -74,6 +74,7 @@ void FrenetFrameConverter::create_segments(const std::vector<CartesianPoint> & w
 
   segments_.push_back(
     std::make_unique<LineAdapter>(last_waypoint, waypoint_list.back()));
+
 }
 
 CartesianTrajectory FrenetFrameConverter::convert_frenet2cartesian(

@@ -14,16 +14,8 @@ class Policy
 {
 public:
   Policy() {}
-  virtual std::vector<FrenetTrajectory> eliminate_frenet_trajectories(
-    const std::vector<FrenetTrajectory> & frenet_trajectory_array)
-  = 0;
-
-  virtual std::vector<CartesianTrajectory> eliminate_cartesian_trajectories(
-    const std::vector<CartesianTrajectory> & cartesian_trajectory_array)
-  = 0;
-
-  virtual bool check_frenet_trajectory_by_policy(const FrenetTrajectory & frenet_trajectory) = 0;
-  virtual bool check_cartesian_trajectory_by_policy(
+  virtual bool check_if_feasible(
+    const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) = 0;
 };
 
