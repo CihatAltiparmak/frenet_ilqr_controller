@@ -82,21 +82,20 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
     frenet_trajectory_selector.add_cost(longtitutal_velocity_cost_checker);
   }
 
-  {
-    policies::AccelerationPolicyParameters parameters = {
-      -20.0, // acceleration_min
-      20.0   // acceleration_max
-    };
-    auto acceleration_policy = std::make_shared<policies::AccelerationPolicy>(
-      parameters,
-      frenet_frame_converter);
-    frenet_trajectory_selector.add_policy(acceleration_policy);
-  }
+  // {
+  //   policies::AccelerationPolicyParameters parameters = {
+  //     -20.0, // acceleration_min
+  //     20.0   // acceleration_max
+  //   };
+  //   auto acceleration_policy = std::make_shared<policies::AccelerationPolicy>(
+  //     parameters,
+  //     frenet_frame_converter);
+  //   frenet_trajectory_selector.add_policy(acceleration_policy);
+  // }
 
   auto best_frenet_trajectory_optional = frenet_trajectory_selector.select_best_frenet_trajectory(
     all_frenet_trajectories);
 
-  std::cerr << "HAS VAL . " << best_frenet_trajectory_optional.has_value() << std::endl;
   auto best_frenet_trajectory = best_frenet_trajectory_optional.value();
   return frenet_frame_converter->convert_frenet2cartesian(best_frenet_trajectory);
 }

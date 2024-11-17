@@ -61,9 +61,7 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convert_
     // --------------
     frenet_state[0] = r * (M_PI / 4);
     frenet_state[1] = 3;
-    frenet_state[2] = 37;
     frenet_state[3] = 3;
-    frenet_state[5] = 4;
 
     auto cartesian_state = adapter.convert_frenet2cartesian(frenet_state);
     auto frenet_state2 = adapter.convert_cartesian2frenet(cartesian_state);

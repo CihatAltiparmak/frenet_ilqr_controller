@@ -4,7 +4,6 @@
 
 #include <Eigen/Dense>
 #include <cmath>
-#include <iostream>
 
 using namespace Eigen;
 
@@ -84,14 +83,6 @@ CartesianState CircleAdapter::convert_frenet2cartesian(const FrenetState & frene
       frenet_state[1],
       2) * rPd / std::pow(r_, 2) + sign_indicactor_ * frenet_state[5]) * x_cosPy_sin;
 
-  if (cartesian_state({2, 5}).norm() > 10) {
-    std::cerr << "CIRCLE ADAPTER DBG: " << frenet_state << std::endl
-              << "#####" << std::endl
-      // << (frenet_state[1] * rPd / r_) << std::endl;
-      // << (frenet_state[2] * rPd + sign_indicactor_ * 2 * frenet_state[1] * frenet_state[4]) / r_ << std::endl;
-      // << (-std::pow(frenet_state[1], 2) * rPd / std::pow(r_, 2) + sign_indicactor_ * frenet_state[5]) << std::endl; // problematic part
-              << std::pow(frenet_state[1] / r_, 2) << std::endl;
-  }
   // cartesian_state[6] = std::atan2(t_frenet_[1], t_frenet_[0]) + std::atan2(
   //   frenet_state[4],
   //   frenet_state[1]); // implement in a correct way (yaw angle also should be added to frenet state)

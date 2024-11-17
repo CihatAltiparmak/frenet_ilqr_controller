@@ -4,7 +4,6 @@
 #include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 #include <vector>
 #include <cmath>
-#include <iostream>
 
 namespace frenet_trajectory_planner
 {
@@ -46,19 +45,14 @@ bool AccelerationPolicy::check_if_feasible(
 {
 
   // assert that frenet_trajectory equals a presentation in frenet frame of cartesian_trajectory
-  int index = 0;
   for (const auto & state : cartesian_trajectory) {
     double acceleration = (state({2, 5})).norm();
-    double vel = (state({1, 4})).norm();
-    // std::cout << "acceleration policy debug: " << index << " | " << vel << " | " << acceleration << std::endl;
-    // if (acceleration > this->parameters_.acceleration_max ||
-    //   acceleration < this->parameters_.acceleration_min)
-    // {
-    //   return false;
-    // }
-    index++;
+    if (acceleration > this->parameters_.acceleration_max ||
+      acceleration < this->parameters_.acceleration_min)
+    {
+      return false;
+    }
   }
-  // std::cout << "END OF ACCELERATION POLICY" << std::endl;
 
   return true;
 }

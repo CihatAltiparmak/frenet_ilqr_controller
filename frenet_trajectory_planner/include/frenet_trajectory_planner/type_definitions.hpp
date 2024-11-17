@@ -26,8 +26,8 @@ typedef struct FrenetTrajectoryPlannerConfig
   double min_longtitutal_velocity;
   double max_longtitutal_velocity;
   double step_longtitutal_velocity;
-  double time_interval = 100; // 1; // 100;
-  double dt = 0.005; // time discretization
+  double time_interval = 1; // 100;
+  double dt = 0.01; // time discretization
 } FrenetTrajectoryPlannerConfig;
 
 }

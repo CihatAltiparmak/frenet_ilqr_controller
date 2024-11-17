@@ -11,7 +11,7 @@ int main()
     frenet_trajectory_planner::CartesianState::Zero();
   robot_cartesian_state[3] = -0.5;
   robot_cartesian_state[0] = 1;
-  robot_cartesian_state[1] = 0.0011;
+  robot_cartesian_state[1] = 1;
 
   std::vector<CartesianPoint> waypoint_list;
   {
@@ -95,38 +95,5 @@ int main()
     std::cout << cartesian_state[0] << ", " << cartesian_state[3] << std::endl;
   }
   std::cout << "END" << std::endl;
-
-  for (const auto & cartesian_state : planned_cartesian_trajectory) {
-    if (cartesian_state({2, 5}).norm() >= 10) {
-      std::cout << cartesian_state[0] << ", " << cartesian_state[3] << std::endl;
-      std::cerr << "LETS FUCKIN GO : " << cartesian_state[0] << ", " << cartesian_state[3] <<
-        std::endl;
-    }
-  }
-  std::cout << "END" << std::endl;
-
-  for (auto waypoint : waypoint_list) {
-    std::cout << waypoint[0] << ", " << waypoint[1] << std::endl;
-  }
-  std::cout << "END" << std::endl;
-
-  // for (size_t i = 0; i <  planned_cartesian_trajectory.size() - 2; i++) {
-  //   auto cs1 = planned_cartesian_trajectory[i]({0, 3});
-  //   auto cs2 = planned_cartesian_trajectory[i + 1]({0, 3});
-  //   auto cs3 = planned_cartesian_trajectory[i + 2]({0, 3});
-
-  //   double vel1 = (cs2 - cs1).norm() / 0.01;
-  //   double vel2 = (cs3 - cs2).norm() / 0.01;
-
-  //   double accel = (vel2 - vel1) / 0.01;
-
-  //   if (accel > 1 || accel < -1) {
-  //     std::cerr << i << " | " << accel << std::endl;
-  //     std::cout << cs1[0] << ", " << cs1[1] << std::endl;
-  //     std::cout << cs2[0] << ", " << cs2[1] << std::endl;
-  //     std::cout << cs3[0] << ", " << cs3[1] << std::endl;
-  //   }
-  // }
-  // std::cout << "END" << std::endl;
   return 0;
 }
