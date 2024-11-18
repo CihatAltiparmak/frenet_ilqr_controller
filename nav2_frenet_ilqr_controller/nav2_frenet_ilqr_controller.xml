@@ -1,0 +1,9 @@
+<class_libraries>
+    <library path="nav2_frenet_ilqr_controller">
+        <class type="nav2_frenet_ilqr_controller::FrenetILQRController" base_class_type="nav2_core::Controller">
+            <description>
+                nav2_frenet_ilqr_controller
+            </description>
+        </class>
+    </library>
+</class_libraries>

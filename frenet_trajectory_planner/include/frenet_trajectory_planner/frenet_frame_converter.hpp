@@ -6,6 +6,7 @@
 #include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
 #include <vector>
 #include <memory>
+#include <iostream>
 
 namespace frenet_trajectory_planner
 {
@@ -19,6 +20,8 @@ public:
   FrenetState convert_cartesian2frenet_for_segment(
     const CartesianState & cartesian_state,
     const size_t segment_index);
+  FrenetState convert_cartesian2frenet(
+    const CartesianState & cartesian_state);
 
 private:
   std::vector<std::unique_ptr<BaseAdapter>> segments_;
@@ -107,7 +110,29 @@ CartesianTrajectory FrenetFrameConverter::convert_frenet2cartesian(
 FrenetState FrenetFrameConverter::convert_cartesian2frenet_for_segment(
   const CartesianState & cartesian_state, const size_t segment_index)
 {
+  std::cout << segments_.at(segment_index)->get_x0() << std::endl
+            << "###" << std::endl
+            << segments_.at(segment_index)->get_t_frenet() << std::endl
+            << "***************" << std::endl;
   return segments_.at(segment_index)->convert_cartesian2frenet(cartesian_state);
+}
+
+FrenetState FrenetFrameConverter::convert_cartesian2frenet(
+  const CartesianState & cartesian_state)
+{
+
+  FrenetState closest_frenet_state = FrenetState::Zero();
+  double closest_dist = std::numeric_limits<double>::infinity();
+  for (size_t index = 0; index < segments_.size(); index++) {
+    FrenetState frenet_state = segments_.at(index)->convert_cartesian2frenet(cartesian_state);
+
+    if (std::sqrt(frenet_state[0] * frenet_state[0]) < closest_dist) {
+      closest_frenet_state = frenet_state;
+      closest_dist = std::sqrt(frenet_state[0] * frenet_state[0]);
+    }
+  }
+
+  return closest_frenet_state;
 }
 
 // --------------------------------
