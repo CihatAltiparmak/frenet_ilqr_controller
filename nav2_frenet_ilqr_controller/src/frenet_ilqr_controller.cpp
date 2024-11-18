@@ -93,17 +93,6 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
   const nav_msgs::msg::Path & path,
   const double lookahead_distance)
 {
-
-  auto lookahead_pose_it = path.poses.end();
-  for (; lookahead_pose_it != path.poses.begin(); --lookahead_pose_it) {
-    if (euclidean_distance(
-        lookahead_pose_it->pose.position,
-        pose_stamped.pose.position) < lookahead_distance)
-    {
-      break;
-    }
-  }
-
   size_t lookahead_index = 0;
   for (size_t index = 0; index < path.poses.size(); ++index) {
     if (euclidean_distance(
@@ -120,6 +109,34 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
     truncated_path.poses.push_back(path.poses[index]);
   }
   return truncated_path;
+}
+
+Vector2d FrenetILQRController::find_optimal_input_for_trajectory(
+  const geometry_msgs::msg::PoseStamped & /*robot_pose*/,
+  const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory) {
+  
+  using ilqr_trajectory_tracker::DiffDriveRobotModel;
+  using ilqr_trajectory_tracker::DiffDriveRobotModelState;
+  using ilqr_trajectory_tracker::DiffDriveRobotModelInput;
+
+  std::vector<DiffDriveRobotModelState> X_feasible;
+  for (auto cartesian_state : robot_cartesian_trajectory) {
+    DiffDriveRobotModelState x;
+    x << cartesian_state[0],
+         cartesian_state[3],
+         std::atan2(cartesian_state[4], cartesian_state[1]);
+    X_feasible.push_back(x);
+  }
+
+  Matrix3d Q = Matrix3d::Identity() * 10;
+  Matrix2d R = Matrix2d::Identity() * 0.1;
+  double alpha = 1;
+  double dt = 0.01;
+  ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
+  newton_optimizer.setIterationNumber(50);
+  newton_optimizer.setAlpha(alpha);
+  auto u_optimal = newton_optimizer.optimize(X_feasible, Q, R, dt);
+  return u_optimal[0];
 }
 
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
@@ -144,49 +161,49 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   transformed_plan = truncateGlobalPlanWithLookAheadDist(robot_pose, transformed_plan, 1);
   global_path_pub_->publish(transformed_plan);
 
+  if (transformed_plan.poses.size() < 2) {
+    throw nav2_core::InvalidPath("Received plan with less than 2 length");
+  }
+
   RCLCPP_INFO(logger_, "Start of waypoint list");
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
   for (const auto & pose_stamped : transformed_plan.poses) {
     frenet_trajectory_planner::CartesianPoint point;
     point << pose_stamped.pose.position.x, pose_stamped.pose.position.y;
-    RCLCPP_INFO(logger_, "%f, %f", point[0], point[1]);
     waypoint_list.push_back(point);
   }
 
   frenet_trajectory_planner::CartesianState robot_cartesian_state =
     frenet_trajectory_planner::CartesianState::Zero();
-  // double robot_yaw = tf2::getYaw(pose.pose.orientation);
-  // RCLCPP_INFO(logger_, "JARBAY NIGHTCORE DEBUG : %f", nav2_util::geometry_utils::euclidean_distance(pose.pose.position, transformed_plan.poses[0].pose.position));
+  double robot_yaw = tf2::getYaw(robot_pose.pose.orientation);
   robot_cartesian_state[0] = robot_pose.pose.position.x;
-  // robot_cartesian_state[1] = 1;
+  robot_cartesian_state[1] = std::cos(robot_yaw);
   robot_cartesian_state[3] = robot_pose.pose.position.y;
-  // robot_cartesian_state[4] = 1; // 0.001 * std::tan(robot_yaw);
-  RCLCPP_INFO_STREAM(logger_, "JARBAY NIGHTCORE DEBUG :" << robot_cartesian_state);
-  RCLCPP_INFO(logger_, "JARBAY NIGHTCORE DEBUG END");
+  robot_cartesian_state[4] = std::sin(robot_yaw);
 
   auto frenet_trajectory_planner = frenet_trajectory_planner::FrenetTrajectoryPlanner();
   auto planned_cartesian_trajectory = frenet_trajectory_planner.plan_by_waypoint(
     robot_cartesian_state,
     waypoint_list, 1.0);
 
-  RCLCPP_INFO(logger_, "Start of frenet traj");
   nav_msgs::msg::Path frenet_plan;
   frenet_plan.header = transformed_plan.header;
   for (const auto & cartesian_state : planned_cartesian_trajectory) {
     geometry_msgs::msg::PoseStamped fre_pose;
     fre_pose.pose.position.x = cartesian_state[0];
     fre_pose.pose.position.y = cartesian_state[3];
-    RCLCPP_INFO(logger_, "%f, %f", cartesian_state[0], cartesian_state[3]);
     frenet_plan.poses.push_back(fre_pose);
   }
   truncated_path_pub_->publish(frenet_plan);
   robot_pose_pub_->publish(robot_pose);
 
-  // throw nav2_core::NoValidControl("FrenetILQRController detected collision ahead!");
+  auto u_opt = find_optimal_input_for_trajectory(robot_pose, planned_cartesian_trajectory);
 
   // populate and return message
   geometry_msgs::msg::TwistStamped cmd_vel;
   cmd_vel.header = pose.header;
+  cmd_vel.twist.linear.x = u_opt[0];
+  cmd_vel.twist.angular.z = u_opt[1];
   return cmd_vel;
 }
 

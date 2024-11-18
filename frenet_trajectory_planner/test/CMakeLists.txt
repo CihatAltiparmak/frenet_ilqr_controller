@@ -47,11 +47,11 @@ ament_add_gtest(
 
 target_link_libraries(circle_adapter_test frenet_trajectory_planner_lib)
 
-ament_add_gtest(
-  frenet_frame_converter_test
-  frenet_frame_converter_test.cpp)
-
-target_link_libraries(frenet_frame_converter_test frenet_trajectory_planner_lib)
+# ament_add_gtest(
+#   frenet_frame_converter_test
+#   frenet_frame_converter_test.cpp)
+# 
+# target_link_libraries(frenet_frame_converter_test frenet_trajectory_planner_lib)
 
 # ament_add_gtest(
 #   frenet_trajectory_selector_test

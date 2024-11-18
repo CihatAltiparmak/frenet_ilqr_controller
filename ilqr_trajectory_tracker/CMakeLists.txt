@@ -34,12 +34,20 @@ endif()
 
 install(
   TARGETS ilqr_trajectory_tracker_lib
-  EXPORT export_ilqr_trajectory_tracker_lib
+  EXPORT ilqr_trajectory_tracker_lib
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
 )
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
+
+ament_export_include_directories("include/ilqr_trajectory_tracker")
+ament_export_dependencies(Eigen3)
+ament_export_targets(ilqr_trajectory_tracker_lib)
 
 ament_package()
 

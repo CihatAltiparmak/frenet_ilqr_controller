@@ -17,6 +17,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(frenet_trajectory_planner REQUIRED)
+find_package(ilqr_trajectory_tracker REQUIRED)
 
 nav2_package()
 
@@ -44,6 +45,7 @@ target_link_libraries(${library_name} PUBLIC
   tf2::tf2
   tf2_ros::tf2_ros
   frenet_trajectory_planner::frenet_trajectory_planner_lib
+  ilqr_trajectory_tracker::ilqr_trajectory_tracker_lib
 )
 target_link_libraries(${library_name} PRIVATE
   angles::angles

@@ -62,18 +62,6 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
   // robot_cartesian_state should start from first segment
   FrenetState robot_frenet_state =
     frenet_frame_converter->convert_cartesian2frenet_for_segment(robot_cartesian_state, 0);
-  // const FrenetState & robot_frenet_state =
-  //   frenet_frame_converter->convert_cartesian2frenet(robot_cartesian_state);
-
-  std::cerr << "CONVERSION DBG: " << robot_frenet_state << std::endl;
-  CartesianState robot_cartesian_state_tmp =
-    frenet_frame_converter->convert_frenet2cartesian_for_segment(
-    robot_frenet_state, 0);
-  std::cerr << "CONVERSION DBG: " << robot_cartesian_state << std::endl;
-  std::cerr << "CONVERSION DBG: " << robot_cartesian_state_tmp << std::endl;
-  std::cerr << "CONVERSION DBG: END" << std::endl;
-  // std::cout << "NAV2 JARBAY DEBUG: " << robot_cartesian_state << std::endl;
-  // std::cout << "------------------" << std::endl;
 
   auto frenet_trajectory_generator = FrenetTrajectoryGenerator(frenet_planner_config_);
   // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
