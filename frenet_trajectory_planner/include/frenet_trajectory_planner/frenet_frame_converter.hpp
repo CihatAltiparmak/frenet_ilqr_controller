@@ -16,9 +16,14 @@ class FrenetFrameConverter
 public:
   FrenetFrameConverter();
   void create_segments(const std::vector<CartesianPoint> & waypoint_list);
-  CartesianTrajectory convert_frenet2cartesian(const FrenetTrajectory & frenet_trajectory);
+  CartesianTrajectory convert_frenet2cartesian(
+    const FrenetTrajectory & frenet_trajectory,
+    const size_t starting_segment_index = 0);
   FrenetState convert_cartesian2frenet_for_segment(
     const CartesianState & cartesian_state,
+    const size_t segment_index);
+  CartesianState convert_frenet2cartesian_for_segment(
+    const FrenetState & frenet_state,
     const size_t segment_index);
   FrenetState convert_cartesian2frenet(
     const CartesianState & cartesian_state);
@@ -81,10 +86,10 @@ void FrenetFrameConverter::create_segments(const std::vector<CartesianPoint> & w
 }
 
 CartesianTrajectory FrenetFrameConverter::convert_frenet2cartesian(
-  const FrenetTrajectory & frenet_trajectory)
+  const FrenetTrajectory & frenet_trajectory, const size_t starting_segment_index)
 {
   double current_longitutal_length = 0;
-  size_t current_segment_index = 0;
+  size_t current_segment_index = starting_segment_index;
   CartesianTrajectory cartesian_trajectory;
   for (auto frenet_state : frenet_trajectory) {
     if (frenet_state[0] <
@@ -110,11 +115,17 @@ CartesianTrajectory FrenetFrameConverter::convert_frenet2cartesian(
 FrenetState FrenetFrameConverter::convert_cartesian2frenet_for_segment(
   const CartesianState & cartesian_state, const size_t segment_index)
 {
-  std::cout << segments_.at(segment_index)->get_x0() << std::endl
-            << "###" << std::endl
-            << segments_.at(segment_index)->get_t_frenet() << std::endl
-            << "***************" << std::endl;
+  // std::cout << segments_.at(segment_index)->get_x0() << std::endl
+  //           << "###" << std::endl
+  //           << segments_.at(segment_index)->get_t_frenet() << std::endl
+  //           << "***************" << std::endl;
   return segments_.at(segment_index)->convert_cartesian2frenet(cartesian_state);
+}
+
+CartesianState FrenetFrameConverter::convert_frenet2cartesian_for_segment(
+  const FrenetState & frenet_state, const size_t segment_index)
+{
+  return segments_.at(segment_index)->convert_frenet2cartesian(frenet_state);
 }
 
 FrenetState FrenetFrameConverter::convert_cartesian2frenet(
@@ -126,10 +137,18 @@ FrenetState FrenetFrameConverter::convert_cartesian2frenet(
   for (size_t index = 0; index < segments_.size(); index++) {
     FrenetState frenet_state = segments_.at(index)->convert_cartesian2frenet(cartesian_state);
 
-    if (std::sqrt(frenet_state[0] * frenet_state[0]) < closest_dist) {
+    CartesianPoint start_point = segments_.at(index)->get_start_point();
+    double dx = start_point[0] - cartesian_state[0];
+    double dy = start_point[1] - cartesian_state[3];
+    double lookahead_distance = 1;
+    if (std::sqrt(dx * dx + dy * dy) < lookahead_distance) {
       closest_frenet_state = frenet_state;
-      closest_dist = std::sqrt(frenet_state[0] * frenet_state[0]);
     }
+
+    // if (std::sqrt(frenet_state[0] * frenet_state[0]) < closest_dist) {
+    //   closest_frenet_state = frenet_state;
+    //   closest_dist = std::sqrt(frenet_state[0] * frenet_state[0]);
+    // }
   }
 
   return closest_frenet_state;

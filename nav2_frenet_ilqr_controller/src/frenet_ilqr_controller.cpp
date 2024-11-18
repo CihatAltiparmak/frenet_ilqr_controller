@@ -17,6 +17,7 @@ using std::min;
 using std::max;
 using std::abs;
 using namespace nav2_costmap_2d;  // NOLINT
+using nav2_util::geometry_utils::euclidean_distance;
 
 namespace nav2_frenet_ilqr_controller
 {
@@ -87,6 +88,40 @@ void FrenetILQRController::deactivate()
   robot_pose_pub_->on_deactivate();
 }
 
+nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
+  const geometry_msgs::msg::PoseStamped & pose_stamped,
+  const nav_msgs::msg::Path & path,
+  const double lookahead_distance)
+{
+
+  auto lookahead_pose_it = path.poses.end();
+  for (; lookahead_pose_it != path.poses.begin(); --lookahead_pose_it) {
+    if (euclidean_distance(
+        lookahead_pose_it->pose.position,
+        pose_stamped.pose.position) < lookahead_distance)
+    {
+      break;
+    }
+  }
+
+  size_t lookahead_index = 0;
+  for (size_t index = 0; index < path.poses.size(); ++index) {
+    if (euclidean_distance(
+        path.poses[index].pose.position,
+        pose_stamped.pose.position) < lookahead_distance)
+    {
+      lookahead_index = index;
+    }
+  }
+
+  nav_msgs::msg::Path truncated_path;
+  truncated_path.header = path.header;
+  for (auto index = lookahead_index; index < path.poses.size(); ++index) {
+    truncated_path.poses.push_back(path.poses[index]);
+  }
+  return truncated_path;
+}
+
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   const geometry_msgs::msg::PoseStamped & pose,
   const geometry_msgs::msg::Twist & /*speed*/,
@@ -100,44 +135,52 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   bool param_interpolate_curvature_after_goal = false;
   auto transformed_plan = path_handler_->transformGlobalPlan(
     pose, param_max_robot_pose_search_dist, param_interpolate_curvature_after_goal);
+
+  geometry_msgs::msg::PoseStamped robot_pose;
+  if (!path_handler_->transformPose(transformed_plan.header.frame_id, pose, robot_pose)) {
+    throw nav2_core::ControllerTFError("Unable to transform robot pose into global plan's frame");
+  }
+
+  transformed_plan = truncateGlobalPlanWithLookAheadDist(robot_pose, transformed_plan, 1);
   global_path_pub_->publish(transformed_plan);
 
+  RCLCPP_INFO(logger_, "Start of waypoint list");
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
   for (const auto & pose_stamped : transformed_plan.poses) {
     frenet_trajectory_planner::CartesianPoint point;
     point << pose_stamped.pose.position.x, pose_stamped.pose.position.y;
+    RCLCPP_INFO(logger_, "%f, %f", point[0], point[1]);
     waypoint_list.push_back(point);
   }
 
   frenet_trajectory_planner::CartesianState robot_cartesian_state =
     frenet_trajectory_planner::CartesianState::Zero();
   // double robot_yaw = tf2::getYaw(pose.pose.orientation);
-  RCLCPP_INFO(
-    logger_, "JARBAY NIGHTCORE DEBUG : %f",
-    nav2_util::geometry_utils::euclidean_distance(
-      pose.pose.position,
-      transformed_plan.poses[0].pose.position));
-  robot_cartesian_state[0] = pose.pose.position.x;
-  robot_cartesian_state[1] = 1;
-  robot_cartesian_state[3] = pose.pose.position.y;
-  robot_cartesian_state[4] = 1; // 0.001 * std::tan(robot_yaw);
+  // RCLCPP_INFO(logger_, "JARBAY NIGHTCORE DEBUG : %f", nav2_util::geometry_utils::euclidean_distance(pose.pose.position, transformed_plan.poses[0].pose.position));
+  robot_cartesian_state[0] = robot_pose.pose.position.x;
+  // robot_cartesian_state[1] = 1;
+  robot_cartesian_state[3] = robot_pose.pose.position.y;
+  // robot_cartesian_state[4] = 1; // 0.001 * std::tan(robot_yaw);
+  RCLCPP_INFO_STREAM(logger_, "JARBAY NIGHTCORE DEBUG :" << robot_cartesian_state);
+  RCLCPP_INFO(logger_, "JARBAY NIGHTCORE DEBUG END");
 
   auto frenet_trajectory_planner = frenet_trajectory_planner::FrenetTrajectoryPlanner();
   auto planned_cartesian_trajectory = frenet_trajectory_planner.plan_by_waypoint(
     robot_cartesian_state,
     waypoint_list, 1.0);
 
+  RCLCPP_INFO(logger_, "Start of frenet traj");
   nav_msgs::msg::Path frenet_plan;
   frenet_plan.header = transformed_plan.header;
   for (const auto & cartesian_state : planned_cartesian_trajectory) {
     geometry_msgs::msg::PoseStamped fre_pose;
     fre_pose.pose.position.x = cartesian_state[0];
     fre_pose.pose.position.y = cartesian_state[3];
-
+    RCLCPP_INFO(logger_, "%f, %f", cartesian_state[0], cartesian_state[3]);
     frenet_plan.poses.push_back(fre_pose);
   }
   truncated_path_pub_->publish(frenet_plan);
-  robot_pose_pub_->publish(pose);
+  robot_pose_pub_->publish(robot_pose);
 
   // throw nav2_core::NoValidControl("FrenetILQRController detected collision ahead!");
 

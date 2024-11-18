@@ -64,6 +64,11 @@ public:
    */
   void deactivate() override;
 
+  nav_msgs::msg::Path truncateGlobalPlanWithLookAheadDist(
+    const geometry_msgs::msg::PoseStamped & pose_stamped,
+    const nav_msgs::msg::Path & path,
+    const double lookahead_distance);
+
   /**
    * @brief Compute the best command given the current pose and velocity, with possible debug information
    *
