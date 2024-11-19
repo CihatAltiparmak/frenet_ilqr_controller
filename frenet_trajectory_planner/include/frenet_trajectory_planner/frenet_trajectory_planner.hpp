@@ -30,8 +30,11 @@ public:
     const std::vector<CartesianPoint> & waypoint_list,
     const double max_time_per_point);
 
+  void add_policy(const std::shared_ptr<policies::Policy> & policy);
+
 private:
   FrenetTrajectoryPlannerConfig frenet_planner_config_;
+  std::vector<std::shared_ptr<policies::Policy>> selected_policies_;
 };
 
 // TODO (CihatAltiparmak) : move the source parts of FrenetTrajectoryPlanner to cpp file. Now to move to cpp file throws out multiple definition error when built
@@ -82,6 +85,10 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
     frenet_trajectory_selector.add_cost(longtitutal_velocity_cost_checker);
   }
 
+  for (auto policy : selected_policies_) {
+    frenet_trajectory_selector.add_policy(policy);
+  }
+
   // {
   //   policies::AccelerationPolicyParameters parameters = {
   //     -20.0, // acceleration_min
@@ -98,6 +105,11 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
 
   auto best_frenet_trajectory = best_frenet_trajectory_optional.value();
   return frenet_frame_converter->convert_frenet2cartesian(best_frenet_trajectory);
+}
+
+void FrenetTrajectoryPlanner::add_policy(const std::shared_ptr<policies::Policy> & policy)
+{
+  selected_policies_.push_back(policy);
 }
 
 }

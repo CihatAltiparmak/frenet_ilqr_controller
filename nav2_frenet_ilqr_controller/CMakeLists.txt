@@ -93,5 +93,6 @@ ament_export_dependencies(
 ament_export_targets(${library_name})
 
 pluginlib_export_plugin_description_file(nav2_core nav2_frenet_ilqr_controller.xml)
+pluginlib_export_plugin_description_file(nav2_frenet_ilqr_controller policies.xml)
 
 ament_package()

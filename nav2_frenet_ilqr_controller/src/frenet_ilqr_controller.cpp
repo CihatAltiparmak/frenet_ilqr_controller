@@ -11,6 +11,7 @@
 #include "nav2_util/node_utils.hpp"
 #include "nav2_util/geometry_utils.hpp"
 #include "nav2_costmap_2d/costmap_filters/filter_values.hpp"
+#include <pluginlib/class_loader.hpp>
 
 using std::hypot;
 using std::min;
@@ -189,6 +190,12 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   robot_cartesian_state[4] = linear_speed * std::sin(robot_yaw);
 
   auto frenet_trajectory_planner = frenet_trajectory_planner::FrenetTrajectoryPlanner();
+
+  // pluginlib::ClassLoader<policies::RclcppNodePolicy> policy_loader("nav2_frenet_policies", "nav2_frenet_ilqr_controller::policies::RclcppNodePolicy");
+  // std::shared_ptr<policies::RclcppNodePolicy> example_policy = policy_loader.createSharedInstance("nav2_frenet_ilqr_controller::policies::ObstaclePolicy");
+  // example_policy->initialize(node_.lock(), costmap_ros_);
+  // frenet_trajectory_planner.add_policy(example_policy);
+
   auto planned_cartesian_trajectory = frenet_trajectory_planner.plan_by_waypoint(
     robot_cartesian_state,
     waypoint_list, 1.0);
