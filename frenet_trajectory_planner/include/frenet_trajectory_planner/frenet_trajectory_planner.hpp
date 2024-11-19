@@ -60,7 +60,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
   frenet_frame_converter->create_segments(waypoint_list);
 
   // robot_cartesian_state should start from first segment
-  const FrenetState & robot_frenet_state =
+  FrenetState robot_frenet_state =
     frenet_frame_converter->convert_cartesian2frenet_for_segment(robot_cartesian_state, 0);
 
   auto frenet_trajectory_generator = FrenetTrajectoryGenerator(frenet_planner_config_);

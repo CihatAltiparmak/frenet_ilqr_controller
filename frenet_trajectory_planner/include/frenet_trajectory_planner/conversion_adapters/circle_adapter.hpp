@@ -94,7 +94,7 @@ CartesianState CircleAdapter::convert_frenet2cartesian(const FrenetState & frene
 FrenetState CircleAdapter::convert_cartesian2frenet(const CartesianState & cartesian_state)
 {
   FrenetState frenet_state = FrenetState::Zero();
-  const auto x_c = cartesian_state({0, 3});
+  const Vector2d x_c = cartesian_state({0, 3});
 
   Vector2d xcMc = x_c - c_;
   double xcMc_norm = xcMc.norm();
