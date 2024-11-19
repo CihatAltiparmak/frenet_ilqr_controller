@@ -113,8 +113,9 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
 
 Vector2d FrenetILQRController::find_optimal_input_for_trajectory(
   const geometry_msgs::msg::PoseStamped & /*robot_pose*/,
-  const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory) {
-  
+  const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
+{
+
   using ilqr_trajectory_tracker::DiffDriveRobotModel;
   using ilqr_trajectory_tracker::DiffDriveRobotModelState;
   using ilqr_trajectory_tracker::DiffDriveRobotModelInput;
@@ -123,8 +124,8 @@ Vector2d FrenetILQRController::find_optimal_input_for_trajectory(
   for (auto cartesian_state : robot_cartesian_trajectory) {
     DiffDriveRobotModelState x;
     x << cartesian_state[0],
-         cartesian_state[3],
-         std::atan2(cartesian_state[4], cartesian_state[1]);
+      cartesian_state[3],
+      std::atan2(cartesian_state[4], cartesian_state[1]);
     X_feasible.push_back(x);
   }
 
@@ -135,19 +136,19 @@ Vector2d FrenetILQRController::find_optimal_input_for_trajectory(
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
   newton_optimizer.setIterationNumber(50);
   newton_optimizer.setAlpha(alpha);
-  auto u_optimal = newton_optimizer.optimize(X_feasible, Q, R, dt);
-  return u_optimal[0];
+  auto U_optimal = newton_optimizer.optimize(X_feasible, Q, R, dt);
+  return U_optimal[0];
 }
 
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   const geometry_msgs::msg::PoseStamped & pose,
-  const geometry_msgs::msg::Twist & /*speed*/,
+  const geometry_msgs::msg::Twist & speed,
   nav2_core::GoalChecker * /*goal_checker*/)
 {
   nav2_costmap_2d::Costmap2D * costmap = costmap_ros_->getCostmap();
   std::unique_lock<nav2_costmap_2d::Costmap2D::mutex_t> lock(*(costmap->getMutex()));
 
-  // // Transform path to robot base frame
+  // Transform path to robot base frame
   double param_max_robot_pose_search_dist = costmap_->getSizeInMetersX() / 2;
   bool param_interpolate_curvature_after_goal = false;
   auto transformed_plan = path_handler_->transformGlobalPlan(
@@ -158,14 +159,16 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     throw nav2_core::ControllerTFError("Unable to transform robot pose into global plan's frame");
   }
 
-  transformed_plan = truncateGlobalPlanWithLookAheadDist(robot_pose, transformed_plan, 1);
+  double lookahead_distance = 0.3;
+  transformed_plan = truncateGlobalPlanWithLookAheadDist(
+    robot_pose, transformed_plan,
+    lookahead_distance);
   global_path_pub_->publish(transformed_plan);
 
   if (transformed_plan.poses.size() < 2) {
     throw nav2_core::InvalidPath("Received plan with less than 2 length");
   }
 
-  RCLCPP_INFO(logger_, "Start of waypoint list");
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
   for (const auto & pose_stamped : transformed_plan.poses) {
     frenet_trajectory_planner::CartesianPoint point;
@@ -176,10 +179,14 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   frenet_trajectory_planner::CartesianState robot_cartesian_state =
     frenet_trajectory_planner::CartesianState::Zero();
   double robot_yaw = tf2::getYaw(robot_pose.pose.orientation);
+  double linear_speed = speed.linear.x;
+  if (linear_speed == 0) {
+    linear_speed = 0.01;
+  }
   robot_cartesian_state[0] = robot_pose.pose.position.x;
-  robot_cartesian_state[1] = std::cos(robot_yaw);
+  robot_cartesian_state[1] = linear_speed * std::cos(robot_yaw);
   robot_cartesian_state[3] = robot_pose.pose.position.y;
-  robot_cartesian_state[4] = std::sin(robot_yaw);
+  robot_cartesian_state[4] = linear_speed * std::sin(robot_yaw);
 
   auto frenet_trajectory_planner = frenet_trajectory_planner::FrenetTrajectoryPlanner();
   auto planned_cartesian_trajectory = frenet_trajectory_planner.plan_by_waypoint(

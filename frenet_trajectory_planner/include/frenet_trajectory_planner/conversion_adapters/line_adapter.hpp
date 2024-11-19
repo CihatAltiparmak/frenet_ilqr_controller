@@ -16,9 +16,8 @@ public:
   LineAdapter(const CartesianPoint & start_point, const CartesianPoint & final_point);
   CartesianState convert_frenet2cartesian(const FrenetState & frenet_state);
   FrenetState convert_cartesian2frenet(const CartesianState & cartesian_state);
-  Vector2d get_x0() {return x0_;}
-  Vector2d get_t_frenet() {return t_frenet_;}
-// private:
+
+private:
   Vector2d t_frenet_;
   Vector2d x0_;
 };
@@ -32,8 +31,6 @@ LineAdapter::LineAdapter(const CartesianPoint & start_point, const CartesianPoin
   t_frenet_ = line_vec / line_vec.norm();
 
   arclength_ = line_vec.norm();
-  start_point_ = start_point;
-  end_point_ = final_point;
 }
 
 CartesianState LineAdapter::convert_frenet2cartesian(const FrenetState & frenet_state)
