@@ -131,6 +131,9 @@ protected:
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::PoseStamped>>
   robot_pose_pub_;
   std::unique_ptr<nav2_frenet_ilqr_controller::PathHandler> path_handler_;
+
+private:
+  frenet_trajectory_planner::FrenetTrajectoryPlanner frenet_trajectory_planner_;
 };
 
 }  // namespace nav2_frenet_ilqr_controller

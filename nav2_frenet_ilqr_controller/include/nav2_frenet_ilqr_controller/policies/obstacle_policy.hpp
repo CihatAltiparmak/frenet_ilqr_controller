@@ -14,16 +14,31 @@ class ObstaclePolicy : public RclcppNodePolicy
 
 public:
   ObstaclePolicy();
+  void initialize(
+    const rclcpp_lifecycle::LifecycleNode::SharedPtr & node,
+    std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros) override;
   bool check_if_feasible(
     const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) override;
 
   bool is_collides(const CartesianState & cartesian_state);
+
+private:
+  nav2_costmap_2d::FootprintCollisionChecker<nav2_costmap_2d::Costmap2D *> collision_checker_{
+    nullptr};
 };
 
 ObstaclePolicy::ObstaclePolicy()
 : RclcppNodePolicy()
 {
+}
+
+void ObstaclePolicy::initialize(
+  const rclcpp_lifecycle::LifecycleNode::SharedPtr & node,
+  std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
+{
+  RclcppNodePolicy::initialize(node, costmap_ros);
+  collision_checker_.setCostmap(costmap_);
 }
 
 bool ObstaclePolicy::check_if_feasible(
@@ -46,11 +61,11 @@ bool ObstaclePolicy::is_collides(const CartesianState & cartesian_state)
   const double & x = cartesian_state[0];
   const double & y = cartesian_state[3];
   unsigned int x_i, y_i;
-  if (!costmap_->worldToMap(x, y, x_i, y_i)) {
+  if (!collision_checker_.worldToMap(x, y, x_i, y_i)) {
     return false;
   }
 
-  unsigned char point_cost = costmap_->getCost(x_i, y_i);
+  unsigned char point_cost = collision_checker_.pointCost(x_i, y_i);
 
   switch (point_cost) {
     case (nav2_costmap_2d::LETHAL_OBSTACLE):

@@ -17,7 +17,7 @@ class RclcppNodePolicy : public Policy
 {
 public:
   RclcppNodePolicy();
-  void initialize(
+  virtual void initialize(
     const rclcpp_lifecycle::LifecycleNode::SharedPtr & node,
     std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros);
   virtual bool check_if_feasible(

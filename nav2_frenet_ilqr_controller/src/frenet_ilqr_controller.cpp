@@ -40,6 +40,13 @@ void FrenetILQRController::configure(
   plugin_name_ = name;
   logger_ = node->get_logger();
 
+  pluginlib::ClassLoader<policies::RclcppNodePolicy> policy_loader("nav2_frenet_ilqr_controller",
+    "nav2_frenet_ilqr_controller::policies::RclcppNodePolicy");
+  std::shared_ptr<policies::RclcppNodePolicy> example_policy = policy_loader.createSharedInstance(
+    "nav2_frenet_ilqr_controller::policies::ObstaclePolicy");
+  example_policy->initialize(node_.lock(), costmap_ros_);
+  frenet_trajectory_planner_.add_policy(example_policy);
+
   // Handles global path transformations
   double param_transform_tolerance = 0.1;
   path_handler_ = std::make_unique<PathHandler>(
@@ -131,11 +138,11 @@ Vector2d FrenetILQRController::find_optimal_input_for_trajectory(
   }
 
   Matrix3d Q = Matrix3d::Identity() * 10;
-  Matrix2d R = Matrix2d::Identity() * 0.1;
+  Matrix2d R = Matrix2d::Identity() * 2;
   double alpha = 1;
-  double dt = 0.01;
+  double dt = 0.05; // 0.01;
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
-  newton_optimizer.setIterationNumber(50);
+  newton_optimizer.setIterationNumber(20);
   newton_optimizer.setAlpha(alpha);
   auto U_optimal = newton_optimizer.optimize(X_feasible, Q, R, dt);
   return U_optimal[0];
@@ -167,7 +174,11 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   global_path_pub_->publish(transformed_plan);
 
   if (transformed_plan.poses.size() < 2) {
-    throw nav2_core::InvalidPath("Received plan with less than 2 length");
+    transformed_plan.poses.insert(transformed_plan.poses.begin(), robot_pose);
+    // geometry_msgs::msg::TwistStamped cmd_vel;
+    // cmd_vel.header = pose.header;
+    // return cmd_vel;
+    // throw nav2_core::InvalidPath("Received plan with less than 2 length");
   }
 
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
@@ -189,14 +200,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   robot_cartesian_state[3] = robot_pose.pose.position.y;
   robot_cartesian_state[4] = linear_speed * std::sin(robot_yaw);
 
-  auto frenet_trajectory_planner = frenet_trajectory_planner::FrenetTrajectoryPlanner();
-
-  // pluginlib::ClassLoader<policies::RclcppNodePolicy> policy_loader("nav2_frenet_policies", "nav2_frenet_ilqr_controller::policies::RclcppNodePolicy");
-  // std::shared_ptr<policies::RclcppNodePolicy> example_policy = policy_loader.createSharedInstance("nav2_frenet_ilqr_controller::policies::ObstaclePolicy");
-  // example_policy->initialize(node_.lock(), costmap_ros_);
-  // frenet_trajectory_planner.add_policy(example_policy);
-
-  auto planned_cartesian_trajectory = frenet_trajectory_planner.plan_by_waypoint(
+  auto planned_cartesian_trajectory = frenet_trajectory_planner_.plan_by_waypoint(
     robot_cartesian_state,
     waypoint_list, 1.0);
 
