@@ -11,7 +11,6 @@
 #include <frenet_trajectory_planner/policies/acceleration_policy.hpp>
 
 #include <memory>
-#include <iostream>
 
 namespace frenet_trajectory_planner
 {
@@ -86,7 +85,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
     frenet_frame_converter->convert_cartesian2frenet_for_segment(robot_cartesian_state, 0);
 
   FrenetTrajectory planned_frenet_trajectory = {};
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < frenet_planner_config_.number_of_time_intervals; i++) {
     // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
     auto all_frenet_trajectories = frenet_trajectory_generator.get_all_possible_frenet_trajectories(
       robot_frenet_state);
@@ -95,9 +94,6 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
       all_frenet_trajectories);
 
     if (!best_frenet_trajectory_optional.has_value()) {
-      std::cout << "best_frenet_trajectory_optional.has_value() is FALSE" << std::endl;
-      std::cout << "SIZE OF planned_frenet_trajectory: " << planned_frenet_trajectory.size() <<
-        std::endl;
       break;
     }
     auto best_frenet_trajectory = best_frenet_trajectory_optional.value();

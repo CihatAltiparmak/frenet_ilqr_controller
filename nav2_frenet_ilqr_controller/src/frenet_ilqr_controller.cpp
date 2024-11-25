@@ -101,6 +101,7 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
   const nav_msgs::msg::Path & path,
   const double lookahead_distance)
 {
+  // TODO (CihatAltiparmak) : find better algorithm to handle this
   size_t lookahead_index = 0;
   for (size_t index = 0; index < path.poses.size(); ++index) {
     if (euclidean_distance(
@@ -140,7 +141,7 @@ Vector2d FrenetILQRController::find_optimal_input_for_trajectory(
   Matrix3d Q = Matrix3d::Identity() * 10;
   Matrix2d R = Matrix2d::Identity() * 2;
   double alpha = 1;
-  double dt = 0.05; // 0.01;
+  double dt = 0.05;
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
   newton_optimizer.setIterationNumber(20);
   newton_optimizer.setAlpha(alpha);
@@ -175,10 +176,6 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
 
   if (transformed_plan.poses.size() < 2) {
     transformed_plan.poses.insert(transformed_plan.poses.begin(), robot_pose);
-    // geometry_msgs::msg::TwistStamped cmd_vel;
-    // cmd_vel.header = pose.header;
-    // return cmd_vel;
-    // throw nav2_core::InvalidPath("Received plan with less than 2 length");
   }
 
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
