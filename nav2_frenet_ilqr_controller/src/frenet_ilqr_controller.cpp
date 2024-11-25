@@ -11,6 +11,7 @@
 #include "nav2_util/node_utils.hpp"
 #include "nav2_util/geometry_utils.hpp"
 #include "nav2_costmap_2d/costmap_filters/filter_values.hpp"
+#include <pluginlib/class_loader.hpp>
 
 using std::hypot;
 using std::min;
@@ -38,6 +39,13 @@ void FrenetILQRController::configure(
   tf_ = tf;
   plugin_name_ = name;
   logger_ = node->get_logger();
+
+  pluginlib::ClassLoader<policies::RclcppNodePolicy> policy_loader("nav2_frenet_ilqr_controller",
+    "nav2_frenet_ilqr_controller::policies::RclcppNodePolicy");
+  std::shared_ptr<policies::RclcppNodePolicy> example_policy = policy_loader.createSharedInstance(
+    "nav2_frenet_ilqr_controller::policies::ObstaclePolicy");
+  example_policy->initialize(node_.lock(), costmap_ros_);
+  frenet_trajectory_planner_.add_policy(example_policy);
 
   // Handles global path transformations
   double param_transform_tolerance = 0.1;
@@ -93,6 +101,7 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
   const nav_msgs::msg::Path & path,
   const double lookahead_distance)
 {
+  // TODO (CihatAltiparmak) : find better algorithm to handle this
   size_t lookahead_index = 0;
   for (size_t index = 0; index < path.poses.size(); ++index) {
     if (euclidean_distance(
@@ -130,11 +139,11 @@ Vector2d FrenetILQRController::find_optimal_input_for_trajectory(
   }
 
   Matrix3d Q = Matrix3d::Identity() * 10;
-  Matrix2d R = Matrix2d::Identity() * 0.1;
+  Matrix2d R = Matrix2d::Identity() * 2;
   double alpha = 1;
-  double dt = 0.01;
+  double dt = 0.05;
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
-  newton_optimizer.setIterationNumber(50);
+  newton_optimizer.setIterationNumber(20);
   newton_optimizer.setAlpha(alpha);
   auto U_optimal = newton_optimizer.optimize(X_feasible, Q, R, dt);
   return U_optimal[0];
@@ -166,7 +175,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   global_path_pub_->publish(transformed_plan);
 
   if (transformed_plan.poses.size() < 2) {
-    throw nav2_core::InvalidPath("Received plan with less than 2 length");
+    transformed_plan.poses.insert(transformed_plan.poses.begin(), robot_pose);
   }
 
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
@@ -188,8 +197,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   robot_cartesian_state[3] = robot_pose.pose.position.y;
   robot_cartesian_state[4] = linear_speed * std::sin(robot_yaw);
 
-  auto frenet_trajectory_planner = frenet_trajectory_planner::FrenetTrajectoryPlanner();
-  auto planned_cartesian_trajectory = frenet_trajectory_planner.plan_by_waypoint(
+  auto planned_cartesian_trajectory = frenet_trajectory_planner_.plan_by_waypoint(
     robot_cartesian_state,
     waypoint_list, 1.0);
 
