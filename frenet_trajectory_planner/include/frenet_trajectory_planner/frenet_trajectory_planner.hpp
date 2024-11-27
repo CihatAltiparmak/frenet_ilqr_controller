@@ -33,6 +33,8 @@ public:
 
 private:
   FrenetTrajectoryPlannerConfig frenet_planner_config_;
+  FrenetTrajectorySelector frenet_trajectory_selector_;
+  std::shared_ptr<FrenetTrajectoryGenerator> frenet_trajectory_generator_;
   std::vector<std::shared_ptr<policies::Policy>> selected_policies_;
 };
 
@@ -45,12 +47,46 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner()
   frenet_planner_config_.min_longtitutal_velocity = 0;
   frenet_planner_config_.max_longtitutal_velocity = 2;
   frenet_planner_config_.step_longtitutal_velocity = 0.5;
+
+  {
+    auto lateral_distance_checker =
+      std::make_shared<costs::LateralDistanceCost>(10);
+    frenet_trajectory_selector_.add_cost(lateral_distance_checker);
+  }
+
+  {
+    auto longtitutal_velocity_cost_checker =
+      std::make_shared<costs::LongtitutalVelocityCost>(10, 2);
+    frenet_trajectory_selector_.add_cost(longtitutal_velocity_cost_checker);
+  }
+
+  for (auto policy : selected_policies_) {
+    frenet_trajectory_selector_.add_policy(policy);
+  }
+
+  frenet_trajectory_generator_ =
+    std::make_shared<FrenetTrajectoryGenerator>(frenet_planner_config_);
 }
 
 FrenetTrajectoryPlanner::FrenetTrajectoryPlanner(
   const FrenetTrajectoryPlannerConfig & frenet_planner_config)
 : frenet_planner_config_(frenet_planner_config)
 {
+  {
+    auto lateral_distance_checker =
+      std::make_shared<costs::LateralDistanceCost>(10);
+    frenet_trajectory_selector_.add_cost(lateral_distance_checker);
+  }
+
+  {
+    auto longtitutal_velocity_cost_checker =
+      std::make_shared<costs::LongtitutalVelocityCost>(10, 2);
+    frenet_trajectory_selector_.add_cost(longtitutal_velocity_cost_checker);
+  }
+
+  for (auto policy : selected_policies_) {
+    frenet_trajectory_selector_.add_policy(policy);
+  }
 }
 
 CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
@@ -61,24 +97,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
   auto frenet_frame_converter = std::make_shared<FrenetFrameConverter>();
   frenet_frame_converter->create_segments(waypoint_list);
 
-  auto frenet_trajectory_selector = FrenetTrajectorySelector(frenet_frame_converter);
-  {
-    auto lateral_distance_checker =
-      std::make_shared<costs::LateralDistanceCost>(10);
-    frenet_trajectory_selector.add_cost(lateral_distance_checker);
-  }
-
-  {
-    auto longtitutal_velocity_cost_checker =
-      std::make_shared<costs::LongtitutalVelocityCost>(10, 2);
-    frenet_trajectory_selector.add_cost(longtitutal_velocity_cost_checker);
-  }
-
-  for (auto policy : selected_policies_) {
-    frenet_trajectory_selector.add_policy(policy);
-  }
-
-  auto frenet_trajectory_generator = FrenetTrajectoryGenerator(frenet_planner_config_);
+  frenet_trajectory_selector_.setFrenetFrameConverter(frenet_frame_converter);
 
   // robot_cartesian_state should start from first segment
   FrenetState robot_frenet_state =
@@ -87,10 +106,12 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
   FrenetTrajectory planned_frenet_trajectory = {};
   for (int i = 0; i < frenet_planner_config_.number_of_time_intervals; i++) {
     // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
-    auto all_frenet_trajectories = frenet_trajectory_generator.get_all_possible_frenet_trajectories(
+    auto all_frenet_trajectories =
+      frenet_trajectory_generator_->get_all_possible_frenet_trajectories(
       robot_frenet_state);
 
-    auto best_frenet_trajectory_optional = frenet_trajectory_selector.select_best_frenet_trajectory(
+    auto best_frenet_trajectory_optional =
+      frenet_trajectory_selector_.select_best_frenet_trajectory(
       all_frenet_trajectories);
 
     if (!best_frenet_trajectory_optional.has_value()) {
