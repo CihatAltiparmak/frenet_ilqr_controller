@@ -14,8 +14,8 @@ class LineAdapter : public BaseAdapter
 {
 public:
   LineAdapter(const CartesianPoint & start_point, const CartesianPoint & final_point);
-  CartesianState convert_frenet2cartesian(const FrenetState & frenet_state);
-  FrenetState convert_cartesian2frenet(const CartesianState & cartesian_state);
+  CartesianState convertFrenet2Cartesian(const FrenetState & frenet_state);
+  FrenetState convertCartesian2Frenet(const CartesianState & cartesian_state);
 
 private:
   Vector2d t_frenet_;
@@ -33,7 +33,7 @@ LineAdapter::LineAdapter(const CartesianPoint & start_point, const CartesianPoin
   arclength_ = line_vec.norm();
 }
 
-CartesianState LineAdapter::convert_frenet2cartesian(const FrenetState & frenet_state)
+CartesianState LineAdapter::convertFrenet2Cartesian(const FrenetState & frenet_state)
 {
   CartesianState cartesian_state = CartesianState::Zero();
 
@@ -52,7 +52,7 @@ CartesianState LineAdapter::convert_frenet2cartesian(const FrenetState & frenet_
 
 }
 
-FrenetState LineAdapter::convert_cartesian2frenet(const CartesianState & cartesian_state)
+FrenetState LineAdapter::convertCartesian2Frenet(const CartesianState & cartesian_state)
 {
   Matrix<double, 6, 2> T;
   T << (cartesian_state[0] - x0_[0]), cartesian_state[3] - x0_[1],

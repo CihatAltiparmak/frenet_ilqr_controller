@@ -18,10 +18,10 @@ class FrenetTrajectoryGenerator
 public:
   FrenetTrajectoryGenerator(const FrenetTrajectoryPlannerConfig & frenet_planner_config);
 
-  std::vector<FrenetTrajectory> get_all_possible_frenet_trajectories(
+  std::vector<FrenetTrajectory> getAllPossibleFrenetTrajectories(
     const FrenetState & frenet_state_initial);
 
-  FrenetTrajectory get_frenet_trajectory(
+  FrenetTrajectory getFrenetTrajectory(
     const FrenetState & frenet_state_initial,
     const FrenetState & frenet_state_final);
 

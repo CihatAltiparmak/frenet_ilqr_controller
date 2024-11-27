@@ -6,7 +6,7 @@ namespace frenet_trajectory_planner
 QuarticTrajectoryPlanner::QuarticTrajectoryPlanner()
 {}
 
-bool QuarticTrajectoryPlanner::set_coefficients_or_return_false(
+bool QuarticTrajectoryPlanner::setCoefficientsOrReturnFalse(
   const double x0,
   const double dx0,
   const double ddx0,

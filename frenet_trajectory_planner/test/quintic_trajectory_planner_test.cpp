@@ -5,11 +5,11 @@ TEST(frenet_trajectory_planner, quintic_trajectory_planner_test_initialization) 
   auto quintic_trajectory_planner = frenet_trajectory_planner::QuinticTrajectoryPlanner();
 }
 
-TEST(frenet_trajectory_planner, quintic_trajectory_planner_test_set_coefficients) {
+TEST(frenet_trajectory_planner, quintic_trajectory_planner_test_setCoefficientsOrReturnFalse) {
   auto quintic_trajectory_planner = frenet_trajectory_planner::QuinticTrajectoryPlanner();
 
   ASSERT_EQ(
-    quintic_trajectory_planner.set_coefficients_or_return_false(
+    quintic_trajectory_planner.setCoefficientsOrReturnFalse(
       0, 0, 0, 1, 0, 0, 0,
       1), true);
 

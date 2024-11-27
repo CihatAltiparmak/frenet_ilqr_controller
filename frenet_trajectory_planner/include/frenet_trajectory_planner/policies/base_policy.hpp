@@ -15,7 +15,7 @@ class Policy
 public:
   Policy() {}
   virtual ~Policy() = default;
-  virtual bool check_if_feasible(
+  virtual bool checkIfFeasible(
     const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) = 0;
 };

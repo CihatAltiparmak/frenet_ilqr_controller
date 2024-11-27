@@ -17,7 +17,7 @@ public:
   void initialize(
     const rclcpp_lifecycle::LifecycleNode::SharedPtr & node,
     std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros) override;
-  bool check_if_feasible(
+  bool checkIfFeasible(
     const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) override;
 
@@ -41,7 +41,7 @@ void ObstaclePolicy::initialize(
   collision_checker_.setCostmap(costmap_);
 }
 
-bool ObstaclePolicy::check_if_feasible(
+bool ObstaclePolicy::checkIfFeasible(
   const FrenetTrajectory & /*frenet_trajectory*/,
   const CartesianTrajectory & cartesian_trajectory)
 {

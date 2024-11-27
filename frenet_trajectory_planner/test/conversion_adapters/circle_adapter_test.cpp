@@ -26,7 +26,7 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_initiali
     x, y, alpha);
 }
 
-TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convert_frenet2cartesian) {
+TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convertFrenet2Cartesian) {
   using frenet_trajectory_planner::CartesianPoint;
   {
     CartesianPoint x_start;
@@ -63,8 +63,8 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convert_
     frenet_state[1] = 3;
     frenet_state[3] = 3;
 
-    auto cartesian_state = adapter.convert_frenet2cartesian(frenet_state);
-    auto frenet_state2 = adapter.convert_cartesian2frenet(cartesian_state);
+    auto cartesian_state = adapter.convertFrenet2Cartesian(frenet_state);
+    auto frenet_state2 = adapter.convertCartesian2Frenet(cartesian_state);
     ASSERT_NEAR(cartesian_state[3], M_PI / 4, 1e-10)
       << "This is actual cartesian state: \n"
       << cartesian_state
@@ -84,7 +84,7 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convert_
 
   //   frenet_trajectory_planner::FrenetState frenet_state =
   //     frenet_trajectory_planner::FrenetState::Zero();
-  //   frenet_trajectory_planner::CartesianState cartesian_state = adapter.convert_frenet2cartesian(
+  //   frenet_trajectory_planner::CartesianState cartesian_state = adapter.convertFrenet2Cartesian(
   //     frenet_state);
 
   //   ASSERT_NEAR(cartesian_state[6], M_PI / 4, 1e-10);
@@ -99,14 +99,14 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convert_
 
   //   frenet_trajectory_planner::FrenetState frenet_state =
   //     frenet_trajectory_planner::FrenetState::Zero();
-  //   frenet_trajectory_planner::CartesianState cartesian_state = adapter.convert_frenet2cartesian(
+  //   frenet_trajectory_planner::CartesianState cartesian_state = adapter.convertFrenet2Cartesian(
   //     frenet_state);
 
   //   ASSERT_NEAR(cartesian_state[6], 0, 1e-10);
   // }
 }
 
-// TEST(frenet_trajectory_planner, conversion_adapters_line_adapter_test_convert_cartesian2frenet) {
+// TEST(frenet_trajectory_planner, conversion_adapters_line_adapter_test_convertCartesian2Frenet) {
 //   using frenet_trajectory_planner::CartesianPoint;
 //   {
 //     CartesianPoint x_start;
@@ -118,7 +118,7 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convert_
 //     frenet_trajectory_planner::CartesianState cartesian_state;
 //     cartesian_state << -1, 0, 0, 1, 0, 0, M_PI / 2;
 
-//     frenet_trajectory_planner::FrenetState frenet_state = adapter.convert_cartesian2frenet(
+//     frenet_trajectory_planner::FrenetState frenet_state = adapter.convertCartesian2Frenet(
 //       cartesian_state);
 
 //     ASSERT_NEAR(frenet_state[3], 2, 1e-10);
@@ -134,7 +134,7 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convert_
 //     frenet_trajectory_planner::CartesianState cartesian_state;
 //     cartesian_state << -1, 0, 0, 2, 0, 0, M_PI / 2;
 
-//     frenet_trajectory_planner::FrenetState frenet_state = adapter.convert_cartesian2frenet(
+//     frenet_trajectory_planner::FrenetState frenet_state = adapter.convertCartesian2Frenet(
 //       cartesian_state);
 
 //     ASSERT_NEAR(frenet_state[3], 2, 1e-10);
@@ -151,7 +151,7 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convert_
 //     frenet_trajectory_planner::CartesianState cartesian_state;
 //     cartesian_state << -1, 0, 0, 3, 0, 0, M_PI / 2;
 
-//     frenet_trajectory_planner::FrenetState frenet_state = adapter.convert_cartesian2frenet(
+//     frenet_trajectory_planner::FrenetState frenet_state = adapter.convertCartesian2Frenet(
 //       cartesian_state);
 
 //     ASSERT_NEAR(frenet_state[3], 2 * std::sqrt(2), 1e-10);

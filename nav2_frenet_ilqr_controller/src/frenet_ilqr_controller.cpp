@@ -45,7 +45,7 @@ void FrenetILQRController::configure(
   std::shared_ptr<policies::RclcppNodePolicy> example_policy = policy_loader.createSharedInstance(
     "nav2_frenet_ilqr_controller::policies::ObstaclePolicy");
   example_policy->initialize(node_.lock(), costmap_ros_);
-  frenet_trajectory_planner_.add_policy(example_policy);
+  frenet_trajectory_planner_.addPolicy(example_policy);
 
   // Handles global path transformations
   double param_transform_tolerance = 0.1;
@@ -120,7 +120,7 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
   return truncated_path;
 }
 
-Vector2d FrenetILQRController::find_optimal_input_for_trajectory(
+Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   const geometry_msgs::msg::PoseStamped & /*robot_pose*/,
   const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
 {
@@ -197,7 +197,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   robot_cartesian_state[3] = robot_pose.pose.position.y;
   robot_cartesian_state[4] = linear_speed * std::sin(robot_yaw);
 
-  auto planned_cartesian_trajectory = frenet_trajectory_planner_.plan_by_waypoint(
+  auto planned_cartesian_trajectory = frenet_trajectory_planner_.planByWaypoint(
     robot_cartesian_state,
     waypoint_list, 1.0);
 
@@ -212,7 +212,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   truncated_path_pub_->publish(frenet_plan);
   robot_pose_pub_->publish(robot_pose);
 
-  auto u_opt = find_optimal_input_for_trajectory(robot_pose, planned_cartesian_trajectory);
+  auto u_opt = findOptimalInputForTrajectory(robot_pose, planned_cartesian_trajectory);
 
   // populate and return message
   geometry_msgs::msg::TwistStamped cmd_vel;

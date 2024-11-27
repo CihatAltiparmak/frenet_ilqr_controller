@@ -24,12 +24,12 @@ public:
     const CartesianState & robot_cartesian_state,
     const CartesianPoint & start_point, const CartesianPoint & final_point);
 
-  CartesianTrajectory plan_by_waypoint(
+  CartesianTrajectory planByWaypoint(
     const CartesianState & robot_cartesian_state,
     const std::vector<CartesianPoint> & waypoint_list,
     const double max_time_per_point);
 
-  void add_policy(const std::shared_ptr<policies::Policy> & policy);
+  void addPolicy(const std::shared_ptr<policies::Policy> & policy);
 
 private:
   FrenetTrajectoryPlannerConfig frenet_planner_config_;
@@ -51,17 +51,17 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner()
   {
     auto lateral_distance_checker =
       std::make_shared<costs::LateralDistanceCost>(10);
-    frenet_trajectory_selector_.add_cost(lateral_distance_checker);
+    frenet_trajectory_selector_.addCost(lateral_distance_checker);
   }
 
   {
     auto longtitutal_velocity_cost_checker =
       std::make_shared<costs::LongtitutalVelocityCost>(10, 2);
-    frenet_trajectory_selector_.add_cost(longtitutal_velocity_cost_checker);
+    frenet_trajectory_selector_.addCost(longtitutal_velocity_cost_checker);
   }
 
   for (auto policy : selected_policies_) {
-    frenet_trajectory_selector_.add_policy(policy);
+    frenet_trajectory_selector_.addPolicy(policy);
   }
 
   frenet_trajectory_generator_ =
@@ -75,43 +75,43 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner(
   {
     auto lateral_distance_checker =
       std::make_shared<costs::LateralDistanceCost>(10);
-    frenet_trajectory_selector_.add_cost(lateral_distance_checker);
+    frenet_trajectory_selector_.addCost(lateral_distance_checker);
   }
 
   {
     auto longtitutal_velocity_cost_checker =
       std::make_shared<costs::LongtitutalVelocityCost>(10, 2);
-    frenet_trajectory_selector_.add_cost(longtitutal_velocity_cost_checker);
+    frenet_trajectory_selector_.addCost(longtitutal_velocity_cost_checker);
   }
 
   for (auto policy : selected_policies_) {
-    frenet_trajectory_selector_.add_policy(policy);
+    frenet_trajectory_selector_.addPolicy(policy);
   }
 }
 
-CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
+CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   const CartesianState & robot_cartesian_state,
   const std::vector<CartesianPoint> & waypoint_list,
   const double max_time_per_point)
 {
   auto frenet_frame_converter = std::make_shared<FrenetFrameConverter>();
-  frenet_frame_converter->create_segments(waypoint_list);
+  frenet_frame_converter->createSegments(waypoint_list);
 
   frenet_trajectory_selector_.setFrenetFrameConverter(frenet_frame_converter);
 
   // robot_cartesian_state should start from first segment
   FrenetState robot_frenet_state =
-    frenet_frame_converter->convert_cartesian2frenet_for_segment(robot_cartesian_state, 0);
+    frenet_frame_converter->convertCartesian2FrenetForSegment(robot_cartesian_state, 0);
 
   FrenetTrajectory planned_frenet_trajectory = {};
   for (int i = 0; i < frenet_planner_config_.number_of_time_intervals; i++) {
     // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
     auto all_frenet_trajectories =
-      frenet_trajectory_generator_->get_all_possible_frenet_trajectories(
+      frenet_trajectory_generator_->getAllPossibleFrenetTrajectories(
       robot_frenet_state);
 
     auto best_frenet_trajectory_optional =
-      frenet_trajectory_selector_.select_best_frenet_trajectory(
+      frenet_trajectory_selector_.selectBestFrenetTrajectory(
       all_frenet_trajectories);
 
     if (!best_frenet_trajectory_optional.has_value()) {
@@ -124,10 +124,10 @@ CartesianTrajectory FrenetTrajectoryPlanner::plan_by_waypoint(
 
     robot_frenet_state = planned_frenet_trajectory.back();
   }
-  return frenet_frame_converter->convert_frenet2cartesian(planned_frenet_trajectory);
+  return frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 }
 
-void FrenetTrajectoryPlanner::add_policy(const std::shared_ptr<policies::Policy> & policy)
+void FrenetTrajectoryPlanner::addPolicy(const std::shared_ptr<policies::Policy> & policy)
 {
   selected_policies_.push_back(policy);
 }

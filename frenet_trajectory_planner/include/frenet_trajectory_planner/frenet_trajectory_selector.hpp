@@ -18,10 +18,10 @@ public:
   FrenetTrajectorySelector();
   FrenetTrajectorySelector(const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
 
-  void add_policy(const std::shared_ptr<policies::Policy> & policy);
-  void add_cost(const std::shared_ptr<costs::Cost> & cost);
+  void addPolicy(const std::shared_ptr<policies::Policy> & policy);
+  void addCost(const std::shared_ptr<costs::Cost> & cost);
 
-  std::optional<FrenetTrajectory> select_best_frenet_trajectory(
+  std::optional<FrenetTrajectory> selectBestFrenetTrajectory(
     const std::vector<FrenetTrajectory> & frenet_trajectory);
 
   void setFrenetFrameConverter(
@@ -44,17 +44,17 @@ FrenetTrajectorySelector::FrenetTrajectorySelector(
 
 }
 
-void FrenetTrajectorySelector::add_policy(const std::shared_ptr<policies::Policy> & policy)
+void FrenetTrajectorySelector::addPolicy(const std::shared_ptr<policies::Policy> & policy)
 {
   policies_.push_back(policy);
 }
 
-void FrenetTrajectorySelector::add_cost(const std::shared_ptr<costs::Cost> & cost)
+void FrenetTrajectorySelector::addCost(const std::shared_ptr<costs::Cost> & cost)
 {
   costs_.push_back(cost);
 }
 
-std::optional<FrenetTrajectory> FrenetTrajectorySelector::select_best_frenet_trajectory(
+std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajectory(
   const std::vector<FrenetTrajectory> & frenet_trajectories)
 {
 
@@ -62,7 +62,7 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::select_best_frenet_tra
     [this](const FrenetTrajectory & frenet_trajectory,
       const CartesianTrajectory & cartesian_trajectory) -> bool {
       for (const auto & policy : policies_) {
-        if (!policy->check_if_feasible(frenet_trajectory, cartesian_trajectory)) {
+        if (!policy->checkIfFeasible(frenet_trajectory, cartesian_trajectory)) {
           return false;
         }
       }
@@ -80,7 +80,7 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::select_best_frenet_tra
   std::optional<FrenetTrajectory> best_frenet_trajectory = std::nullopt;
   double best_cost = std::numeric_limits<double>::infinity();
   for (const auto & frenet_trajectory : frenet_trajectories) {
-    CartesianTrajectory cartesian_trajectory = frenet_frame_converter_->convert_frenet2cartesian(
+    CartesianTrajectory cartesian_trajectory = frenet_frame_converter_->convertFrenet2Cartesian(
       frenet_trajectory);
     if (!policy_checker(frenet_trajectory, cartesian_trajectory)) {
       continue;

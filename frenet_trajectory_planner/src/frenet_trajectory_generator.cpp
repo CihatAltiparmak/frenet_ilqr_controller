@@ -10,7 +10,7 @@ FrenetTrajectoryGenerator::FrenetTrajectoryGenerator(
 : frenet_planner_config_(frenet_planner_config)
 {}
 
-std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::get_all_possible_frenet_trajectories(
+std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::getAllPossibleFrenetTrajectories(
   const FrenetState & frenet_state_initial)
 {
 
@@ -31,7 +31,7 @@ std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::get_all_possible_frenet
 
       FrenetState frenet_state_final;
       frenet_state_final << state_longtitutal_final, state_lateral_final;
-      auto frenet_trajectory = get_frenet_trajectory(frenet_state_initial, frenet_state_final);
+      auto frenet_trajectory = getFrenetTrajectory(frenet_state_initial, frenet_state_final);
       if (!frenet_trajectory.empty()) {
         frenet_trajectories.push_back(frenet_trajectory);
       }
@@ -41,14 +41,14 @@ std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::get_all_possible_frenet
   return frenet_trajectories;
 }
 
-FrenetTrajectory FrenetTrajectoryGenerator::get_frenet_trajectory(
+FrenetTrajectory FrenetTrajectoryGenerator::getFrenetTrajectory(
   const FrenetState & frenet_state_initial,
   const FrenetState & frenet_state_final)
 {
   auto longtitual_state_initial = frenet_state_initial(seq(0, 2));
   auto longtitual_state_final = frenet_state_final(seq(0, 2));
   auto longtitutal_velocity_planner = QuarticTrajectoryPlanner();
-  if (!longtitutal_velocity_planner.set_coefficients_or_return_false(
+  if (!longtitutal_velocity_planner.setCoefficientsOrReturnFalse(
       longtitual_state_initial[0], longtitual_state_initial[1], longtitual_state_initial[2],
       longtitual_state_final[1], longtitual_state_final[2],
       0, frenet_planner_config_.time_interval))
@@ -59,7 +59,7 @@ FrenetTrajectory FrenetTrajectoryGenerator::get_frenet_trajectory(
   auto lateral_state_initial = frenet_state_initial(seq(3, 5));
   auto lateral_state_final = frenet_state_final(seq(3, 5));
   auto lateral_distance_planner = QuinticTrajectoryPlanner();
-  if (!lateral_distance_planner.set_coefficients_or_return_false(
+  if (!lateral_distance_planner.setCoefficientsOrReturnFalse(
       lateral_state_initial[0], lateral_state_initial[1], lateral_state_initial[2],
       lateral_state_final[0], lateral_state_final[1], lateral_state_final[2],
       0, frenet_planner_config_.time_interval))
