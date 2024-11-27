@@ -15,6 +15,7 @@ namespace frenet_trajectory_planner
 class FrenetTrajectorySelector
 {
 public:
+  FrenetTrajectorySelector();
   FrenetTrajectorySelector(const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
 
   void add_policy(const std::shared_ptr<policies::Policy> & policy);
@@ -23,11 +24,18 @@ public:
   std::optional<FrenetTrajectory> select_best_frenet_trajectory(
     const std::vector<FrenetTrajectory> & frenet_trajectory);
 
+  void setFrenetFrameConverter(
+    const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
+
 private:
   std::vector<std::shared_ptr<policies::Policy>> policies_;
   std::vector<std::shared_ptr<costs::Cost>> costs_;
   std::shared_ptr<FrenetFrameConverter> frenet_frame_converter_;
 };
+
+FrenetTrajectorySelector::FrenetTrajectorySelector()
+{
+}
 
 FrenetTrajectorySelector::FrenetTrajectorySelector(
   const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter)
@@ -87,6 +95,12 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::select_best_frenet_tra
   }
 
   return best_frenet_trajectory;
+}
+
+void FrenetTrajectorySelector::setFrenetFrameConverter(
+  const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter)
+{
+  frenet_frame_converter_ = frenet_frame_converter;
 }
 
 }
