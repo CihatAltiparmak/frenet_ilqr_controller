@@ -22,8 +22,8 @@ public:
     const CartesianPoint & start_point, const CartesianPoint & final_point,
     const Vector2d & c, const double r, const Vector2d & x, const Vector2d & y,
     const double alpha, const int sign_indicactor);
-  CartesianState convert_frenet2cartesian(const FrenetState & frenet_state);
-  FrenetState convert_cartesian2frenet(const CartesianState & cartesian_state);
+  CartesianState convertFrenet2Cartesian(const FrenetState & frenet_state);
+  FrenetState convertCartesian2Frenet(const CartesianState & cartesian_state);
 
 private:
   Vector2d c_;
@@ -60,7 +60,7 @@ CircleAdapter::CircleAdapter(
   arclength_ = alpha_ * r_;
 }
 
-CartesianState CircleAdapter::convert_frenet2cartesian(const FrenetState & frenet_state)
+CartesianState CircleAdapter::convertFrenet2Cartesian(const FrenetState & frenet_state)
 {
   CartesianState cartesian_state = CartesianState::Zero();
 
@@ -91,7 +91,7 @@ CartesianState CircleAdapter::convert_frenet2cartesian(const FrenetState & frene
 
 }
 
-FrenetState CircleAdapter::convert_cartesian2frenet(const CartesianState & cartesian_state)
+FrenetState CircleAdapter::convertCartesian2Frenet(const CartesianState & cartesian_state)
 {
   FrenetState frenet_state = FrenetState::Zero();
   const Vector2d x_c = cartesian_state({0, 3});

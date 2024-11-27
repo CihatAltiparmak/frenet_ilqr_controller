@@ -25,7 +25,7 @@ int main(int argc, char ** argv)
 
   double dt = 0.05;
   for (int i = 0; i < trajectory_size - 1; i++) {
-    x_feasible[i + 1] = diff_drive_robot_model.apply_system_dynamics(
+    x_feasible[i + 1] = diff_drive_robot_model.applySystemDynamics(
       x_feasible[i], u_ground_truth[i],
       dt);
   }

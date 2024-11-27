@@ -89,7 +89,7 @@ public:
     const geometry_msgs::msg::Twist & velocity,
     nav2_core::GoalChecker * /*goal_checker*/) override;
 
-  Vector2d find_optimal_input_for_trajectory(
+  Vector2d findOptimalInputForTrajectory(
     const geometry_msgs::msg::PoseStamped & robot_pose,
     const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory);
 

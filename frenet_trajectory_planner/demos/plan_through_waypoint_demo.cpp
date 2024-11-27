@@ -361,7 +361,7 @@ int main()
   }
 
   auto frenet_trajectory_planner = frenet_trajectory_planner::FrenetTrajectoryPlanner();
-  auto planned_cartesian_trajectory = frenet_trajectory_planner.plan_by_waypoint(
+  auto planned_cartesian_trajectory = frenet_trajectory_planner.planByWaypoint(
     robot_cartesian_state,
     truncated_waypoint_list, 1.0);
 

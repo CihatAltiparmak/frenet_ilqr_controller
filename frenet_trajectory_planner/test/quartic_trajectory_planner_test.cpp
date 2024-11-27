@@ -6,11 +6,11 @@ TEST(frenet_trajectory_planner, quartic_trajectory_planner_test_initialization) 
   auto quartic_trajectory_planner = frenet_trajectory_planner::QuarticTrajectoryPlanner();
 }
 
-TEST(frenet_trajectory_planner, quartic_trajectory_planner_test_set_coefficients) {
+TEST(frenet_trajectory_planner, quartic_trajectory_planner_test_setCoefficientsOrReturnFalse) {
   auto quartic_trajectory_planner = frenet_trajectory_planner::QuarticTrajectoryPlanner();
 
   ASSERT_EQ(
-    quartic_trajectory_planner.set_coefficients_or_return_false(
+    quartic_trajectory_planner.setCoefficientsOrReturnFalse(
       0, 0, 0, 1, 0, 0, 1), true);
 
   // check if the longtitutal velocity is 1 when time is 1 sec

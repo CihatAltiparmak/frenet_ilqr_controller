@@ -13,7 +13,7 @@ DiffDriveRobotModel::DiffDriveRobotModel()
 
 }
 
-Vector3d DiffDriveRobotModel::apply_system_dynamics(
+Vector3d DiffDriveRobotModel::applySystemDynamics(
   const Vector3d & x, const Vector2d & u,
   const double dt)
 {
@@ -26,7 +26,7 @@ Vector3d DiffDriveRobotModel::apply_system_dynamics(
   return x_final;
 }
 
-MatrixXd DiffDriveRobotModel::get_state_matrix(
+MatrixXd DiffDriveRobotModel::getStateMatrix(
   const Vector3d & x_eq, const Vector2d & u_eq,
   const double dt)
 {
@@ -38,7 +38,7 @@ MatrixXd DiffDriveRobotModel::get_state_matrix(
   return state_matrix;
 }
 
-MatrixXd DiffDriveRobotModel::get_control_matrix(
+MatrixXd DiffDriveRobotModel::getControlMatrix(
   const Vector3d & x_eq, const Vector2d & /*u_eq*/,
   const double dt)
 {

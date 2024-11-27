@@ -14,13 +14,13 @@ class FrenetFrameConverter
 {
 public:
   FrenetFrameConverter();
-  void create_segments(const std::vector<CartesianPoint> & waypoint_list);
-  CartesianTrajectory convert_frenet2cartesian(
+  void createSegments(const std::vector<CartesianPoint> & waypoint_list);
+  CartesianTrajectory convertFrenet2Cartesian(
     const FrenetTrajectory & frenet_trajectory);
-  FrenetState convert_cartesian2frenet_for_segment(
+  FrenetState convertCartesian2FrenetForSegment(
     const CartesianState & cartesian_state,
     const size_t segment_index);
-  CartesianState convert_frenet2cartesian_for_segment(
+  CartesianState convertFrenet2CartesianForSegment(
     const FrenetState & frenet_state,
     const size_t segment_index);
 
@@ -32,7 +32,7 @@ FrenetFrameConverter::FrenetFrameConverter()
 {
 }
 
-void FrenetFrameConverter::create_segments(const std::vector<CartesianPoint> & waypoint_list)
+void FrenetFrameConverter::createSegments(const std::vector<CartesianPoint> & waypoint_list)
 {
   // assert that waypoint_list size must be at least 2
   CartesianPoint last_waypoint = waypoint_list[0];
@@ -80,7 +80,7 @@ void FrenetFrameConverter::create_segments(const std::vector<CartesianPoint> & w
 
 }
 
-CartesianTrajectory FrenetFrameConverter::convert_frenet2cartesian(
+CartesianTrajectory FrenetFrameConverter::convertFrenet2Cartesian(
   const FrenetTrajectory & frenet_trajectory)
 {
   double current_longitutal_length = 0;
@@ -88,15 +88,15 @@ CartesianTrajectory FrenetFrameConverter::convert_frenet2cartesian(
   CartesianTrajectory cartesian_trajectory;
   for (auto frenet_state : frenet_trajectory) {
     if (frenet_state[0] <
-      current_longitutal_length + segments_[current_segment_index]->get_arclength())
+      current_longitutal_length + segments_[current_segment_index]->getArclength())
     {
       FrenetState converted_frenet_state = frenet_state;
       converted_frenet_state[0] -= current_longitutal_length;
       CartesianState cartesian_state =
-        segments_[current_segment_index]->convert_frenet2cartesian(converted_frenet_state);
+        segments_[current_segment_index]->convertFrenet2Cartesian(converted_frenet_state);
       cartesian_trajectory.push_back(cartesian_state);
     } else {
-      current_longitutal_length += segments_[current_segment_index]->get_arclength();
+      current_longitutal_length += segments_[current_segment_index]->getArclength();
       current_segment_index++;
     }
 
@@ -107,15 +107,15 @@ CartesianTrajectory FrenetFrameConverter::convert_frenet2cartesian(
   return cartesian_trajectory;
 }
 
-FrenetState FrenetFrameConverter::convert_cartesian2frenet_for_segment(
+FrenetState FrenetFrameConverter::convertCartesian2FrenetForSegment(
   const CartesianState & cartesian_state, const size_t segment_index)
 {
-  return segments_.at(segment_index)->convert_cartesian2frenet(cartesian_state);
+  return segments_.at(segment_index)->convertCartesian2Frenet(cartesian_state);
 }
 
-CartesianState FrenetFrameConverter::convert_frenet2cartesian_for_segment(
+CartesianState FrenetFrameConverter::convertFrenet2CartesianForSegment(
   const FrenetState & frenet_state, const size_t segment_index)
 {
-  return segments_.at(segment_index)->convert_frenet2cartesian(frenet_state);
+  return segments_.at(segment_index)->convertFrenet2Cartesian(frenet_state);
 }
 }

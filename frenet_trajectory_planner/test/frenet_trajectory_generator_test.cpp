@@ -16,7 +16,7 @@ TEST(frenet_trajectory_planner, frenet_trajectory_generator_test_initialization)
 
 TEST(
   frenet_trajectory_planner,
-  frenet_trajectory_generator_test_get_all_possible_frenet_trajectories) {
+  frenet_trajectory_generator_test_getAllPossibleFrenetTrajectories) {
 
   using frenet_trajectory_planner::FrenetState;
   using frenet_trajectory_planner::FrenetTrajectoryPlannerConfig;
@@ -34,7 +34,7 @@ TEST(
   FrenetState frenet_state_initial = FrenetState::Zero();
   frenet_state_initial[1] = 1;
   frenet_state_initial[3] = -1;
-  auto all_frenet_trajectories = frenet_trajectory_generator.get_all_possible_frenet_trajectories(
+  auto all_frenet_trajectories = frenet_trajectory_generator.getAllPossibleFrenetTrajectories(
     frenet_state_initial);
 
   ASSERT_EQ(all_frenet_trajectories.size(), 441u);

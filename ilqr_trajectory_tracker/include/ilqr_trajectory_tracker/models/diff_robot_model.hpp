@@ -19,9 +19,9 @@ public:
   using StateT = DiffDriveRobotModelState;
   using InputT = DiffDriveRobotModelInput;
   DiffDriveRobotModel();
-  Vector3d apply_system_dynamics(const Vector3d & x, const Vector2d & u, const double dt) override;
-  MatrixXd get_state_matrix(const Vector3d & x_eq, const Vector2d & u_eq, const double dt);
-  MatrixXd get_control_matrix(const Vector3d & x_eq, const Vector2d & u_eq, const double dt);
+  Vector3d applySystemDynamics(const Vector3d & x, const Vector2d & u, const double dt) override;
+  MatrixXd getStateMatrix(const Vector3d & x_eq, const Vector2d & u_eq, const double dt);
+  MatrixXd getControlMatrix(const Vector3d & x_eq, const Vector2d & u_eq, const double dt);
 };
 
 }

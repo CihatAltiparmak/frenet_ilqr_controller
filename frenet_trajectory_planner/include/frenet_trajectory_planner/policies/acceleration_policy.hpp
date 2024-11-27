@@ -22,7 +22,7 @@ public:
   AccelerationPolicy(
     const AccelerationPolicyParameters & acceleration_policy_parameters,
     const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
-  bool check_if_feasible(
+  bool checkIfFeasible(
     const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) override;
 
@@ -39,7 +39,7 @@ AccelerationPolicy::AccelerationPolicy(
 
 }
 
-bool AccelerationPolicy::check_if_feasible(
+bool AccelerationPolicy::checkIfFeasible(
   const FrenetTrajectory & frenet_trajectory,
   const CartesianTrajectory & cartesian_trajectory)
 {

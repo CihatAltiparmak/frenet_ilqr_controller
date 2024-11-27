@@ -60,8 +60,8 @@ int main()
     frenet_state[4] = 31.32;
     frenet_state[5] = 15.778954;
 
-    auto cartesian_state = adapter.convert_frenet2cartesian(frenet_state);
-    auto frenet_state2 = adapter.convert_cartesian2frenet(cartesian_state);
+    auto cartesian_state = adapter.convertFrenet2Cartesian(frenet_state);
+    auto frenet_state2 = adapter.convertCartesian2Frenet(cartesian_state);
 
     std::cout
       << "This is actual cartesian state: " << std::endl

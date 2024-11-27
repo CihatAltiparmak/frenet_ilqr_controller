@@ -12,7 +12,7 @@ class QuinticTrajectoryPlanner
 {
 public:
   QuinticTrajectoryPlanner();
-  bool set_coefficients_or_return_false(
+  bool setCoefficientsOrReturnFalse(
     const double x0,
     const double dx0,
     const double ddx0,
