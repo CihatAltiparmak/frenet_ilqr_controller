@@ -151,6 +151,11 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   newton_optimizer.setIterationNumber(20);
   newton_optimizer.setAlpha(alpha);
   auto U_optimal = newton_optimizer.optimize(X_feasible, Q, R, dt);
+
+  if (U_optimal.empty()) {
+    throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
+  }
+
   return U_optimal[0];
 }
 
