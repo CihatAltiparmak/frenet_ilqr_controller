@@ -14,6 +14,7 @@
 #include "geometry_msgs/msg/pose2_d.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "nav2_frenet_ilqr_controller/path_handler.hpp"
+#include "nav2_frenet_ilqr_controller/parameter_handler.hpp"
 #include "nav2_frenet_ilqr_controller/policies/obstacle_policy.hpp"
 #include "frenet_trajectory_planner/type_definitions.hpp"
 #include "frenet_trajectory_planner/frenet_trajectory_planner.hpp"
@@ -131,9 +132,9 @@ protected:
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::PoseStamped>>
   robot_pose_pub_;
   std::unique_ptr<nav2_frenet_ilqr_controller::PathHandler> path_handler_;
-
-private:
+  std::unique_ptr<nav2_frenet_ilqr_controller::ParameterHandler> parameter_handler_;
   frenet_trajectory_planner::FrenetTrajectoryPlanner frenet_trajectory_planner_;
+  Parameters * params_;
 };
 
 }  // namespace nav2_frenet_ilqr_controller

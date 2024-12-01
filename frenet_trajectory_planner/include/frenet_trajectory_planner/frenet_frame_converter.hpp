@@ -65,14 +65,21 @@ void FrenetFrameConverter::createSegments(const std::vector<CartesianPoint> & wa
     CartesianPoint new_q2 = ci + ri * xi;
     CartesianPoint new_q3 = ci + ri * (xi * std::cos(alphai) + yi * std::sin(alphai));
 
-    segments_.push_back(
-      std::make_unique<LineAdapter>(new_q1, new_q2)
-    );
+    // if three points nearly present line, just ignore to smooth with circle adapter
+    if (alphai < 0.1 || std::isnan(alphai)) {
+      segments_.push_back(
+        std::make_unique<LineAdapter>(new_q1, qi)
+      );
+      last_waypoint = qi;
+    } else {
+      segments_.push_back(
+        std::make_unique<LineAdapter>(new_q1, new_q2)
+      );
 
-    segments_.push_back(
-      std::make_unique<CircleAdapter>(new_q2, new_q3, ci, ri, xi, yi, alphai, sign_indicactor));
-
-    last_waypoint = new_q3;
+      segments_.push_back(
+        std::make_unique<CircleAdapter>(new_q2, new_q3, ci, ri, xi, yi, alphai, sign_indicactor));
+      last_waypoint = new_q3;
+    }
   }
 
   segments_.push_back(
@@ -87,23 +94,24 @@ CartesianTrajectory FrenetFrameConverter::convertFrenet2Cartesian(
   size_t current_segment_index = 0;
   CartesianTrajectory cartesian_trajectory;
   for (auto frenet_state : frenet_trajectory) {
-    if (frenet_state[0] <
-      current_longitutal_length + segments_[current_segment_index]->getArclength())
+    while (frenet_state[0] >
+      current_longitutal_length + segments_.at(current_segment_index)->getArclength())
     {
-      FrenetState converted_frenet_state = frenet_state;
-      converted_frenet_state[0] -= current_longitutal_length;
-      CartesianState cartesian_state =
-        segments_[current_segment_index]->convertFrenet2Cartesian(converted_frenet_state);
-      cartesian_trajectory.push_back(cartesian_state);
-    } else {
-      current_longitutal_length += segments_[current_segment_index]->getArclength();
+      current_longitutal_length += segments_.at(current_segment_index)->getArclength();
       current_segment_index++;
+
+      if (current_segment_index >= segments_.size()) {
+        return cartesian_trajectory;
+      }
     }
 
-    if (current_segment_index >= segments_.size()) {
-      break;
-    }
+    FrenetState converted_frenet_state = frenet_state;
+    converted_frenet_state[0] -= current_longitutal_length;
+    CartesianState cartesian_state =
+      segments_.at(current_segment_index)->convertFrenet2Cartesian(converted_frenet_state);
+    cartesian_trajectory.push_back(cartesian_state);
   }
+
   return cartesian_trajectory;
 }
 

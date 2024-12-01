@@ -19,7 +19,7 @@ class FrenetTrajectoryPlanner
 {
 public:
   FrenetTrajectoryPlanner();
-  FrenetTrajectoryPlanner(const FrenetTrajectoryPlannerConfig & frenet_planner_config);
+  FrenetTrajectoryPlanner(const FrenetTrajectoryPlannerConfig & frenet_trajectory_planner_config);
   CartesianTrajectory plan(
     const CartesianState & robot_cartesian_state,
     const CartesianPoint & start_point, const CartesianPoint & final_point);
@@ -31,8 +31,11 @@ public:
 
   void addPolicy(const std::shared_ptr<policies::Policy> & policy);
 
+  void setFrenetTrajectoryPlannerConfig(
+    const FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config);
+
 private:
-  FrenetTrajectoryPlannerConfig frenet_planner_config_;
+  FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config_;
   FrenetTrajectorySelector frenet_trajectory_selector_;
   std::shared_ptr<FrenetTrajectoryGenerator> frenet_trajectory_generator_;
   std::vector<std::shared_ptr<policies::Policy>> selected_policies_;
@@ -41,12 +44,12 @@ private:
 // TODO (CihatAltiparmak) : move the source parts of FrenetTrajectoryPlanner to cpp file. Now to move to cpp file throws out multiple definition error when built
 FrenetTrajectoryPlanner::FrenetTrajectoryPlanner()
 {
-  frenet_planner_config_.min_lateral_distance = -1;
-  frenet_planner_config_.max_lateral_distance = 1;
-  frenet_planner_config_.step_lateral_distance = 0.5;
-  frenet_planner_config_.min_longtitutal_velocity = 0;
-  frenet_planner_config_.max_longtitutal_velocity = 2;
-  frenet_planner_config_.step_longtitutal_velocity = 0.5;
+  frenet_trajectory_planner_config_.min_lateral_distance = -1;
+  frenet_trajectory_planner_config_.max_lateral_distance = 1;
+  frenet_trajectory_planner_config_.step_lateral_distance = 0.5;
+  frenet_trajectory_planner_config_.min_longtitutal_velocity = 0;
+  frenet_trajectory_planner_config_.max_longtitutal_velocity = 0.5;
+  frenet_trajectory_planner_config_.step_longtitutal_velocity = 0.125;
 
   {
     auto lateral_distance_checker =
@@ -56,7 +59,7 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner()
 
   {
     auto longtitutal_velocity_cost_checker =
-      std::make_shared<costs::LongtitutalVelocityCost>(10, 2);
+      std::make_shared<costs::LongtitutalVelocityCost>(5, 0.5);
     frenet_trajectory_selector_.addCost(longtitutal_velocity_cost_checker);
   }
 
@@ -65,12 +68,12 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner()
   }
 
   frenet_trajectory_generator_ =
-    std::make_shared<FrenetTrajectoryGenerator>(frenet_planner_config_);
+    std::make_shared<FrenetTrajectoryGenerator>(frenet_trajectory_planner_config_);
 }
 
 FrenetTrajectoryPlanner::FrenetTrajectoryPlanner(
-  const FrenetTrajectoryPlannerConfig & frenet_planner_config)
-: frenet_planner_config_(frenet_planner_config)
+  const FrenetTrajectoryPlannerConfig & frenet_trajectory_planner_config)
+: frenet_trajectory_planner_config_(frenet_trajectory_planner_config)
 {
   {
     auto lateral_distance_checker =
@@ -80,7 +83,7 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner(
 
   {
     auto longtitutal_velocity_cost_checker =
-      std::make_shared<costs::LongtitutalVelocityCost>(10, 2);
+      std::make_shared<costs::LongtitutalVelocityCost>(5, 0.5);
     frenet_trajectory_selector_.addCost(longtitutal_velocity_cost_checker);
   }
 
@@ -104,7 +107,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
     frenet_frame_converter->convertCartesian2FrenetForSegment(robot_cartesian_state, 0);
 
   FrenetTrajectory planned_frenet_trajectory = {};
-  for (int i = 0; i < frenet_planner_config_.number_of_time_intervals; i++) {
+  for (int i = 0; i < frenet_trajectory_planner_config_.number_of_time_intervals; i++) {
     // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
     auto all_frenet_trajectories =
       frenet_trajectory_generator_->getAllPossibleFrenetTrajectories(
@@ -130,6 +133,12 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
 void FrenetTrajectoryPlanner::addPolicy(const std::shared_ptr<policies::Policy> & policy)
 {
   selected_policies_.push_back(policy);
+}
+
+void FrenetTrajectoryPlanner::setFrenetTrajectoryPlannerConfig(
+  const FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config)
+{
+  frenet_trajectory_planner_config_ = frenet_trajectory_planner_config;
 }
 
 }

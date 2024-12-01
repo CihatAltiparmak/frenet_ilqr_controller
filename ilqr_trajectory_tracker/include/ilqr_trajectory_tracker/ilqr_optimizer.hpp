@@ -158,7 +158,7 @@ std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
     RobotModel::InputT::Zero());
 
   double best_trajectory_cost = std::numeric_limits<double>::infinity();
-
+  double previous_best_trajectory_cost = best_trajectory_cost;
   for (int i = 0; i < iteration_number_; i++) {
     auto K_gain_list = this->backwardPass(x_trajectory, u_optimized, Q, R, dt);
     auto [x_tracked, u_tracked] = this->forwardPass(
@@ -168,9 +168,14 @@ std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
 
     double trajectory_cost = this->cost(x_tracked, x_trajectory);
     if (trajectory_cost < best_trajectory_cost) {
+      previous_best_trajectory_cost = best_trajectory_cost;
       best_trajectory_cost = trajectory_cost;
       x_best_trajectory = x_tracked;
       u_best_trajectory = u_tracked;
+
+      if (std::abs(previous_best_trajectory_cost - best_trajectory_cost) < 0.0001) {
+        break;
+      }
 
       alpha *= 0.7;
     } else {
