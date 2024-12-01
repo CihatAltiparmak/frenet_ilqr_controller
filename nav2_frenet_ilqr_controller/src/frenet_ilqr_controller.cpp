@@ -40,6 +40,12 @@ void FrenetILQRController::configure(
   plugin_name_ = name;
   logger_ = node->get_logger();
 
+  parameter_handler_ = std::make_unique<nav2_frenet_ilqr_controller::ParameterHandler>(
+    parent,
+    plugin_name_,
+    costmap_->getSizeInMetersX());
+  params_ = parameter_handler_->getParams();
+
   pluginlib::ClassLoader<policies::RclcppNodePolicy> policy_loader("nav2_frenet_ilqr_controller",
     "nav2_frenet_ilqr_controller::policies::RclcppNodePolicy");
   std::shared_ptr<policies::RclcppNodePolicy> example_policy = policy_loader.createSharedInstance(
@@ -48,9 +54,8 @@ void FrenetILQRController::configure(
   frenet_trajectory_planner_.addPolicy(example_policy);
 
   // Handles global path transformations
-  double param_transform_tolerance = 0.1;
   path_handler_ = std::make_unique<PathHandler>(
-    tf2::durationFromSec(param_transform_tolerance), tf_, costmap_ros_);
+    tf2::durationFromSec(params_->transform_tolerance), tf_, costmap_ros_);
 
   double control_frequency = 20.0;
   control_duration_ = 1.0 / control_frequency;
@@ -154,14 +159,12 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   const geometry_msgs::msg::Twist & speed,
   nav2_core::GoalChecker * /*goal_checker*/)
 {
-  nav2_costmap_2d::Costmap2D * costmap = costmap_ros_->getCostmap();
-  std::unique_lock<nav2_costmap_2d::Costmap2D::mutex_t> lock(*(costmap->getMutex()));
+  std::lock_guard<std::mutex> lock_reinit(parameter_handler_->getMutex());
+  std::unique_lock<nav2_costmap_2d::Costmap2D::mutex_t> lock(*(costmap_->getMutex()));
 
   // Transform path to robot base frame
-  double param_max_robot_pose_search_dist = costmap_->getSizeInMetersX() / 2;
-  bool param_interpolate_curvature_after_goal = false;
   auto transformed_plan = path_handler_->transformGlobalPlan(
-    pose, param_max_robot_pose_search_dist, param_interpolate_curvature_after_goal);
+    pose, params_->max_robot_pose_search_dist, params_->interpolate_curvature_after_goal);
 
   geometry_msgs::msg::PoseStamped robot_pose;
   if (!path_handler_->transformPose(transformed_plan.header.frame_id, pose, robot_pose)) {
@@ -169,6 +172,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   }
 
   double lookahead_distance = 0.3;
+  // TODO (CihatAltiparmak) : we should ignore the waypoints whose angles between them equal to zero or extremely large
   transformed_plan = truncateGlobalPlanWithLookAheadDist(
     robot_pose, transformed_plan,
     lookahead_distance);
@@ -190,13 +194,15 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   double robot_yaw = tf2::getYaw(robot_pose.pose.orientation);
   double linear_speed = speed.linear.x;
   if (linear_speed == 0) {
-    linear_speed = 0.01;
+    linear_speed = 0.001;
   }
   robot_cartesian_state[0] = robot_pose.pose.position.x;
   robot_cartesian_state[1] = linear_speed * std::cos(robot_yaw);
   robot_cartesian_state[3] = robot_pose.pose.position.y;
   robot_cartesian_state[4] = linear_speed * std::sin(robot_yaw);
 
+  frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
+    params_->frenet_trajectory_planner_config);
   auto planned_cartesian_trajectory = frenet_trajectory_planner_.planByWaypoint(
     robot_cartesian_state,
     waypoint_list, 1.0);
@@ -236,6 +242,7 @@ void FrenetILQRController::setSpeedLimit(
   const double & /*speed_limit*/,
   const bool & /*percentage*/)
 {
+  std::lock_guard<std::mutex> lock_reinit(parameter_handler_->getMutex());
   return;
 }
 

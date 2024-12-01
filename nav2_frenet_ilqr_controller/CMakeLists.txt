@@ -25,7 +25,8 @@ set(library_name nav2_frenet_ilqr_controller)
 
 add_library(${library_name} SHARED
   src/frenet_ilqr_controller.cpp
-  src/path_handler.cpp)
+  src/path_handler.cpp
+  src/parameter_handler.cpp)
 target_include_directories(${library_name}
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
