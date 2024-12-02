@@ -1,5 +1,5 @@
 <class_libraries>
-  <library path="nav2_frenet_ilqr_controller">
+  <library path="nav2_frenet_ilqr_controller_policies">
 
     <class type="nav2_frenet_ilqr_controller::policies::ObstaclePolicy" base_class_type="nav2_frenet_ilqr_controller::policies::RclcppNodePolicy">
       <description>frenet trajectory planner policy for obstacle avoidance</description>

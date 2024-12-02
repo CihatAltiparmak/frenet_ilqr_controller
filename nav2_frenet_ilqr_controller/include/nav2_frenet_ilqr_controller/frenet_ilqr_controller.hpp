@@ -15,7 +15,8 @@
 #include "std_msgs/msg/bool.hpp"
 #include "nav2_frenet_ilqr_controller/path_handler.hpp"
 #include "nav2_frenet_ilqr_controller/parameter_handler.hpp"
-#include "nav2_frenet_ilqr_controller/policies/obstacle_policy.hpp"
+#include "nav2_frenet_ilqr_controller/policies/rclcpp_node_policy.hpp"
+#include "nav2_frenet_ilqr_controller/costs/rclcpp_node_cost.hpp"
 #include "frenet_trajectory_planner/type_definitions.hpp"
 #include "frenet_trajectory_planner/frenet_trajectory_planner.hpp"
 #include "ilqr_trajectory_tracker/models/diff_robot_model.hpp"
@@ -112,6 +113,9 @@ public:
   void setSpeedLimit(const double & speed_limit, const bool & percentage) override;
 
   void reset() override;
+
+  void addPoliciesFromPlugins();
+  void addCostsFromPlugins();
 
 protected:
   rclcpp_lifecycle::LifecycleNode::WeakPtr node_;

@@ -46,12 +46,8 @@ void FrenetILQRController::configure(
     costmap_->getSizeInMetersX());
   params_ = parameter_handler_->getParams();
 
-  pluginlib::ClassLoader<policies::RclcppNodePolicy> policy_loader("nav2_frenet_ilqr_controller",
-    "nav2_frenet_ilqr_controller::policies::RclcppNodePolicy");
-  std::shared_ptr<policies::RclcppNodePolicy> example_policy = policy_loader.createSharedInstance(
-    "nav2_frenet_ilqr_controller::policies::ObstaclePolicy");
-  example_policy->initialize(node_.lock(), costmap_ros_);
-  frenet_trajectory_planner_.addPolicy(example_policy);
+  addPoliciesFromPlugins();
+  addCostsFromPlugins();
 
   // Handles global path transformations
   path_handler_ = std::make_unique<PathHandler>(
@@ -99,6 +95,35 @@ void FrenetILQRController::deactivate()
   global_path_pub_->on_deactivate();
   truncated_path_pub_->on_deactivate();
   robot_pose_pub_->on_deactivate();
+}
+
+void FrenetILQRController::addPoliciesFromPlugins()
+{
+  pluginlib::ClassLoader<policies::RclcppNodePolicy> policy_loader("nav2_frenet_ilqr_controller",
+    "nav2_frenet_ilqr_controller::policies::RclcppNodePolicy");
+  std::shared_ptr<policies::RclcppNodePolicy> example_policy = policy_loader.createSharedInstance(
+    "nav2_frenet_ilqr_controller::policies::ObstaclePolicy");
+  example_policy->initialize(node_.lock(), costmap_ros_);
+  frenet_trajectory_planner_.addPolicy(example_policy);
+}
+
+void FrenetILQRController::addCostsFromPlugins()
+{
+  // example cost
+  pluginlib::ClassLoader<costs::RclcppNodeCost> cost_loader("nav2_frenet_ilqr_controller",
+    "nav2_frenet_ilqr_controller::costs::RclcppNodeCost");
+
+  std::shared_ptr<costs::RclcppNodeCost> lateral_distance_cost_checker =
+    cost_loader.createSharedInstance(
+    "nav2_frenet_ilqr_controller::costs::LateralDistanceCost");
+  lateral_distance_cost_checker->initialize("lateral_distance_cost_plug", node_, costmap_ros_);
+  frenet_trajectory_planner_.addCost(lateral_distance_cost_checker);
+
+  std::shared_ptr<costs::RclcppNodeCost> longtitutal_velocity_cost_checker =
+    cost_loader.createSharedInstance(
+    "nav2_frenet_ilqr_controller::costs::LongtitutalVelocityCost");
+  longtitutal_velocity_cost_checker->initialize("longtitutal_cost_plug", node_, costmap_ros_);
+  frenet_trajectory_planner_.addCost(longtitutal_velocity_cost_checker);
 }
 
 nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
