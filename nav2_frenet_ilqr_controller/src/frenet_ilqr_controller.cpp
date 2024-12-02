@@ -46,12 +46,8 @@ void FrenetILQRController::configure(
     costmap_->getSizeInMetersX());
   params_ = parameter_handler_->getParams();
 
-  pluginlib::ClassLoader<policies::RclcppNodePolicy> policy_loader("nav2_frenet_ilqr_controller",
-    "nav2_frenet_ilqr_controller::policies::RclcppNodePolicy");
-  std::shared_ptr<policies::RclcppNodePolicy> example_policy = policy_loader.createSharedInstance(
-    "nav2_frenet_ilqr_controller::policies::ObstaclePolicy");
-  example_policy->initialize(node_.lock(), costmap_ros_);
-  frenet_trajectory_planner_.addPolicy(example_policy);
+  addPoliciesFromPlugins();
+  addCostsFromPlugins();
 
   // Handles global path transformations
   path_handler_ = std::make_unique<PathHandler>(
@@ -99,6 +95,73 @@ void FrenetILQRController::deactivate()
   global_path_pub_->on_deactivate();
   truncated_path_pub_->on_deactivate();
   robot_pose_pub_->on_deactivate();
+}
+
+void FrenetILQRController::addPoliciesFromPlugins()
+{
+
+  auto node = node_.lock();
+
+  std::vector<std::string> default_policy_plugins = {};
+  std::vector<std::string> policy_plugins;
+
+  nav2_util::declare_parameter_if_not_declared(
+    node, plugin_name_ + ".policy_plugins", rclcpp::ParameterValue(default_policy_plugins));
+
+  node->get_parameter(
+    plugin_name_ + ".policy_plugins",
+    policy_plugins);
+
+  pluginlib::ClassLoader<policies::RclcppNodePolicy> policy_loader("nav2_frenet_ilqr_controller",
+    "nav2_frenet_ilqr_controller::policies::RclcppNodePolicy");
+  for (const auto & policy_plugin_name : policy_plugins) {
+    std::string absolute_policy_plugin_name = plugin_name_ + ".";
+    absolute_policy_plugin_name += policy_plugin_name;
+    auto policy_plugin_type = nav2_util::get_plugin_type_param(node, absolute_policy_plugin_name);
+    RCLCPP_INFO(
+      logger_, "Policy Plugin is initializing. : %s %s",
+      policy_plugin_name.c_str(), policy_plugin_type.c_str());
+
+    std::shared_ptr<policies::RclcppNodePolicy> policy = policy_loader.createSharedInstance(
+      policy_plugin_type);
+    policy->initialize(policy_plugin_name, node_, costmap_ros_);
+    frenet_trajectory_planner_.addPolicy(policy);
+  }
+}
+
+void FrenetILQRController::addCostsFromPlugins()
+{
+
+  auto node = node_.lock();
+
+  std::vector<std::string> default_cost_checker_plugins = {};
+  std::vector<std::string> cost_checker_plugins;
+
+  nav2_util::declare_parameter_if_not_declared(
+    node, plugin_name_ + ".cost_checker_plugins",
+    rclcpp::ParameterValue(default_cost_checker_plugins));
+
+  node->get_parameter(
+    plugin_name_ + ".cost_checker_plugins",
+    cost_checker_plugins);
+
+  pluginlib::ClassLoader<costs::RclcppNodeCost> cost_loader("nav2_frenet_ilqr_controller",
+    "nav2_frenet_ilqr_controller::costs::RclcppNodeCost");
+  for (const auto & cost_checker_plugin_name : cost_checker_plugins) {
+    std::string absolute_cost_checker_plugin_name = plugin_name_ + ".";
+    absolute_cost_checker_plugin_name += cost_checker_plugin_name;
+    auto cost_checker_plugin_type = nav2_util::get_plugin_type_param(
+      node,
+      absolute_cost_checker_plugin_name);
+    RCLCPP_INFO(
+      logger_, "Cost Checker Plugin is initializing. : %s %s",
+      cost_checker_plugin_name.c_str(), cost_checker_plugin_type.c_str());
+
+    std::shared_ptr<costs::RclcppNodeCost> cost_checker = cost_loader.createSharedInstance(
+      cost_checker_plugin_type);
+    cost_checker->initialize(cost_checker_plugin_name, node_, costmap_ros_);
+    frenet_trajectory_planner_.addCost(cost_checker);
+  }
 }
 
 nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(

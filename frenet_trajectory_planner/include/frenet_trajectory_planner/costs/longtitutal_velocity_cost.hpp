@@ -12,7 +12,9 @@ class LongtitutalVelocityCost : public Cost
 {
 public:
   LongtitutalVelocityCost(const double & K_longtitutal_velocity, const double desired_velocity);
-  double cost(const FrenetTrajectory & frenet_trajectory) override;
+  double cost(
+    const FrenetTrajectory & frenet_trajectory,
+    const CartesianTrajectory & cartesian_trajectory) override;
 
 private:
   double K_longtitutal_velocity_;
@@ -26,7 +28,9 @@ LongtitutalVelocityCost::LongtitutalVelocityCost(
 {
 }
 
-double LongtitutalVelocityCost::cost(const FrenetTrajectory & frenet_trajectory)
+double LongtitutalVelocityCost::cost(
+  const FrenetTrajectory & frenet_trajectory,
+  const CartesianTrajectory & /*cartesian_trajectory*/)
 {
   double trajectory_cost = 0;
 

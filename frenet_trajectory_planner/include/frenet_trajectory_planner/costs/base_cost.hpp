@@ -11,7 +11,10 @@ class Cost
 {
 public:
   Cost() {}
-  virtual double cost(const FrenetTrajectory & frenet_trajectory) = 0;
+  virtual ~Cost() = default;
+  virtual double cost(
+    const FrenetTrajectory & frenet_trajectory,
+    const CartesianTrajectory & cartesian_trajectory) = 0;
 };
 
 }

@@ -18,14 +18,22 @@ class RclcppNodePolicy : public Policy
 public:
   RclcppNodePolicy();
   virtual void initialize(
-    const rclcpp_lifecycle::LifecycleNode::SharedPtr & node,
-    std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros);
+    const std::string & policy_plugin_name,
+    const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
+    std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
+  {
+    policy_plugin_name_ = policy_plugin_name;
+    node_ = parent;
+    costmap_ros_ = costmap_ros;
+    costmap_ = costmap_ros_->getCostmap();
+  }
   virtual bool checkIfFeasible(
     const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) = 0;
 
 protected:
-  rclcpp_lifecycle::LifecycleNode::SharedPtr node_;
+  rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
+  std::string policy_plugin_name_;
   std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros_;
   nav2_costmap_2d::Costmap2D * costmap_{nullptr};
 };
@@ -33,15 +41,6 @@ protected:
 RclcppNodePolicy::RclcppNodePolicy()
 : Policy()
 {
-}
-
-void RclcppNodePolicy::initialize(
-  const rclcpp_lifecycle::LifecycleNode::SharedPtr & node,
-  std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
-{
-  node_ = node;
-  costmap_ros_ = costmap_ros;
-  costmap_ = costmap_ros_->getCostmap();
 }
 
 }

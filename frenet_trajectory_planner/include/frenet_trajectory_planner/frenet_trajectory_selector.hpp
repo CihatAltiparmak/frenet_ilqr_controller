@@ -69,10 +69,12 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajec
       return true;
     };
 
-  auto get_trajectory_cost = [this](const FrenetTrajectory & frenet_trajectory) -> double {
+  auto get_trajectory_cost =
+    [this](const FrenetTrajectory & frenet_trajectory,
+      const CartesianTrajectory & cartesian_trajectory) -> double {
       double trajectory_cost = 0;
       for (const auto & cost_checker : costs_) {
-        trajectory_cost += cost_checker->cost(frenet_trajectory);
+        trajectory_cost += cost_checker->cost(frenet_trajectory, cartesian_trajectory);
       }
       return trajectory_cost;
     };
@@ -87,7 +89,7 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajec
     }
 
     // check for cost
-    double trajectory_cost = get_trajectory_cost(frenet_trajectory);
+    double trajectory_cost = get_trajectory_cost(frenet_trajectory, cartesian_trajectory);
     if (trajectory_cost < best_cost) {
       best_cost = trajectory_cost;
       best_frenet_trajectory = std::optional<FrenetTrajectory>{frenet_trajectory};

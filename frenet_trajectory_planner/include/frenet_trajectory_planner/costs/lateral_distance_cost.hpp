@@ -12,7 +12,9 @@ class LateralDistanceCost : public Cost
 {
 public:
   LateralDistanceCost(const double & K_distance);
-  double cost(const FrenetTrajectory & frenet_trajectory) override;
+  double cost(
+    const FrenetTrajectory & frenet_trajectory,
+    const CartesianTrajectory & cartesian_trajectory) override;
 
 private:
   double K_distance_;
@@ -23,7 +25,9 @@ LateralDistanceCost::LateralDistanceCost(const double & K_distance)
 {
 }
 
-double LateralDistanceCost::cost(const FrenetTrajectory & frenet_trajectory)
+double LateralDistanceCost::cost(
+  const FrenetTrajectory & frenet_trajectory,
+  const CartesianTrajectory & /*cartesian_trajectory*/)
 {
   double trajectory_cost = 0;
 

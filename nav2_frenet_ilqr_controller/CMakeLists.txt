@@ -52,8 +52,51 @@ target_link_libraries(${library_name} PRIVATE
   angles::angles
 )
 
-install(TARGETS ${library_name}
-  EXPORT ${library_name}
+add_library(nav2_frenet_ilqr_controller_costs SHARED
+  src/costs/lateral_distance_cost.cpp
+  src/costs/longtitutal_velocity_cost.cpp)
+
+target_include_directories(nav2_frenet_ilqr_controller_costs
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_link_libraries(nav2_frenet_ilqr_controller_costs PUBLIC
+  nav2_costmap_2d::nav2_costmap_2d_core
+  nav2_util::nav2_util_core
+  ${nav_msgs_TARGETS}
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
+  ${rcl_interfaces_TARGETS}
+  frenet_trajectory_planner::frenet_trajectory_planner_lib
+)
+
+target_link_libraries(nav2_frenet_ilqr_controller_costs PRIVATE
+  pluginlib::pluginlib
+)
+
+add_library(nav2_frenet_ilqr_controller_policies SHARED
+  src/policies/obstacle_policy.cpp)
+
+target_include_directories(nav2_frenet_ilqr_controller_policies
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_link_libraries(nav2_frenet_ilqr_controller_policies PUBLIC
+  nav2_costmap_2d::nav2_costmap_2d_core
+  nav2_util::nav2_util_core
+  ${nav_msgs_TARGETS}
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
+  ${rcl_interfaces_TARGETS}
+  frenet_trajectory_planner::frenet_trajectory_planner_lib
+)
+
+target_link_libraries(nav2_frenet_ilqr_controller_policies PRIVATE
+  pluginlib::pluginlib
+)
+
+install(TARGETS ${library_name} nav2_frenet_ilqr_controller_costs nav2_frenet_ilqr_controller_policies
+  EXPORT ${library_name} 
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -95,5 +138,6 @@ ament_export_targets(${library_name})
 
 pluginlib_export_plugin_description_file(nav2_core nav2_frenet_ilqr_controller.xml)
 pluginlib_export_plugin_description_file(nav2_frenet_ilqr_controller policies.xml)
+pluginlib_export_plugin_description_file(nav2_frenet_ilqr_controller costs.xml)
 
 ament_package()

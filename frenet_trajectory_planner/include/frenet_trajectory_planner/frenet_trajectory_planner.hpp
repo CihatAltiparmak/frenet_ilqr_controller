@@ -6,8 +6,6 @@
 #include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/line_adapter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
-#include <frenet_trajectory_planner/costs/lateral_distance_cost.hpp>
-#include <frenet_trajectory_planner/costs/longtitutal_velocity_cost.hpp>
 #include <frenet_trajectory_planner/policies/acceleration_policy.hpp>
 
 #include <memory>
@@ -30,6 +28,7 @@ public:
     const double max_time_per_point);
 
   void addPolicy(const std::shared_ptr<policies::Policy> & policy);
+  void addCost(const std::shared_ptr<costs::Cost> & cost);
 
   void setFrenetTrajectoryPlannerConfig(
     const FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config);
@@ -38,7 +37,6 @@ private:
   FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config_;
   FrenetTrajectorySelector frenet_trajectory_selector_;
   std::shared_ptr<FrenetTrajectoryGenerator> frenet_trajectory_generator_;
-  std::vector<std::shared_ptr<policies::Policy>> selected_policies_;
 };
 
 // TODO (CihatAltiparmak) : move the source parts of FrenetTrajectoryPlanner to cpp file. Now to move to cpp file throws out multiple definition error when built
@@ -51,22 +49,6 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner()
   frenet_trajectory_planner_config_.max_longtitutal_velocity = 0.5;
   frenet_trajectory_planner_config_.step_longtitutal_velocity = 0.125;
 
-  {
-    auto lateral_distance_checker =
-      std::make_shared<costs::LateralDistanceCost>(10);
-    frenet_trajectory_selector_.addCost(lateral_distance_checker);
-  }
-
-  {
-    auto longtitutal_velocity_cost_checker =
-      std::make_shared<costs::LongtitutalVelocityCost>(5, 0.5);
-    frenet_trajectory_selector_.addCost(longtitutal_velocity_cost_checker);
-  }
-
-  for (auto policy : selected_policies_) {
-    frenet_trajectory_selector_.addPolicy(policy);
-  }
-
   frenet_trajectory_generator_ =
     std::make_shared<FrenetTrajectoryGenerator>(frenet_trajectory_planner_config_);
 }
@@ -75,21 +57,8 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner(
   const FrenetTrajectoryPlannerConfig & frenet_trajectory_planner_config)
 : frenet_trajectory_planner_config_(frenet_trajectory_planner_config)
 {
-  {
-    auto lateral_distance_checker =
-      std::make_shared<costs::LateralDistanceCost>(10);
-    frenet_trajectory_selector_.addCost(lateral_distance_checker);
-  }
-
-  {
-    auto longtitutal_velocity_cost_checker =
-      std::make_shared<costs::LongtitutalVelocityCost>(5, 0.5);
-    frenet_trajectory_selector_.addCost(longtitutal_velocity_cost_checker);
-  }
-
-  for (auto policy : selected_policies_) {
-    frenet_trajectory_selector_.addPolicy(policy);
-  }
+  frenet_trajectory_generator_ =
+    std::make_shared<FrenetTrajectoryGenerator>(frenet_trajectory_planner_config_);
 }
 
 CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
@@ -132,7 +101,12 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
 
 void FrenetTrajectoryPlanner::addPolicy(const std::shared_ptr<policies::Policy> & policy)
 {
-  selected_policies_.push_back(policy);
+  frenet_trajectory_selector_.addPolicy(policy);
+}
+
+void FrenetTrajectoryPlanner::addCost(const std::shared_ptr<costs::Cost> & cost)
+{
+  frenet_trajectory_selector_.addCost(cost);
 }
 
 void FrenetTrajectoryPlanner::setFrenetTrajectoryPlannerConfig(
