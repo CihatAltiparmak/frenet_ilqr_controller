@@ -15,6 +15,7 @@ class ObstaclePolicy : public RclcppNodePolicy
 public:
   ObstaclePolicy();
   void initialize(
+    const std::string & policy_plugin_name,
     const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
     std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros) override;
   bool checkIfFeasible(

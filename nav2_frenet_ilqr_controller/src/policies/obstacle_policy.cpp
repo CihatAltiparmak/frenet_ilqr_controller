@@ -12,10 +12,11 @@ ObstaclePolicy::ObstaclePolicy()
 }
 
 void ObstaclePolicy::initialize(
+  const std::string & policy_plugin_name,
   const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
   std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
 {
-  RclcppNodePolicy::initialize(parent, costmap_ros);
+  RclcppNodePolicy::initialize(policy_plugin_name, parent, costmap_ros);
   collision_checker_.setCostmap(costmap_);
 }
 
