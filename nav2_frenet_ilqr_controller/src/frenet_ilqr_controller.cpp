@@ -102,7 +102,7 @@ void FrenetILQRController::addPoliciesFromPlugins()
 
   auto node = node_.lock();
 
-  std::vector<std::string> default_policy_plugins = {}; //{"LateralDistanceCostChecker", "LongtitutalVelocityCostChecker"};
+  std::vector<std::string> default_policy_plugins = {};
   std::vector<std::string> policy_plugins;
 
   nav2_util::declare_parameter_if_not_declared(
@@ -134,7 +134,7 @@ void FrenetILQRController::addCostsFromPlugins()
 
   auto node = node_.lock();
 
-  std::vector<std::string> default_cost_checker_plugins = {}; //{"LateralDistanceCostChecker", "LongtitutalVelocityCostChecker"};
+  std::vector<std::string> default_cost_checker_plugins = {};
   std::vector<std::string> cost_checker_plugins;
 
   nav2_util::declare_parameter_if_not_declared(
