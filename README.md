@@ -67,6 +67,41 @@ TODO
 
 Eliminates the frenet trajectories that collides any obstacle using costmap.
 
+### XML configuration example
+
+```yaml
+controller_server:
+  ros__parameters:
+    controller_frequency: 20.0
+    FollowPath:
+      plugin: "nav2_frenet_ilqr_controller::FrenetILQRController"
+      time_discretization: 0.05
+      frenet_trajectory_planner:
+        min_lateral_distance: -1.0
+        max_lateral_distance: 1.0
+        step_lateral_distance: 0.5
+        min_longtitutal_velocity: -0.1
+        max_longtitutal_velocity: 2.0
+        step_longtitutal_velocity: 0.5
+        time_interval: 2.0
+        number_of_time_interval: 1
+      ilqr_trajectory_tracker:
+        iteration_number: 20
+        alpha: 1.0
+      cost_checker_plugins: ["LateralDistanceCostChecker", "LongtitutalVelocityCostChecker"]
+      LateralDistanceCostChecker:
+        plugin: "nav2_frenet_ilqr_controller::costs::LateralDistanceCost"
+        K_lateral_distance: 10.0
+      LongtitutalVelocityCostChecker:
+        plugin: "nav2_frenet_ilqr_controller::costs::LongtitutalVelocityCost"
+        K_longtitutal_velocity: 5.0
+        desired_velocity: 0.5
+
+      policy_plugins: ["ObstaclePolicy"]
+      ObstaclePolicy:
+        plugin: "nav2_frenet_ilqr_controller::policies::ObstaclePolicy"
+```
+
 # Citation
 
 ```bibtex
