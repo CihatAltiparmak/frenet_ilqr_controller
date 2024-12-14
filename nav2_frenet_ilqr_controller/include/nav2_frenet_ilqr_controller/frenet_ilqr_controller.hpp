@@ -117,6 +117,9 @@ public:
   void addPoliciesFromPlugins();
   void addCostsFromPlugins();
 
+  nav_msgs::msg::Path convertFromCartesianTrajectory(
+    const std::string & frame_id, const CartesianTrajectory & cartesian_trajectory);
+
 protected:
   rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
   std::shared_ptr<tf2_ros::Buffer> tf_;
