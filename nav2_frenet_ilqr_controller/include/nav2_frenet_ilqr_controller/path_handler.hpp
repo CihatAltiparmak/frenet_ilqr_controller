@@ -77,6 +77,10 @@ public:
     const geometry_msgs::msg::PoseStamped & in_pose,
     geometry_msgs::msg::PoseStamped & out_pose) const;
 
+  nav_msgs::msg::Path transformPath(
+    const std::string frame_id,
+    const nav_msgs::msg::Path & path) const;
+
   void setPlan(const nav_msgs::msg::Path & path) {global_plan_ = path;}
 
   nav_msgs::msg::Path getPlan() {return global_plan_;}
