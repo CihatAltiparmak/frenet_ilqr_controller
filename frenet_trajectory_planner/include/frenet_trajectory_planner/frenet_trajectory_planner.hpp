@@ -24,8 +24,7 @@ public:
 
   CartesianTrajectory planByWaypoint(
     const CartesianState & robot_cartesian_state,
-    const std::vector<CartesianPoint> & waypoint_list,
-    const double max_time_per_point);
+    const std::vector<CartesianPoint> & waypoint_list);
 
   void addPolicy(const std::shared_ptr<policies::Policy> & policy);
   void addCost(const std::shared_ptr<costs::Cost> & cost);
@@ -63,8 +62,7 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner(
 
 CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   const CartesianState & robot_cartesian_state,
-  const std::vector<CartesianPoint> & waypoint_list,
-  const double max_time_per_point)
+  const std::vector<CartesianPoint> & waypoint_list)
 {
   auto frenet_frame_converter = std::make_shared<FrenetFrameConverter>();
   frenet_frame_converter->createSegments(waypoint_list);
@@ -76,7 +74,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
     frenet_frame_converter->convertCartesian2FrenetForSegment(robot_cartesian_state, 0);
 
   FrenetTrajectory planned_frenet_trajectory = {};
-  for (int i = 0; i < frenet_trajectory_planner_config_.number_of_time_intervals; i++) {
+  for (int i = 0; i < frenet_trajectory_planner_config_.number_of_time_intervals; ++i) {
     // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
     auto all_frenet_trajectories =
       frenet_trajectory_generator_->getAllPossibleFrenetTrajectories(

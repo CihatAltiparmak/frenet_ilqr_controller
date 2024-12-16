@@ -273,7 +273,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     params_->frenet_trajectory_planner_config);
   auto planned_cartesian_trajectory = frenet_trajectory_planner_.planByWaypoint(
     robot_cartesian_state,
-    waypoint_list, 1.0);
+    waypoint_list);
 
   // get yaw angles from velocities along x axis and y axis in cartesian coordinate system
   for (auto & cartesian_state : planned_cartesian_trajectory) {

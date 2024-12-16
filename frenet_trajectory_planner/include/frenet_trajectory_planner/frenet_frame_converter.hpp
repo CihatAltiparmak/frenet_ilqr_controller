@@ -37,7 +37,7 @@ void FrenetFrameConverter::createSegments(const std::vector<CartesianPoint> & wa
   // assert that waypoint_list size must be at least 2
   CartesianPoint last_waypoint = waypoint_list[0];
   for (auto waypoint_it = waypoint_list.begin() + 1; (waypoint_it + 1) != waypoint_list.end();
-    waypoint_it++)
+    ++waypoint_it)
   {
     CartesianPoint qim1 = last_waypoint;
     CartesianPoint qi = *(waypoint_it);
@@ -98,7 +98,7 @@ CartesianTrajectory FrenetFrameConverter::convertFrenet2Cartesian(
       current_longitutal_length + segments_.at(current_segment_index)->getArclength())
     {
       current_longitutal_length += segments_.at(current_segment_index)->getArclength();
-      current_segment_index++;
+      ++current_segment_index;
 
       if (current_segment_index >= segments_.size()) {
         return cartesian_trajectory;
