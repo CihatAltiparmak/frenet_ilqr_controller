@@ -35,10 +35,10 @@ double LongtitutalVelocityCost::cost(
   double trajectory_cost = 0;
 
   for (auto frenet_state : frenet_trajectory) {
-    trajectory_cost += std::abs(frenet_state[1] - desired_velocity_) * K_longtitutal_velocity_;
+    trajectory_cost += std::abs(frenet_state[1] - desired_velocity_);
   }
 
-  return trajectory_cost;
+  return K_longtitutal_velocity_ * trajectory_cost;
 }
 
 }
