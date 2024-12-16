@@ -285,15 +285,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     planned_cartesian_trajectory);
   frenet_plan = path_handler_->transformPath(costmap_ros_->getBaseFrameID(), frenet_plan);
 
-  // transform traj
-  int traj_ind = 0;
-  for (auto & fre_pose : frenet_plan.poses) {
-    planned_cartesian_trajectory[traj_ind][0] = fre_pose.pose.position.x;
-    planned_cartesian_trajectory[traj_ind][3] = fre_pose.pose.position.y;
-    planned_cartesian_trajectory[traj_ind][6] = tf2::getYaw(fre_pose.pose.orientation);
-
-    traj_ind++;
-  }
+  planned_cartesian_trajectory = convertToCartesianTrajectory(frenet_plan);
 
   truncated_path_pub_->publish(frenet_plan);
   robot_pose_pub_->publish(robot_pose);
@@ -329,6 +321,21 @@ nav_msgs::msg::Path FrenetILQRController::convertFromCartesianTrajectory(
   }
 
   return plan_msg;
+}
+
+CartesianTrajectory FrenetILQRController::convertToCartesianTrajectory(
+  const nav_msgs::msg::Path & path_msg)
+{
+  CartesianTrajectory cartesian_trajectory = {};
+  for (const auto & pose_st : path_msg.poses) {
+    CartesianState cartesian_state = CartesianState::Zero();
+    cartesian_state({0, 3, 6}) << pose_st.pose.position.x, pose_st.pose.position.y, tf2::getYaw(
+      pose_st.pose.orientation);
+
+    cartesian_trajectory.push_back(cartesian_state);
+  }
+
+  return cartesian_trajectory;
 }
 
 bool FrenetILQRController::cancel()

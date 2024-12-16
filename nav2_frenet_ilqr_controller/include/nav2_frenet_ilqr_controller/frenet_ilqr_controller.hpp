@@ -120,6 +120,9 @@ public:
   nav_msgs::msg::Path convertFromCartesianTrajectory(
     const std::string & frame_id, const CartesianTrajectory & cartesian_trajectory);
 
+  CartesianTrajectory convertToCartesianTrajectory(
+    const nav_msgs::msg::Path & path_msg);
+
 protected:
   rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
   std::shared_ptr<tf2_ros::Buffer> tf_;

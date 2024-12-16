@@ -1,7 +1,5 @@
 #include "nav2_frenet_ilqr_controller/costs/obstacle_cost.hpp"
 
-#include <iostream>
-
 namespace nav2_frenet_ilqr_controller
 {
 namespace costs
@@ -41,13 +39,13 @@ double ObstacleCost::cost(
 
     double point_cost = 0.0;
     if (costmap_->worldToMap(x, y, x_i, y_i)) {
-      point_cost = costmap_->getCost(x_i, y_i) / 254;
+      point_cost = costmap_->getCost(x_i, y_i) / nav2_costmap_2d::LETHAL_OBSTACLE;
     }
 
-    trajectory_cost += point_cost * K_obstacle_;
+    trajectory_cost += point_cost;
   }
 
-  return trajectory_cost;
+  return K_obstacle_ * trajectory_cost;
 }
 
 }

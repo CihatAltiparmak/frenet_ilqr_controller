@@ -141,7 +141,6 @@ nav_msgs::msg::Path PathHandler::transformPath(
 
   nav_msgs::msg::Path transformed_path;
   transformed_path.header.frame_id = frame_id;
-  // transformed_path.header.stamp = path.header.stamp;
 
   for (const auto & pose_st : path.poses) {
     geometry_msgs::msg::PoseStamped transformed_pose_st;
