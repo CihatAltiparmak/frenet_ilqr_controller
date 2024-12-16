@@ -45,13 +45,13 @@ public:
     const std::vector<typename RobotModel::StateT> & x_tracked,
     const std::vector<typename RobotModel::StateT> & x_trajectory);
 
-  void setIterationNumber(const int iteration_number);
+  void setIterationNumber(const size_t iteration_number);
   void setAlpha(const double alpha);
 
 private:
   RobotModel robot_model_;
   double alpha_;
-  int iteration_number_;
+  size_t iteration_number_;
 };
 
 template<typename RobotModel>
@@ -67,18 +67,18 @@ std::vector<MatrixXd> NewtonOptimizer<RobotModel>::backwardPass(
   const MatrixXd & R, const double dt)
 {
 
-  auto trajectory_size = x_feasible.size();
   auto state_dimension = Q.rows();
   auto input_dimension = R.rows();
 
   MatrixXd P_tilda = MatrixXd::Identity(state_dimension + 1, state_dimension + 1);
   P_tilda.topLeftCorner(state_dimension, state_dimension) = Q;
 
-  std::vector<MatrixXd> K_gain(trajectory_size);
+  std::vector<MatrixXd> K_gain(x_feasible.size(),
+    MatrixXd::Zero(input_dimension, state_dimension + 1));
 
-  for (int i = trajectory_size - 2; i >= 0; i--) {
+  for (auto i = std::distance(x_feasible.begin(), std::prev(x_feasible.end(), 2)); i >= 0; i--) {
     auto x_offset =
-      robot_model_.applySystemDynamics(x_feasible[i], u_feasible[i], dt) - x_feasible[i + 1];
+      robot_model_.applySystemDynamics(x_feasible.at(i), u_feasible[i], dt) - x_feasible[i + 1];
 
     MatrixXd A_tilda = MatrixXd::Identity(state_dimension + 1, state_dimension + 1);
     auto A = robot_model_.getStateMatrix(x_feasible[i], u_feasible[i], dt);
@@ -117,7 +117,10 @@ std::tuple<std::vector<typename RobotModel::StateT>,
 
   // assert trajectory_size > 0
   x_tracked[0] = x_feasible[0];
-  for (int i = 0; i < trajectory_size - 1; i++) {
+  for (typename std::vector<typename RobotModel::StateT>::difference_type i = 0,
+    max_difference = std::distance(x_feasible.begin(), std::prev(x_feasible.end(), 1));
+    i < max_difference; ++i)
+  {
     auto x_error = x_tracked[i] - x_feasible[i];
     Vector<double, 4> z_error;
     z_error << x_error, alpha;
@@ -149,17 +152,19 @@ std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
   const Matrix2d & R, const double dt)
 {
   // assert trajectory_size > 0
-  const auto trajectory_size = x_trajectory.size();
+
   double alpha = alpha_;
 
   std::vector<typename RobotModel::StateT> x_best_trajectory;
   std::vector<typename RobotModel::InputT> u_best_trajectory;
-  std::vector<typename RobotModel::InputT> u_optimized(trajectory_size - 1,
+  std::vector<typename RobotModel::InputT> u_optimized(std::distance(
+      x_trajectory.begin(),
+      std::prev(x_trajectory.end(), 1)),
     RobotModel::InputT::Zero());
 
   double best_trajectory_cost = std::numeric_limits<double>::infinity();
   double previous_best_trajectory_cost = best_trajectory_cost;
-  for (int i = 0; i < iteration_number_; i++) {
+  for (size_t i = 0; i < iteration_number_; ++i) {
     auto K_gain_list = this->backwardPass(x_trajectory, u_optimized, Q, R, dt);
     auto [x_tracked, u_tracked] = this->forwardPass(
       x_trajectory, u_optimized, K_gain_list, dt,
@@ -191,10 +196,10 @@ double NewtonOptimizer<RobotModel>::cost(
   const std::vector<typename RobotModel::StateT> & x_tracked,
   const std::vector<typename RobotModel::StateT> & x_trajectory)
 {
-
-  auto trajectory_size = x_trajectory.size();
   double trajectory_cost = 0;
-  for (size_t i = 0; i < trajectory_size; i++) {
+  for (typename std::vector<typename RobotModel::StateT>::size_type i = 0; i < x_trajectory.size();
+    ++i)
+  {
     trajectory_cost += (x_tracked[i] - x_trajectory[i]).squaredNorm();
   }
 
@@ -202,7 +207,7 @@ double NewtonOptimizer<RobotModel>::cost(
 }
 
 template<typename RobotModel>
-void NewtonOptimizer<RobotModel>::setIterationNumber(const int iteration_number)
+void NewtonOptimizer<RobotModel>::setIterationNumber(const size_t iteration_number)
 {
   iteration_number_ = iteration_number;
 }

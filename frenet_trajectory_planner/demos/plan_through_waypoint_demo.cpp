@@ -363,7 +363,7 @@ int main()
   auto frenet_trajectory_planner = frenet_trajectory_planner::FrenetTrajectoryPlanner();
   auto planned_cartesian_trajectory = frenet_trajectory_planner.planByWaypoint(
     robot_cartesian_state,
-    truncated_waypoint_list, 1.0);
+    truncated_waypoint_list);
 
   for (const auto & cartesian_state : planned_cartesian_trajectory) {
     std::cout << cartesian_state[0] << ", " << cartesian_state[3] << std::endl;

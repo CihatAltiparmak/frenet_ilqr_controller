@@ -173,9 +173,17 @@ ParameterHandler::dynamicParametersCallback(
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.time_interval") {
       params_.frenet_trajectory_planner_config.time_interval = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.number_of_time_intervals") {
-      params_.frenet_trajectory_planner_config.number_of_time_intervals = parameter.as_int();
+      if (parameter.as_int() < 1) {
+        params_.frenet_trajectory_planner_config.number_of_time_intervals = 2;
+      } else {
+        params_.frenet_trajectory_planner_config.number_of_time_intervals = parameter.as_int();
+      }
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.iteration_number") {
-      params_.iteration_number = parameter.as_int();
+      if (parameter.as_int() < 0) {
+        params_.iteration_number = 20;
+      } else {
+        params_.iteration_number = parameter.as_int();
+      }
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.alpha") {
       params_.alpha = parameter.as_double();
     }
