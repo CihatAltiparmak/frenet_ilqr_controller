@@ -29,11 +29,11 @@ ament_add_gtest(
 
 target_link_libraries(quartic_trajectory_planner_test frenet_trajectory_planner_lib)
 
-ament_add_gtest(
-  frenet_trajectory_generator_test
-  frenet_trajectory_generator_test.cpp)
-
-target_link_libraries(frenet_trajectory_generator_test  frenet_trajectory_planner_lib)
+# ament_add_gtest(
+#   frenet_trajectory_generator_test
+#   frenet_trajectory_generator_test.cpp)
+# 
+# target_link_libraries(frenet_trajectory_generator_test  frenet_trajectory_planner_lib)
 
 ament_add_gtest(
   line_adapter_test

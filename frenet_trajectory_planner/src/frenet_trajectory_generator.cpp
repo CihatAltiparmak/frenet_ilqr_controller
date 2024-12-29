@@ -11,7 +11,7 @@ FrenetTrajectoryGenerator::FrenetTrajectoryGenerator(
 {}
 
 std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::getAllPossibleFrenetTrajectories(
-  const FrenetState & frenet_state_initial)
+  const FrenetState & frenet_state_initial, size_t max_state_number)
 {
 
   std::vector<FrenetTrajectory> frenet_trajectories;
@@ -31,7 +31,9 @@ std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::getAllPossibleFrenetTra
 
       FrenetState frenet_state_final;
       frenet_state_final << state_longtitutal_final, state_lateral_final;
-      auto frenet_trajectory = getFrenetTrajectory(frenet_state_initial, frenet_state_final);
+      auto frenet_trajectory = getFrenetTrajectory(
+        frenet_state_initial, frenet_state_final,
+        max_state_number);
       if (!frenet_trajectory.empty()) {
         frenet_trajectories.push_back(frenet_trajectory);
       }
@@ -43,7 +45,7 @@ std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::getAllPossibleFrenetTra
 
 FrenetTrajectory FrenetTrajectoryGenerator::getFrenetTrajectory(
   const FrenetState & frenet_state_initial,
-  const FrenetState & frenet_state_final)
+  const FrenetState & frenet_state_final, const size_t max_state_number)
 {
   auto longtitual_state_initial = frenet_state_initial(seq(0, 2));
   auto longtitual_state_final = frenet_state_final(seq(0, 2));
@@ -70,7 +72,10 @@ FrenetTrajectory FrenetTrajectoryGenerator::getFrenetTrajectory(
   FrenetTrajectory frenet_trajectory;
 
   // assert dt is smaller than time_interval
-  for (double t = 0; t < frenet_planner_config_.time_interval; t += frenet_planner_config_.dt) {
+  double maximum_time_interval = std::min(
+    frenet_planner_config_.dt * max_state_number,
+    frenet_planner_config_.time_interval);
+  for (double t = 0; t <= maximum_time_interval; t += frenet_planner_config_.dt) {
     StateLongtitutal state_longtitutal;
     state_longtitutal[0] = longtitutal_velocity_planner.x(t);
     state_longtitutal[1] = longtitutal_velocity_planner.dx(t);

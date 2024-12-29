@@ -19,11 +19,12 @@ public:
   FrenetTrajectoryGenerator(const FrenetTrajectoryPlannerConfig & frenet_planner_config);
 
   std::vector<FrenetTrajectory> getAllPossibleFrenetTrajectories(
-    const FrenetState & frenet_state_initial);
+    const FrenetState & frenet_state_initial, const size_t max_state_number);
 
   FrenetTrajectory getFrenetTrajectory(
     const FrenetState & frenet_state_initial,
-    const FrenetState & frenet_state_final);
+    const FrenetState & frenet_state_final,
+    const size_t max_state_number);
 
 private:
   FrenetTrajectoryPlannerConfig frenet_planner_config_;

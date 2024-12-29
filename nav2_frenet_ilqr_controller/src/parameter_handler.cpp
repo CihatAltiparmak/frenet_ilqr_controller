@@ -71,7 +71,7 @@ ParameterHandler::ParameterHandler(
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.time_interval", rclcpp::ParameterValue(1.0));
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".frenet_trajectory_planner.number_of_time_intervals", rclcpp::ParameterValue(
+    node, plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory", rclcpp::ParameterValue(
       2));
 
   declare_parameter_if_not_declared(
@@ -116,8 +116,8 @@ ParameterHandler::ParameterHandler(
     plugin_name_ + ".frenet_trajectory_planner.time_interval",
     params_.frenet_trajectory_planner_config.time_interval);
   node->get_parameter(
-    plugin_name_ + ".frenet_trajectory_planner.number_of_time_intervals",
-    params_.frenet_trajectory_planner_config.number_of_time_intervals);
+    plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory",
+    params_.frenet_trajectory_planner_config.max_state_in_trajectory);
 
   node->get_parameter(
     plugin_name_ + ".ilqr_trajectory_tracker.iteration_number",
@@ -172,11 +172,11 @@ ParameterHandler::dynamicParametersCallback(
       params_.frenet_trajectory_planner_config.step_longtitutal_velocity = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.time_interval") {
       params_.frenet_trajectory_planner_config.time_interval = parameter.as_double();
-    } else if (name == plugin_name_ + ".frenet_trajectory_planner.number_of_time_intervals") {
+    } else if (name == plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory") {
       if (parameter.as_int() < 1) {
-        params_.frenet_trajectory_planner_config.number_of_time_intervals = 2;
+        params_.frenet_trajectory_planner_config.max_state_in_trajectory = 2;
       } else {
-        params_.frenet_trajectory_planner_config.number_of_time_intervals = parameter.as_int();
+        params_.frenet_trajectory_planner_config.max_state_in_trajectory = parameter.as_int();
       }
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.iteration_number") {
       if (parameter.as_int() < 0) {
