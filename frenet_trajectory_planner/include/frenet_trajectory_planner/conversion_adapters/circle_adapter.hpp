@@ -86,6 +86,7 @@ CartesianState CircleAdapter::convertFrenet2Cartesian(const FrenetState & frenet
   // cartesian_state[6] = std::atan2(t_frenet_[1], t_frenet_[0]) + std::atan2(
   //   frenet_state[4],
   //   frenet_state[1]); // implement in a correct way (yaw angle also should be added to frenet state)
+  cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
 
   return cartesian_state;
 

@@ -55,7 +55,8 @@ target_link_libraries(${library_name} PRIVATE
 add_library(nav2_frenet_ilqr_controller_costs SHARED
   src/costs/lateral_distance_cost.cpp
   src/costs/longtitutal_velocity_cost.cpp
-  src/costs/obstacle_cost.cpp)
+  src/costs/obstacle_cost.cpp
+  src/costs/angular_velocity_cost.cpp)
 
 target_include_directories(nav2_frenet_ilqr_controller_costs
   PUBLIC
