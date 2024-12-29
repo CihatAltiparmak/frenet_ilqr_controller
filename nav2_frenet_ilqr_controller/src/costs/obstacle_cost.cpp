@@ -45,7 +45,7 @@ double ObstacleCost::cost(
     trajectory_cost += point_cost;
   }
 
-  return K_obstacle_ * trajectory_cost;
+  return K_obstacle_ * trajectory_cost / cartesian_trajectory.size();
 }
 
 }
