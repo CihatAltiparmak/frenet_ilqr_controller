@@ -62,7 +62,7 @@ docker run -it --rm --net=host --privileged --volume="${XAUTHORITY}:/root/.Xauth
 | max_longitital_velocity    | double | Default:  2.0. Maximum longitutal velocity along interpolated curve. |
 | step_lateral_distance      | double | Default: 0.5.  Increasing rate for producing longtitutal velocity trajectories in Frenet Frame |
 | time_interval              | double | Default: 2.0.  time (s) required to achieve corresponding frenet state. Used by polynomial trajectory planning for both velocity planning and lateral distance planning, (e.g time (s) required to increase speed from 1.0 m/s to 2 m/s)|
-| number_of_time_interval    | int | Default: 1.  the number of how many trajectory generation to done. This param is used for generating frenet trajectory stage by stage (e.g when number_of_time_interval, time_interval and time_discretization equal 2, 1.0 and 0.05 respectively, It's generated frenet trajectory with 40 states)  |
+| max_state_in_trajectory    | int | Default: 40.  the number of how many state the generated trajectory can have at most.  |
 
 #### Iterative Linear Quadratic Regulator
 
@@ -103,7 +103,7 @@ controller_server:
         max_longtitutal_velocity: 2.0
         step_longtitutal_velocity: 0.5
         time_interval: 2.0
-        number_of_time_interval: 1
+        max_state_in_trajectory: 40
       ilqr_trajectory_tracker:
         iteration_number: 20
         alpha: 1.0

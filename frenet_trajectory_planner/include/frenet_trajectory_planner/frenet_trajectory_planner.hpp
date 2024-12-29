@@ -73,12 +73,15 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   FrenetState robot_frenet_state =
     frenet_frame_converter->convertCartesian2FrenetForSegment(robot_cartesian_state, 0);
 
-  FrenetTrajectory planned_frenet_trajectory = {};
-  for (int i = 0; i < frenet_trajectory_planner_config_.number_of_time_intervals; ++i) {
+  FrenetTrajectory planned_frenet_trajectory = {robot_frenet_state};
+  size_t remaining_state_number_ = frenet_trajectory_planner_config_.max_state_in_trajectory - 1;
+  while (remaining_state_number_ > 0) {
+    robot_frenet_state = planned_frenet_trajectory.back();
+
     // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
     auto all_frenet_trajectories =
       frenet_trajectory_generator_->getAllPossibleFrenetTrajectories(
-      robot_frenet_state);
+      robot_frenet_state, remaining_state_number_);
 
     auto best_frenet_trajectory_optional =
       frenet_trajectory_selector_.selectBestFrenetTrajectory(
@@ -88,12 +91,18 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
       break;
     }
     auto best_frenet_trajectory = best_frenet_trajectory_optional.value();
+    if (best_frenet_trajectory.size() <= 1) {
+      break;
+    }
+
     planned_frenet_trajectory.insert(
       planned_frenet_trajectory.end(),
-      best_frenet_trajectory.begin(), best_frenet_trajectory.end());
+      std::next(best_frenet_trajectory.begin()), best_frenet_trajectory.end());
 
-    robot_frenet_state = planned_frenet_trajectory.back();
+    remaining_state_number_ = frenet_trajectory_planner_config_.max_state_in_trajectory -
+      planned_frenet_trajectory.size();
   }
+
   return frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 }
 
