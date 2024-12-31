@@ -7,7 +7,7 @@
 
 #include "angles/angles.h"
 #include "nav2_frenet_ilqr_controller/frenet_ilqr_controller.hpp"
-#include "nav2_core/controller_exceptions.hpp"
+#include "nav2_core/exceptions.hpp"
 #include "nav2_util/node_utils.hpp"
 #include "nav2_util/geometry_utils.hpp"
 #include "nav2_costmap_2d/costmap_filters/filter_values.hpp"
@@ -31,7 +31,7 @@ void FrenetILQRController::configure(
   auto node = parent.lock();
   node_ = parent;
   if (!node) {
-    throw nav2_core::ControllerException("Unable to lock node!");
+    throw std::runtime_error("Unable to lock node!");
   }
 
   costmap_ros_ = costmap_ros;
@@ -216,7 +216,7 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   auto U_optimal = newton_optimizer.optimize(X_feasible, Q, R, dt);
 
   if (U_optimal.empty()) {
-    throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
+    throw std::runtime_error("Iterative LQR couldn't find any solution!");
   }
 
   return U_optimal[0];
@@ -232,7 +232,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
 
   geometry_msgs::msg::PoseStamped robot_pose;
   if (!path_handler_->transformPose(costmap_ros_->getGlobalFrameID(), pose, robot_pose)) {
-    throw nav2_core::ControllerTFError("Unable to transform robot pose into global plan's frame");
+    throw std::runtime_error("Unable to transform robot pose into global plan's frame");
   }
 
   // Transform path to robot base frame

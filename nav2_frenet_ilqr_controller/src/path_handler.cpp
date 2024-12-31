@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "nav2_frenet_ilqr_controller/path_handler.hpp"
-#include "nav2_core/controller_exceptions.hpp"
+#include "nav2_core/exceptions.hpp"
 #include "nav2_util/node_utils.hpp"
 #include "nav2_util/geometry_utils.hpp"
 
@@ -37,17 +37,17 @@ nav_msgs::msg::Path PathHandler::transformGlobalPlan(
   bool reject_unit_path)
 {
   if (global_plan_.poses.empty()) {
-    throw nav2_core::InvalidPath("Received plan with zero length");
+    throw std::runtime_error("Received plan with zero length");
   }
 
   if (reject_unit_path && global_plan_.poses.size() == 1) {
-    throw nav2_core::InvalidPath("Received plan with length of one");
+    throw std::runtime_error("Received plan with length of one");
   }
 
   // let's get the pose of the robot in the frame of the plan
   geometry_msgs::msg::PoseStamped robot_pose;
   if (!transformPose(global_plan_.header.frame_id, pose, robot_pose)) {
-    throw nav2_core::ControllerTFError("Unable to transform robot pose into global plan's frame");
+    throw std::runtime_error("Unable to transform robot pose into global plan's frame");
   }
 
   auto closest_pose_upper_bound =
@@ -88,7 +88,7 @@ nav_msgs::msg::Path PathHandler::transformGlobalPlan(
       stamped_pose.header.stamp = robot_pose.header.stamp;
       stamped_pose.pose = global_plan_pose.pose;
       if (!transformPose(costmap_ros_->getGlobalFrameID(), stamped_pose, transformed_pose)) {
-        throw nav2_core::ControllerTFError("Unable to transform plan pose into local frame");
+        throw std::runtime_error("Unable to transform plan pose into local frame");
       }
       transformed_pose.pose.position.z = 0.0;
       return transformed_pose;
@@ -108,7 +108,7 @@ nav_msgs::msg::Path PathHandler::transformGlobalPlan(
   global_plan_.poses.erase(begin(global_plan_.poses), transformation_begin);
 
   if (transformed_plan.poses.empty()) {
-    throw nav2_core::InvalidPath("Resulting plan has 0 poses in it.");
+    throw std::runtime_error("Resulting plan has 0 poses in it.");
   }
 
   return transformed_plan;
@@ -145,7 +145,7 @@ nav_msgs::msg::Path PathHandler::transformPath(
   for (const auto & pose_st : path.poses) {
     geometry_msgs::msg::PoseStamped transformed_pose_st;
     if (!transformPose(frame_id, pose_st, transformed_pose_st)) {
-      throw nav2_core::ControllerTFError("Unable to transform path!");
+      throw std::runtime_error("Unable to transform path!");
     }
     transformed_path.poses.push_back(transformed_pose_st);
   }

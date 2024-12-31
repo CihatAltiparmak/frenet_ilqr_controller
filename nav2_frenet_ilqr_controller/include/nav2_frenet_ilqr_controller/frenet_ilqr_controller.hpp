@@ -95,7 +95,7 @@ public:
     const geometry_msgs::msg::PoseStamped & robot_pose,
     const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory);
 
-  bool cancel() override;
+  bool cancel();
 
   /**
    * @brief nav2_core setPlan - Sets the global plan
@@ -112,7 +112,7 @@ public:
    */
   void setSpeedLimit(const double & speed_limit, const bool & percentage) override;
 
-  void reset() override;
+  void reset();
 
   void addPoliciesFromPlugins();
   void addCostsFromPlugins();

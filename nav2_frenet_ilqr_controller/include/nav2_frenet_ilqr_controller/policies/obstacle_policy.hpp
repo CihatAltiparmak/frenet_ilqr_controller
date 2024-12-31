@@ -2,6 +2,7 @@
 #define NAV2_FRENET_ILQR_CONTROLLER__POLICIES__OBSTACLE_POLICY_HPP_
 
 #include "nav2_frenet_ilqr_controller/policies/rclcpp_node_policy.hpp"
+#include "nav2_costmap_2d/footprint_collision_checker.hpp"
 #include <memory>
 
 namespace nav2_frenet_ilqr_controller

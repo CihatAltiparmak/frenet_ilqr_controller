@@ -26,7 +26,7 @@
 #include "nav2_costmap_2d/footprint_collision_checker.hpp"
 #include "nav2_util/odometry_utils.hpp"
 #include "nav2_util/geometry_utils.hpp"
-#include "nav2_core/controller_exceptions.hpp"
+#include "nav2_core/exceptions.hpp"
 #include "geometry_msgs/msg/pose2_d.hpp"
 
 namespace nav2_frenet_ilqr_controller
