@@ -214,20 +214,32 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   using ilqr_trajectory_tracker::DiffDriveRobotModelState;
   using ilqr_trajectory_tracker::DiffDriveRobotModelInput;
 
-  std::vector<DiffDriveRobotModelState> X_feasible;
+  using ilqr_trajectory_tracker::AckermannRobotModel;
+  using ilqr_trajectory_tracker::AckermannRobotModelState;
+  using ilqr_trajectory_tracker::AckermannRobotModelInput;
+
+  std::vector<AckermannRobotModelState> X_feasible;
   for (auto cartesian_state : robot_cartesian_trajectory) {
-    DiffDriveRobotModelState x;
+    AckermannRobotModelState x;
     x << cartesian_state[0],
       cartesian_state[3],
       cartesian_state[6];
     X_feasible.push_back(x);
   }
 
-  Matrix3d Q = Matrix3d::Identity() * 10;
-  Matrix2d R = Matrix2d::Identity() * 2;
+  Matrix3d Q = Matrix3d::Identity() * 1;
+  Matrix2d R = Matrix2d::Identity() * 0.2;
   double alpha = 1;
   double dt = 0.05;
-  ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
+  ilqr_trajectory_tracker::NewtonOptimizer<AckermannRobotModel> newton_optimizer(0.5);
+
+  AckermannRobotModelInput input_limits_min;
+  input_limits_min << -0.5, -2.5;
+
+  AckermannRobotModelInput input_limits_max;
+  input_limits_max << 0.5, 2.5;
+  newton_optimizer.setInputConstraints(input_limits_min, input_limits_max);
+
   newton_optimizer.setIterationNumber(20);
   newton_optimizer.setAlpha(alpha);
   auto U_optimal = newton_optimizer.optimize(X_feasible, Q, R, dt);
@@ -278,13 +290,19 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     frenet_trajectory_planner::CartesianState::Zero();
   double robot_yaw = tf2::getYaw(robot_pose.pose.orientation);
   double linear_speed = speed.linear.x;
-  if (linear_speed == 0) {
-    linear_speed = 0.001;
-  }
+  
+  // if (std::abs(linear_speed) <= 0.5) {
+  //   params_->frenet_trajectory_planner_config.time_interval = 10;
+  // }
+  double max_curvature = 2.5;
+  linear_speed = 1 / max_curvature;
   robot_cartesian_state[0] = robot_pose.pose.position.x;
   robot_cartesian_state[1] = linear_speed * std::cos(robot_yaw);
+  robot_cartesian_state[2] = -linear_speed * std::sin(robot_yaw);
   robot_cartesian_state[3] = robot_pose.pose.position.y;
   robot_cartesian_state[4] = linear_speed * std::sin(robot_yaw);
+  robot_cartesian_state[5] = linear_speed * std::cos(robot_yaw);
+  robot_cartesian_state[6] = robot_yaw;
 
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
     params_->frenet_trajectory_planner_config);
