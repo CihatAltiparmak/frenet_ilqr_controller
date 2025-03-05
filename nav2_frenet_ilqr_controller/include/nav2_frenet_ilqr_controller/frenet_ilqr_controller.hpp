@@ -110,7 +110,7 @@ public:
     nav2_core::GoalChecker * /*goal_checker*/) override;
 
   Vector2d findOptimalInputForTrajectory(
-    const Vector3d & x0,
+    const Vector3d & c_state_robot,
     const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory);
 
   bool cancel() override;

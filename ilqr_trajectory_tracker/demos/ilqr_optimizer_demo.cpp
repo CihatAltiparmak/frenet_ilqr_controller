@@ -54,8 +54,9 @@ int main(int argc, char ** argv)
   newton_optimizer.setIterationNumber(10);
 
   const auto start{std::chrono::steady_clock::now()};
-  // TODO: pass parameter of actual robot pose instead of 
-  // passing the first state of feasible trajectory
+
+  // TODO: Fix demo later, we should pass the actual robot pose instead of
+  // the beginning pose of the feasible trajectory
   auto u_optimal = newton_optimizer.optimize(x_feasible[0], x_feasible, Q, R, dt);
   const auto end{std::chrono::steady_clock::now()};
 

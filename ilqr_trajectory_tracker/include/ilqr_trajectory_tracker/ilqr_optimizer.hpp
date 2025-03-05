@@ -57,13 +57,13 @@ public:
 
   std::tuple<std::vector<typename RobotModel::StateT>,
     std::vector<typename RobotModel::InputT>> forwardPass(
-    const typename RobotModel::StateT x0,
+    const typename RobotModel::StateT & x0,
     const std::vector<typename RobotModel::StateT> & x_feasible,
     const std::vector<typename RobotModel::InputT> & u_feasible,
     const std::vector<MatrixXd> & K_gains, const double dt, const double alpha);
 
   std::vector<typename RobotModel::InputT> optimize(
-    const typename RobotModel::StateT x0,
+    const typename RobotModel::StateT & x0,
     const std::vector<typename RobotModel::StateT> & x_feasible, const Matrix3d & Q,
     const Matrix2d & R, const double dt);
 
@@ -135,7 +135,7 @@ std::vector<MatrixXd> NewtonOptimizer<RobotModel>::backwardPass(
 template<typename RobotModel>
 std::tuple<std::vector<typename RobotModel::StateT>,
   std::vector<typename RobotModel::InputT>> NewtonOptimizer<RobotModel>::forwardPass(
-  const typename RobotModel::StateT x0,
+  const typename RobotModel::StateT & x0,
   const std::vector<typename RobotModel::StateT> & x_feasible,
   const std::vector<typename RobotModel::InputT> & u_feasible,
   const std::vector<MatrixXd> & K_gains, const double dt, const double alpha)
@@ -178,7 +178,7 @@ std::tuple<MatrixXd, MatrixXd> NewtonOptimizer<RobotModel>::solveDiscreteLQRProb
 
 template<typename RobotModel>
 std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
-  const typename RobotModel::StateT x0,
+  const typename RobotModel::StateT & x0,
   const std::vector<typename RobotModel::StateT> & x_trajectory, const Matrix3d & Q,
   const Matrix2d & R, const double dt)
 {
