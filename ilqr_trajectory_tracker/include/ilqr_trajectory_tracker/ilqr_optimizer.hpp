@@ -51,11 +51,13 @@ public:
     const MatrixXd & P);
   std::tuple<std::vector<typename RobotModel::StateT>,
     std::vector<typename RobotModel::InputT>> forwardPass(
+    const typename RobotModel::StateT & x0,
     const std::vector<typename RobotModel::StateT> & x_feasible,
     const std::vector<typename RobotModel::InputT> & u_feasible,
     const std::vector<MatrixXd> & K_gains, const double dt, const double alpha);
 
   std::vector<typename RobotModel::InputT> optimize(
+    const typename RobotModel::StateT & x0,
     const std::vector<typename RobotModel::StateT> & x_feasible, const Matrix3d & Q,
     const Matrix2d & R, const double dt);
   double cost(
@@ -122,6 +124,7 @@ std::vector<MatrixXd> NewtonOptimizer<RobotModel>::backwardPass(
 template<typename RobotModel>
 std::tuple<std::vector<typename RobotModel::StateT>,
   std::vector<typename RobotModel::InputT>> NewtonOptimizer<RobotModel>::forwardPass(
+  const typename RobotModel::StateT & x0,
   const std::vector<typename RobotModel::StateT> & x_feasible,
   const std::vector<typename RobotModel::InputT> & u_feasible,
   const std::vector<MatrixXd> & K_gains, const double dt, const double alpha)
@@ -133,7 +136,7 @@ std::tuple<std::vector<typename RobotModel::StateT>,
   std::vector<typename RobotModel::InputT> u_applied(input_size);
 
   // assert trajectory_size > 0
-  x_tracked[0] = x_feasible[0];
+  x_tracked[0] = x0;
   for (typename std::vector<typename RobotModel::StateT>::difference_type i = 0,
     max_difference = std::distance(x_feasible.begin(), std::prev(x_feasible.end(), 1));
     i < max_difference; ++i)
@@ -165,6 +168,7 @@ std::tuple<MatrixXd, MatrixXd> NewtonOptimizer<RobotModel>::solveDiscreteLQRProb
 
 template<typename RobotModel>
 std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
+  const typename RobotModel::StateT & x0,
   const std::vector<typename RobotModel::StateT> & x_trajectory, const Matrix3d & Q,
   const Matrix2d & R, const double dt)
 {
@@ -183,7 +187,7 @@ std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
   double previous_best_trajectory_cost = best_trajectory_cost;
   for (size_t i = 0; i < iteration_number_; ++i) {
     auto K_gain_list = this->backwardPass(x_trajectory, u_optimized, Q, R, dt);
-    auto [x_tracked, u_tracked] = this->forwardPass(
+    auto [x_tracked, u_tracked] = this->forwardPass(x0,
       x_trajectory, u_optimized, K_gain_list, dt,
       alpha);
     u_optimized = u_tracked;
