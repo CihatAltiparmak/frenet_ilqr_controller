@@ -78,8 +78,9 @@ ParameterHandler::ParameterHandler(
     node, plugin_name_ + ".ilqr_trajectory_tracker.iteration_number", rclcpp::ParameterValue(20));
 
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".ilqr_trajectory_tracker.alpha", rclcpp::ParameterValue(1.0));
-
+    node, plugin_name_ + ".robot_type", rclcpp::ParameterValue("diff_drive"));
+  declare_parameter_if_not_declared(
+    node, plugin_name_ + ".wheelbase", rclcpp::ParameterValue(2.5));
 
   node->get_parameter(
     plugin_name_ + ".interpolate_curvature_after_goal",
@@ -122,7 +123,9 @@ ParameterHandler::ParameterHandler(
   node->get_parameter(
     plugin_name_ + ".ilqr_trajectory_tracker.iteration_number",
     params_.iteration_number);
-  node->get_parameter(plugin_name_ + ".ilqr_trajectory_tracker.alpha", params_.alpha);
+
+  node->get_parameter(plugin_name_ + ".robot_type", params_.robot_type);
+  node->get_parameter(plugin_name_ + ".wheelbase", params_.wheelbase);
 
 
   dynamic_params_handler_ = node->add_on_set_parameters_callback(
@@ -184,8 +187,10 @@ ParameterHandler::dynamicParametersCallback(
       } else {
         params_.iteration_number = parameter.as_int();
       }
-    } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.alpha") {
-      params_.alpha = parameter.as_double();
+    } else if (name == plugin_name_ + ".robot_type") {
+      params_.robot_type = parameter.as_string();
+    } else if (name == plugin_name_ + ".wheelbase") {
+      params_.wheelbase = parameter.as_double();
     }
   }
 

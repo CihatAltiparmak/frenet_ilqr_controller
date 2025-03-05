@@ -37,7 +37,8 @@ struct Parameters
   double transform_tolerance;
   double time_discretization;
   int iteration_number;
-  double alpha;
+  std::string robot_type;
+  double wheelbase;
   frenet_trajectory_planner::FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config;
 };
 

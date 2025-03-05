@@ -206,7 +206,7 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
 }
 
 Vector2d FrenetILQRController::findOptimalInputForTrajectory(
-  const geometry_msgs::msg::PoseStamped & /*robot_pose*/,
+  const Vector3d & x0,
   const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
 {
 
@@ -219,7 +219,8 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   using ilqr_trajectory_tracker::AckermannRobotModelInput;
 
   std::vector<AckermannRobotModelState> X_feasible;
-  for (auto cartesian_state : robot_cartesian_trajectory) {
+  for (size_t i = 1; i < robot_cartesian_trajectory.size(); ++i) {
+    auto cartesian_state = robot_cartesian_trajectory[i];
     AckermannRobotModelState x;
     x << cartesian_state[0],
       cartesian_state[3],
@@ -229,26 +230,62 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
 
   Matrix3d Q = Matrix3d::Identity() * 1;
   Matrix2d R = Matrix2d::Identity() * 0.2;
-  double alpha = 1;
-  double dt = 0.05;
-  ilqr_trajectory_tracker::NewtonOptimizer<AckermannRobotModel> newton_optimizer(0.5);
 
-  AckermannRobotModelInput input_limits_min;
-  input_limits_min << -0.5, -2.5;
+  if (params_->robot_type == "ackermann") {
+    using ilqr_trajectory_tracker::AckermannRobotModel;
+    ilqr_trajectory_tracker::NewtonOptimizer<AckermannRobotModel> newton_optimizer(params_->wheelbase);
 
-  AckermannRobotModelInput input_limits_max;
-  input_limits_max << 0.5, 2.5;
-  newton_optimizer.setInputConstraints(input_limits_min, input_limits_max);
+    Vector2d input_limits_min;
+    input_limits_min << -0.5, -0.523599;
 
-  newton_optimizer.setIterationNumber(20);
-  newton_optimizer.setAlpha(alpha);
-  auto U_optimal = newton_optimizer.optimize(X_feasible, Q, R, dt);
+    Vector2d input_limits_max;
+    input_limits_max << 0.5, 0.523599;
+    newton_optimizer.setInputConstraints(input_limits_min, input_limits_max);
 
-  if (U_optimal.empty()) {
-    throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
+    newton_optimizer.setIterationNumber(20);
+    auto U_optimal = newton_optimizer.optimize(x0, X_feasible, Q, R, params_->time_discretization);
+
+    RCLCPP_INFO(logger_, "--------------------");
+    for (auto cstate : X_feasible) {
+      RCLCPP_INFO(logger_, "[%f, %f, %f]", cstate[0], cstate[1], cstate[2]);
+    }
+    RCLCPP_INFO(logger_, "********************");
+
+    if (U_optimal.empty()) {
+      throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
+    }
+
+    Vector2d u_ackermann;
+    u_ackermann << U_optimal[0][0], (U_optimal[0][0] / params_->wheelbase) * std::tan(U_optimal[0][1]);
+    RCLCPP_INFO(logger_, "--------------------");
+    for (auto u : U_optimal) {
+      RCLCPP_INFO(logger_, "[%f, %f]", u[0], u[1]);
+    }
+    RCLCPP_INFO(logger_, "********************");
+
+    return u_ackermann;
+  } else if (params_->robot_type == "diffdrive") {
+    using ilqr_trajectory_tracker::DiffDriveRobotModel;
+    ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
+
+    Vector2d input_limits_min;
+    input_limits_min << -0.5, -2.5;
+
+    Vector2d input_limits_max;
+    input_limits_max << 0.5, 2.5;
+    newton_optimizer.setInputConstraints(input_limits_min, input_limits_max);
+
+    newton_optimizer.setIterationNumber(20);
+    auto U_optimal = newton_optimizer.optimize(x0, X_feasible, Q, R, params_->time_discretization);
+
+    if (U_optimal.empty()) {
+      throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
+    }
+
+    return U_optimal[0];
+  } else {
+    throw nav2_core::NoValidControl("Unknown robot type! Possible robot types : ackermann, diffdrive");
   }
-
-  return U_optimal[0];
 }
 
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
@@ -289,19 +326,19 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   frenet_trajectory_planner::CartesianState robot_cartesian_state =
     frenet_trajectory_planner::CartesianState::Zero();
   double robot_yaw = tf2::getYaw(robot_pose.pose.orientation);
-  double linear_speed = speed.linear.x;
+  double linear_speed = std::abs(speed.linear.x);
   
   // if (std::abs(linear_speed) <= 0.5) {
   //   params_->frenet_trajectory_planner_config.time_interval = 10;
   // }
-  double max_curvature = 2.5;
-  linear_speed = 1 / max_curvature;
+  // double max_curvature = 2.5;
+  // linear_speed = 1 / max_curvature;
   robot_cartesian_state[0] = robot_pose.pose.position.x;
   robot_cartesian_state[1] = linear_speed * std::cos(robot_yaw);
-  robot_cartesian_state[2] = -linear_speed * std::sin(robot_yaw);
+  // robot_cartesian_state[2] = -linear_speed * std::sin(robot_yaw);
   robot_cartesian_state[3] = robot_pose.pose.position.y;
   robot_cartesian_state[4] = linear_speed * std::sin(robot_yaw);
-  robot_cartesian_state[5] = linear_speed * std::cos(robot_yaw);
+  // robot_cartesian_state[5] = linear_speed * std::cos(robot_yaw);
   robot_cartesian_state[6] = robot_yaw;
 
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
@@ -319,13 +356,16 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     transformed_plan.header.frame_id,
     planned_cartesian_trajectory);
   frenet_plan = path_handler_->transformPath(costmap_ros_->getBaseFrameID(), frenet_plan);
-
   planned_cartesian_trajectory = convertToCartesianTrajectory(frenet_plan);
 
   truncated_path_pub_->publish(frenet_plan);
   robot_pose_pub_->publish(robot_pose);
 
-  auto u_opt = findOptimalInputForTrajectory(robot_pose, planned_cartesian_trajectory);
+  path_handler_->transformPose(costmap_ros_->getBaseFrameID(), robot_pose, robot_pose);
+  Vector3d c_state_robot;
+  c_state_robot << robot_pose.pose.position.x, robot_pose.pose.position.y,
+    tf2::getYaw(robot_pose.pose.orientation);
+  auto u_opt = findOptimalInputForTrajectory(c_state_robot, planned_cartesian_trajectory);
 
   // populate and return message
   geometry_msgs::msg::TwistStamped cmd_vel;
