@@ -37,6 +37,7 @@
 #include "frenet_trajectory_planner/type_definitions.hpp"
 #include "frenet_trajectory_planner/frenet_trajectory_planner.hpp"
 #include "ilqr_trajectory_tracker/models/diff_robot_model.hpp"
+#include "ilqr_trajectory_tracker/models/ackermann_robot_model.hpp"
 #include "ilqr_trajectory_tracker/ilqr_optimizer.hpp"
 
 namespace nav2_frenet_ilqr_controller

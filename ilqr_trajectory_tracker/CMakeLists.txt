@@ -16,7 +16,10 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 
-add_library(ilqr_trajectory_tracker_lib SHARED src/models/diff_robot_model.cpp)
+add_library(
+  ilqr_trajectory_tracker_lib SHARED 
+    src/models/diff_robot_model.cpp
+    src/models/ackermann_robot_model.cpp)
 
 target_include_directories(
   ilqr_trajectory_tracker_lib

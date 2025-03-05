@@ -19,8 +19,10 @@
 
 #include <Eigen/Dense>
 #include <cmath>
+#include <memory>
 #include <tuple>
 #include <algorithm>
+#include <limits>
 
 using namespace Eigen;
 
@@ -40,15 +42,19 @@ template<typename RobotModel>
 class NewtonOptimizer : public Optimizer
 {
 public:
-  NewtonOptimizer();
+  template<typename ... RobotModelParams>
+  NewtonOptimizer(const RobotModelParams ... model_params);
+
   std::vector<MatrixXd> backwardPass(
     const std::vector<typename RobotModel::StateT> & x_feasible,
     const std::vector<typename RobotModel::InputT> & u_feasible,
     const MatrixXd & Q, const MatrixXd & R, const double dt);
+
   std::tuple<MatrixXd, MatrixXd> solveDiscreteLQRProblem(
     const MatrixXd & A, const MatrixXd & B,
     const MatrixXd & Q, const MatrixXd & R,
     const MatrixXd & P);
+
   std::tuple<std::vector<typename RobotModel::StateT>,
     std::vector<typename RobotModel::InputT>> forwardPass(
     const typename RobotModel::StateT & x0,
@@ -60,23 +66,28 @@ public:
     const typename RobotModel::StateT & x0,
     const std::vector<typename RobotModel::StateT> & x_feasible, const Matrix3d & Q,
     const Matrix2d & R, const double dt);
+
   double cost(
     const std::vector<typename RobotModel::StateT> & x_tracked,
     const std::vector<typename RobotModel::StateT> & x_trajectory);
 
   void setIterationNumber(const size_t iteration_number);
-  void setAlpha(const double alpha);
+
+  void setInputConstraints(
+    typename RobotModel::InputT input_limits_min,
+    typename RobotModel::InputT input_limits_max);
 
 private:
-  RobotModel robot_model_;
-  double alpha_;
+  std::unique_ptr<RobotModel> robot_model_;
   size_t iteration_number_;
 };
 
 template<typename RobotModel>
-NewtonOptimizer<RobotModel>::NewtonOptimizer()
+template<typename ... RobotModelParams>
+NewtonOptimizer<RobotModel>::NewtonOptimizer(const RobotModelParams ... model_params)
 : Optimizer()
 {
+  robot_model_ = std::make_unique<RobotModel>(model_params...);
 }
 
 template<typename RobotModel>
@@ -97,15 +108,15 @@ std::vector<MatrixXd> NewtonOptimizer<RobotModel>::backwardPass(
 
   for (auto i = std::distance(x_feasible.begin(), std::prev(x_feasible.end(), 2)); i >= 0; i--) {
     auto x_offset =
-      robot_model_.applySystemDynamics(x_feasible.at(i), u_feasible[i], dt) - x_feasible[i + 1];
+      robot_model_->applySystemDynamics(x_feasible.at(i), u_feasible[i], dt) - x_feasible[i + 1];
 
     MatrixXd A_tilda = MatrixXd::Identity(state_dimension + 1, state_dimension + 1);
-    auto A = robot_model_.getStateMatrix(x_feasible[i], u_feasible[i], dt);
+    auto A = robot_model_->getStateMatrix(x_feasible[i], u_feasible[i], dt);
     A_tilda.topLeftCorner(state_dimension, state_dimension) = A;
     A_tilda.topRightCorner(state_dimension, 1) = x_offset;
 
     MatrixXd B_tilda = MatrixXd::Zero(state_dimension + 1, input_dimension);
-    auto B = robot_model_.getControlMatrix(x_feasible[i], u_feasible[i], dt);
+    auto B = robot_model_->getControlMatrix(x_feasible[i], u_feasible[i], dt);
     B_tilda.topLeftCorner(state_dimension, input_dimension) = B;
 
     MatrixXd Q_tilda = MatrixXd::Identity(state_dimension + 1, state_dimension + 1);
@@ -137,16 +148,15 @@ std::tuple<std::vector<typename RobotModel::StateT>,
 
   // assert trajectory_size > 0
   x_tracked[0] = x0;
-  for (typename std::vector<typename RobotModel::StateT>::difference_type i = 0,
-    max_difference = std::distance(x_feasible.begin(), std::prev(x_feasible.end(), 1));
-    i < max_difference; ++i)
+  for (size_t i = 0; i < x_feasible.size() - 1; ++i)
   {
     auto x_error = x_tracked[i] - x_feasible[i];
     Vector<double, 4> z_error;
     z_error << x_error, alpha;
 
     u_applied[i] = u_feasible[i] + K_gains[i] * z_error;
-    x_tracked[i + 1] = robot_model_.applySystemDynamics(x_tracked[i], u_applied[i], dt);
+    u_applied[i] = robot_model_->applyLimits(u_applied[i]);
+    x_tracked[i + 1] = robot_model_->applySystemDynamics(x_tracked[i], u_applied[i], dt);
   }
 
   return {x_tracked, u_applied};
@@ -174,7 +184,7 @@ std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
 {
   // assert trajectory_size > 0
 
-  double alpha = alpha_;
+  double alpha = 1.0;
 
   std::vector<typename RobotModel::StateT> x_best_trajectory;
   std::vector<typename RobotModel::InputT> u_best_trajectory;
@@ -234,9 +244,11 @@ void NewtonOptimizer<RobotModel>::setIterationNumber(const size_t iteration_numb
 }
 
 template<typename RobotModel>
-void NewtonOptimizer<RobotModel>::setAlpha(const double alpha)
+void NewtonOptimizer<RobotModel>::setInputConstraints(
+  typename RobotModel::InputT input_limits_min,
+  typename RobotModel::InputT input_limits_max)
 {
-  alpha_ = alpha;
+  robot_model_->setLimits(input_limits_min, input_limits_max);
 }
 
 }

@@ -49,13 +49,12 @@ int main(int argc, char ** argv)
 
   Matrix3d Q = Matrix3d::Identity() * 10;
   Matrix2d R = Matrix2d::Identity() * 0.1;
-  double alpha = 1;
 
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
   newton_optimizer.setIterationNumber(10);
-  newton_optimizer.setAlpha(alpha);
 
   const auto start{std::chrono::steady_clock::now()};
+
   // TODO: Fix demo later, we should pass the actual robot pose instead of
   // the beginning pose of the feasible trajectory
   auto u_optimal = newton_optimizer.optimize(x_feasible[0], x_feasible, Q, R, dt);

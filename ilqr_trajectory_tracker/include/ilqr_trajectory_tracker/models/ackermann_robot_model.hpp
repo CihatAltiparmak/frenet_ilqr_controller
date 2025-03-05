@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <ilqr_trajectory_tracker/models/base_model.hpp>
+
 #include <Eigen/Dense>
 #include <cmath>
 
@@ -25,34 +27,21 @@ using namespace Eigen;
 namespace ilqr_trajectory_tracker
 {
 
-template<typename StateT, typename InputT>
-class Model
+using AckermannRobotModelState = Vector3d;
+using AckermannRobotModelInput = Vector2d;
+
+class AckermannRobotModel : public Model<AckermannRobotModelState, AckermannRobotModelInput>
 {
 public:
-  Model();
-  virtual StateT applySystemDynamics(const StateT & x, const InputT & u, const double dt) = 0;
-  virtual InputT applyLimits(const InputT & u) = 0;
-  void setLimits(const Vector2d & input_limits_min, const Vector2d & input_limits_max);
-  virtual MatrixXd getStateMatrix(const StateT & x_eq, const InputT & u_eq, const double dt) = 0;
-  virtual MatrixXd getControlMatrix(
-    const StateT & x_eq, const InputT & u_eq,
-    const double dt) = 0;
-protected:
-  InputT input_limits_min_;
-  InputT input_limits_max_;
+  using StateT = AckermannRobotModelState;
+  using InputT = AckermannRobotModelInput;
+  AckermannRobotModel(const double wheelbase);
+  StateT applySystemDynamics(const StateT & x, const InputT & u, const double dt) override;
+  InputT applyLimits(const InputT & u) override;
+  MatrixXd getStateMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
+  MatrixXd getControlMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
+private:
+  double wheelbase_;
 };
 
-template<typename StateT, typename InputT>
-Model<StateT, InputT>::Model()
-{
-}
-
-template<typename StateT, typename InputT>
-void Model<StateT, InputT>::setLimits(
-  const Vector2d & input_limits_min,
-  const Vector2d & input_limits_max) {
-
-  input_limits_min_ = input_limits_min;
-  input_limits_max_ = input_limits_max;
-}
 }
