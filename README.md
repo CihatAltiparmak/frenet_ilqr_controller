@@ -70,10 +70,12 @@ docker run -it --rm --net=host --privileged --volume="${XAUTHORITY}:/root/.Xauth
 
 #### Iterative Linear Quadratic Regulator
 
-| Parameter                  | Type   | Definition                                                                              |
-| ---------------------      | -------| --------------------------------------------------------------------------------------- |
-| iteration_number           | int    | Default: 20. Maximum iteration number of newton optimizer. |
-| alpha                      | double | Default: 1.0. Line search relavant parameter |
+| Parameter                  | Type         | Definition                                                                              |
+| ---------------------      | -------------| --------------------------------------------------------------------------------------- |
+| iteration_number           | int          | Default: 20. Maximum iteration number of newton optimizer. |
+| alpha                      | double       | Default: 1.0. Line search relavant parameter |
+| input_limits_min           | double array | Default: [0.0, -1.5]. Minimum values the input vectors during optimization should be. The default parameters are set for a differential drive robot, which means a robot's minimum linear velocity will be 0.0 and its angular velocity will be -1.5|
+| input_limits_max           | double array | Default: [1.0, 1.5]. Maximum values the input vectors during optimization should be. The default parameters are set for a differential drive robot, which means a robot's maximum linear velocity will be +1.0 and its maximum angular velocity will be +1.5|
 
 #### Lateral Distance Cost Checker
 | Parameter                  | Type   | Definition |
@@ -111,6 +113,8 @@ controller_server:
       ilqr_trajectory_tracker:
         iteration_number: 20
         alpha: 1.0
+        input_limits_min: [0.0, -1.5]
+        input_limits_max: [1.0, 1.5]
       cost_checker_plugins: ["LateralDistanceCostChecker", "LongtitutalVelocityCostChecker"]
       LateralDistanceCostChecker:
         plugin: "nav2_frenet_ilqr_controller::costs::LateralDistanceCost"
