@@ -80,6 +80,12 @@ ParameterHandler::ParameterHandler(
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".ilqr_trajectory_tracker.alpha", rclcpp::ParameterValue(1.0));
 
+  declare_parameter_if_not_declared(
+    node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min", rclcpp::ParameterValue(std::vector<double>({0.0, -1.5})));
+
+  declare_parameter_if_not_declared(
+    node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max", rclcpp::ParameterValue(std::vector<double>({1.0, 1.5})));
+
 
   node->get_parameter(
     plugin_name_ + ".interpolate_curvature_after_goal",
@@ -124,6 +130,19 @@ ParameterHandler::ParameterHandler(
     params_.iteration_number);
   node->get_parameter(plugin_name_ + ".ilqr_trajectory_tracker.alpha", params_.alpha);
 
+  {
+    std::vector<double> input_limits_min;
+    node->get_parameter(
+      plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min", input_limits_min);
+    params_.input_limits_min = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_min.data(), input_limits_min.size());
+  }
+
+  {
+    std::vector<double> input_limits_max;
+    node->get_parameter(
+      plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max", input_limits_max);
+    params_.input_limits_max = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_max.data(), input_limits_max.size());
+  }
 
   dynamic_params_handler_ = node->add_on_set_parameters_callback(
     std::bind(
@@ -186,6 +205,12 @@ ParameterHandler::dynamicParametersCallback(
       }
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.alpha") {
       params_.alpha = parameter.as_double();
+    } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min") {
+      auto input_limits_min = parameter.as_double_array();
+      params_.input_limits_min = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_min.data(), input_limits_min.size());
+    } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max") {
+      auto input_limits_max = parameter.as_double_array();
+      params_.input_limits_max = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_max.data(), input_limits_max.size());
     }
   }
 

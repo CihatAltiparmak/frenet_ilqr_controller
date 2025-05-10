@@ -39,6 +39,8 @@ struct Parameters
   int iteration_number;
   double alpha;
   frenet_trajectory_planner::FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config;
+  Eigen::VectorXd input_limits_min;
+  Eigen::VectorXd input_limits_max;
 };
 
 namespace nav2_frenet_ilqr_controller

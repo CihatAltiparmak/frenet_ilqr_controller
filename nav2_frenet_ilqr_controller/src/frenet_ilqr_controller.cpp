@@ -230,6 +230,7 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
   newton_optimizer.setIterationNumber(20);
   newton_optimizer.setAlpha(alpha);
+  newton_optimizer.setInputConstraints(params_->input_limits_min, params_->input_limits_max);
   auto U_optimal = newton_optimizer.optimize(c_state_robot, X_feasible, Q, R, dt);
 
   if (U_optimal.empty()) {
