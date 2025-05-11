@@ -97,7 +97,7 @@ Eliminates the frenet trajectories that collides any obstacle using costmap.
 ```yaml
 controller_server:
   ros__parameters:
-    controller_frequency: 20.0
+    controller_frequency: 40.0
     FollowPath:
       plugin: "nav2_frenet_ilqr_controller::FrenetILQRController"
       time_discretization: 0.05
@@ -114,7 +114,7 @@ controller_server:
         iteration_number: 20
         alpha: 1.0
         input_limits_min: [0.0, -1.5]
-        input_limits_max: [1.0, 1.5]
+        input_limits_max: [0.5, 1.5]
       cost_checker_plugins: ["LateralDistanceCostChecker", "LongtitutalVelocityCostChecker"]
       LateralDistanceCostChecker:
         plugin: "nav2_frenet_ilqr_controller::costs::LateralDistanceCost"
