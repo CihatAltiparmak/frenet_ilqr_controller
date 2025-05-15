@@ -1,6 +1,10 @@
 # Frenet Iterative Linear Quadratic Regulator Controller
 
-[Screencast from 12-02-2024 11:48:19 PM.webm](https://github.com/user-attachments/assets/7f1043e1-162a-4b1c-9775-ae54953393cb)
+> [!IMPORTANT]  
+> When in doubt, flat out.
+> ~ Colin McRae
+
+[Screencast from 05-11-2025 03:11:35 AM.webm](https://gist.github.com/user-attachments/assets/73521206-e1aa-48e7-9081-988030a7f946)
 
 # Overview
 
@@ -22,7 +26,7 @@ Finally this generated best trajectory is tracked by Iterative Linear Quadratic 
 
 Clone repository
 ```sh
-git clone https://github.com/CihatAltiparmak/frenet_ilqr_controller.git
+git clone https://github.com/CihatAltiparmak/frenet_ilqr_controller.git -b humble
 ```
 
 Build dockerfile by going to the directory of cloned repository.
@@ -66,10 +70,12 @@ docker run -it --rm --net=host --privileged --volume="${XAUTHORITY}:/root/.Xauth
 
 #### Iterative Linear Quadratic Regulator
 
-| Parameter                  | Type   | Definition                                                                              |
-| ---------------------      | -------| --------------------------------------------------------------------------------------- |
-| iteration_number           | int    | Default: 20. Maximum iteration number of newton optimizer. |
-| alpha                      | double | Default: 1.0. Line search relavant parameter |
+| Parameter                  | Type         | Definition                                                                              |
+| ---------------------      | -------------| --------------------------------------------------------------------------------------- |
+| iteration_number           | int          | Default: 20. Maximum iteration number of newton optimizer. |
+| alpha                      | double       | Default: 1.0. Line search relavant parameter |
+| input_limits_min           | double array | Default: [0.0, -1.5]. Minimum values the input vectors during optimization should be. The default parameters are set for a differential drive robot, which means a robot's minimum linear velocity will be 0.0 and its angular velocity will be -1.5|
+| input_limits_max           | double array | Default: [1.0, 1.5]. Maximum values the input vectors during optimization should be. The default parameters are set for a differential drive robot, which means a robot's maximum linear velocity will be +1.0 and its maximum angular velocity will be +1.5|
 
 #### Lateral Distance Cost Checker
 | Parameter                  | Type   | Definition |
@@ -91,7 +97,7 @@ Eliminates the frenet trajectories that collides any obstacle using costmap.
 ```yaml
 controller_server:
   ros__parameters:
-    controller_frequency: 20.0
+    controller_frequency: 40.0
     FollowPath:
       plugin: "nav2_frenet_ilqr_controller::FrenetILQRController"
       time_discretization: 0.05
@@ -107,6 +113,8 @@ controller_server:
       ilqr_trajectory_tracker:
         iteration_number: 20
         alpha: 1.0
+        input_limits_min: [0.0, -1.5]
+        input_limits_max: [0.5, 1.5]
       cost_checker_plugins: ["LateralDistanceCostChecker", "LongtitutalVelocityCostChecker"]
       LateralDistanceCostChecker:
         plugin: "nav2_frenet_ilqr_controller::costs::LateralDistanceCost"

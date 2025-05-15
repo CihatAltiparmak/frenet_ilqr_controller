@@ -13,11 +13,11 @@ DiffDriveRobotModel::DiffDriveRobotModel()
 
 }
 
-Vector3d DiffDriveRobotModel::applySystemDynamics(
-  const Vector3d & x, const Vector2d & u,
+DiffDriveRobotModelState DiffDriveRobotModel::applySystemDynamics(
+  const DiffDriveRobotModelState & x, const DiffDriveRobotModelInput & u,
   const double dt)
 {
-  Vector3d x_final;
+  DiffDriveRobotModelState x_final;
   x_final <<
     x[0] + u[0] * std::cos(x[2] + u[1] * dt) * dt,
     x[1] + u[0] * std::sin(x[2] + u[1] * dt) * dt,
@@ -26,8 +26,12 @@ Vector3d DiffDriveRobotModel::applySystemDynamics(
   return x_final;
 }
 
+DiffDriveRobotModelInput DiffDriveRobotModel::applyLimits(const DiffDriveRobotModelInput & u) {
+  return u.cwiseMin(input_limits_max_).cwiseMax(input_limits_min_);
+}
+
 MatrixXd DiffDriveRobotModel::getStateMatrix(
-  const Vector3d & x_eq, const Vector2d & u_eq,
+  const DiffDriveRobotModelState & x_eq, const DiffDriveRobotModelInput & u_eq,
   const double dt)
 {
   Matrix3d state_matrix;
@@ -39,7 +43,7 @@ MatrixXd DiffDriveRobotModel::getStateMatrix(
 }
 
 MatrixXd DiffDriveRobotModel::getControlMatrix(
-  const Vector3d & x_eq, const Vector2d & /*u_eq*/,
+  const DiffDriveRobotModelState & x_eq, const DiffDriveRobotModelInput & u_eq,
   const double dt)
 {
   Matrix<double, 3, 2> control_matrix;

@@ -189,7 +189,7 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
 }
 
 Vector2d FrenetILQRController::findOptimalInputForTrajectory(
-  const geometry_msgs::msg::PoseStamped & /*robot_pose*/,
+  const Vector3d & c_state_robot,
   const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
 {
 
@@ -213,7 +213,8 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
   newton_optimizer.setIterationNumber(20);
   newton_optimizer.setAlpha(alpha);
-  auto U_optimal = newton_optimizer.optimize(X_feasible, Q, R, dt);
+  newton_optimizer.setInputConstraints(params_->input_limits_min, params_->input_limits_max);
+  auto U_optimal = newton_optimizer.optimize(c_state_robot, X_feasible, Q, R, dt);
 
   if (U_optimal.empty()) {
     throw std::runtime_error("Iterative LQR couldn't find any solution!");
@@ -290,7 +291,11 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   truncated_path_pub_->publish(frenet_plan);
   robot_pose_pub_->publish(robot_pose);
 
-  auto u_opt = findOptimalInputForTrajectory(robot_pose, planned_cartesian_trajectory);
+  path_handler_->transformPose(costmap_ros_->getBaseFrameID(), robot_pose, robot_pose);
+  Vector3d c_state_robot;
+  c_state_robot << robot_pose.pose.position.x, robot_pose.pose.position.y,
+  tf2::getYaw(robot_pose.pose.orientation);
+  auto u_opt = findOptimalInputForTrajectory(c_state_robot, planned_cartesian_trajectory);
 
   // populate and return message
   geometry_msgs::msg::TwistStamped cmd_vel;
