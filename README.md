@@ -26,7 +26,7 @@ Finally this generated best trajectory is tracked by Iterative Linear Quadratic 
 
 Clone repository
 ```sh
-git clone https://github.com/CihatAltiparmak/frenet_ilqr_controller.git
+git clone https://github.com/CihatAltiparmak/frenet_ilqr_controller.git -b humble
 ```
 
 Build dockerfile by going to the directory of cloned repository.
