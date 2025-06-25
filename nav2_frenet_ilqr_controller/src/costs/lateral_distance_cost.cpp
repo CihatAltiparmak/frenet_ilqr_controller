@@ -29,7 +29,7 @@ LateralDistanceCost::LateralDistanceCost()
 
 void LateralDistanceCost::initialize(
   const std::string & cost_plugin_name,
-  const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
+  const nav2::LifecycleNode::WeakPtr & parent,
   std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
 {
   RclcppNodeCost::initialize(cost_plugin_name, parent, costmap_ros);

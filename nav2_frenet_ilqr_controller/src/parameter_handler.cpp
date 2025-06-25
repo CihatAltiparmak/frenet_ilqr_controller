@@ -25,11 +25,11 @@
 namespace nav2_frenet_ilqr_controller
 {
 
-using nav2_util::declare_parameter_if_not_declared;
+using nav2::declare_parameter_if_not_declared;
 using rcl_interfaces::msg::ParameterType;
 
 ParameterHandler::ParameterHandler(
-  rclcpp_lifecycle::LifecycleNode::WeakPtr parent,
+  nav2::LifecycleNode::WeakPtr parent,
   const std::string & plugin_name, const double costmap_size_x_in_meters)
 : plugin_name_(plugin_name)
 {
