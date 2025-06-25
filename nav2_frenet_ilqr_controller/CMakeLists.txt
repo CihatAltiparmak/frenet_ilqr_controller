@@ -18,6 +18,7 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(frenet_trajectory_planner REQUIRED)
 find_package(ilqr_trajectory_tracker REQUIRED)
+find_package(nav2_ros_common REQUIRED)
 
 nav2_package()
 
@@ -31,6 +32,7 @@ target_include_directories(${library_name}
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+    "$<BUILD_INTERFACE:${nav2_ros_common_INCLUDE_DIRS}>"
 )
 target_link_libraries(${library_name} PUBLIC
   ${geometry_msgs_TARGETS}
@@ -60,7 +62,10 @@ add_library(nav2_frenet_ilqr_controller_costs SHARED
 target_include_directories(nav2_frenet_ilqr_controller_costs
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+    "$<BUILD_INTERFACE:${nav2_ros_common_INCLUDE_DIRS}>"
+)
+
 target_link_libraries(nav2_frenet_ilqr_controller_costs PUBLIC
   nav2_costmap_2d::nav2_costmap_2d_core
   nav2_util::nav2_util_core
@@ -81,7 +86,10 @@ add_library(nav2_frenet_ilqr_controller_policies SHARED
 target_include_directories(nav2_frenet_ilqr_controller_policies
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+    "$<BUILD_INTERFACE:${nav2_ros_common_INCLUDE_DIRS}>"
+)
+
 target_link_libraries(nav2_frenet_ilqr_controller_policies PUBLIC
   nav2_costmap_2d::nav2_costmap_2d_core
   nav2_util::nav2_util_core
@@ -134,6 +142,7 @@ ament_export_dependencies(
   std_msgs
   tf2
   tf2_ros
+  nav2_ros_common
 )
 ament_export_targets(${library_name})
 

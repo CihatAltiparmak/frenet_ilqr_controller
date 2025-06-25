@@ -30,7 +30,7 @@ ObstaclePolicy::ObstaclePolicy()
 
 void ObstaclePolicy::initialize(
   const std::string & policy_plugin_name,
-  const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
+  const nav2::LifecycleNode::WeakPtr & parent,
   std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
 {
   RclcppNodePolicy::initialize(policy_plugin_name, parent, costmap_ros);

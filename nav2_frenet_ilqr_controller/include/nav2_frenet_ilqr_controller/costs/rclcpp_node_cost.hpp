@@ -19,7 +19,7 @@
 #define NAV2_FRENET_ILQR_CONTROLLER__COSTS__RCLCPP_NODE_COST_HPP_
 
 #include "frenet_trajectory_planner/costs/base_cost.hpp"
-#include "rclcpp/rclcpp.hpp"
+#include "nav2_ros_common/node_utils.hpp"
 #include "nav2_costmap_2d/costmap_2d_ros.hpp"
 
 using namespace frenet_trajectory_planner::costs;
@@ -37,7 +37,7 @@ public:
   : Cost() {}
   virtual void initialize(
     const std::string & cost_plugin_name,
-    const rclcpp_lifecycle::LifecycleNode::WeakPtr & node,
+    const nav2::LifecycleNode::WeakPtr & node,
     std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
   {
     cost_plugin_name_ = cost_plugin_name;
@@ -48,7 +48,7 @@ public:
 
 protected:
   std::string cost_plugin_name_;
-  rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
+  nav2::LifecycleNode::WeakPtr node_;
   std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros_;
   nav2_costmap_2d::Costmap2D * costmap_{nullptr};
 };

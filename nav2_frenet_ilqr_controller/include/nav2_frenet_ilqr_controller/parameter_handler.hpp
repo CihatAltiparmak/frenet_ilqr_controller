@@ -21,11 +21,10 @@
 #include <algorithm>
 #include <mutex>
 
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "nav2_util/odometry_utils.hpp"
 #include "nav2_util/geometry_utils.hpp"
-#include "nav2_util/node_utils.hpp"
+#include "nav2_ros_common/lifecycle_node.hpp"
+#include "nav2_ros_common/node_utils.hpp"
 
 #include "frenet_trajectory_planner/type_definitions.hpp"
 #include <iostream>
@@ -57,7 +56,7 @@ public:
    * @brief Constructor for nav2_frenet_ilqr_controller::ParameterHandler
    */
   ParameterHandler(
-    rclcpp_lifecycle::LifecycleNode::WeakPtr node, const std::string & plugin_name,
+    nav2::LifecycleNode::WeakPtr node, const std::string & plugin_name,
     const double costmap_size_x_in_meters);
 
   /**
@@ -70,7 +69,7 @@ public:
   Parameters * getParams() {return &params_;}
 
 protected:
-  rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
+  nav2::LifecycleNode::WeakPtr node_;
   std::string plugin_name_;
   Parameters params_;
   /**
