@@ -6,8 +6,13 @@
 #include <utility>
 
 #include "nav2_frenet_ilqr_controller/path_handler.hpp"
+<<<<<<< HEAD
 #include "nav2_core/exceptions.hpp"
 #include "nav2_util/node_utils.hpp"
+=======
+#include "nav2_core/controller_exceptions.hpp"
+#include "nav2_ros_common/node_utils.hpp"
+>>>>>>> 443563f (Migrate nav2_utils's ros relavant dependencies to nav2_ros_common (#44))
 #include "nav2_util/geometry_utils.hpp"
 
 namespace nav2_frenet_ilqr_controller

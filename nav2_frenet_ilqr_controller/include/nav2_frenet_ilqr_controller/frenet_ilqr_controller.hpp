@@ -50,7 +50,7 @@ public:
    * @param costmap_ros Costmap2DROS object of environment
    */
   void configure(
-    const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
+    const nav2::LifecycleNode::WeakPtr & parent,
     std::string name, std::shared_ptr<tf2_ros::Buffer> tf,
     std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros) override;
 
@@ -124,7 +124,7 @@ public:
     const nav_msgs::msg::Path & path_msg);
 
 protected:
-  rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
+  nav2::LifecycleNode::WeakPtr node_;
   std::shared_ptr<tf2_ros::Buffer> tf_;
   std::string plugin_name_;
   std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros_;
@@ -137,9 +137,9 @@ protected:
   bool finished_cancelling_ = false;
   bool is_rotating_to_heading_ = false;
 
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::Path>> global_path_pub_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::Path>> truncated_path_pub_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::PoseStamped>>
+  std::shared_ptr<nav2::Publisher<nav_msgs::msg::Path>> global_path_pub_;
+  std::shared_ptr<nav2::Publisher<nav_msgs::msg::Path>> truncated_path_pub_;
+  std::shared_ptr<nav2::Publisher<geometry_msgs::msg::PoseStamped>>
   robot_pose_pub_;
   std::unique_ptr<nav2_frenet_ilqr_controller::PathHandler> path_handler_;
   std::unique_ptr<nav2_frenet_ilqr_controller::ParameterHandler> parameter_handler_;

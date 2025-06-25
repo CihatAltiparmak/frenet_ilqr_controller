@@ -19,7 +19,7 @@ public:
   RclcppNodePolicy();
   virtual void initialize(
     const std::string & policy_plugin_name,
-    const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
+    const nav2::LifecycleNode::WeakPtr & parent,
     std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
   {
     policy_plugin_name_ = policy_plugin_name;
@@ -32,7 +32,7 @@ public:
     const CartesianTrajectory & cartesian_trajectory) = 0;
 
 protected:
-  rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
+  nav2::LifecycleNode::WeakPtr node_;
   std::string policy_plugin_name_;
   std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros_;
   nav2_costmap_2d::Costmap2D * costmap_{nullptr};

@@ -7,8 +7,13 @@
 
 #include "angles/angles.h"
 #include "nav2_frenet_ilqr_controller/frenet_ilqr_controller.hpp"
+<<<<<<< HEAD
 #include "nav2_core/exceptions.hpp"
 #include "nav2_util/node_utils.hpp"
+=======
+#include "nav2_core/controller_exceptions.hpp"
+#include "nav2_ros_common/node_utils.hpp"
+>>>>>>> 443563f (Migrate nav2_utils's ros relavant dependencies to nav2_ros_common (#44))
 #include "nav2_util/geometry_utils.hpp"
 #include "nav2_costmap_2d/costmap_filters/filter_values.hpp"
 #include <pluginlib/class_loader.hpp>
@@ -24,11 +29,11 @@ namespace nav2_frenet_ilqr_controller
 {
 
 void FrenetILQRController::configure(
-  const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
+  const nav2::LifecycleNode::WeakPtr & parent,
   std::string name, std::shared_ptr<tf2_ros::Buffer> tf,
   std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
 {
-  auto node = parent.lock();
+  nav2::LifecycleNode::SharedPtr node = parent.lock();
   node_ = parent;
   if (!node) {
     throw std::runtime_error("Unable to lock node!");
@@ -105,7 +110,7 @@ void FrenetILQRController::addPoliciesFromPlugins()
   std::vector<std::string> default_policy_plugins = {};
   std::vector<std::string> policy_plugins;
 
-  nav2_util::declare_parameter_if_not_declared(
+  nav2::declare_parameter_if_not_declared(
     node, plugin_name_ + ".policy_plugins", rclcpp::ParameterValue(default_policy_plugins));
 
   node->get_parameter(
@@ -117,7 +122,7 @@ void FrenetILQRController::addPoliciesFromPlugins()
   for (const auto & policy_plugin_name : policy_plugins) {
     std::string absolute_policy_plugin_name = plugin_name_ + ".";
     absolute_policy_plugin_name += policy_plugin_name;
-    auto policy_plugin_type = nav2_util::get_plugin_type_param(node, absolute_policy_plugin_name);
+    auto policy_plugin_type = nav2::get_plugin_type_param(node, absolute_policy_plugin_name);
     RCLCPP_INFO(
       logger_, "Policy Plugin is initializing. : %s %s",
       policy_plugin_name.c_str(), policy_plugin_type.c_str());
@@ -137,7 +142,7 @@ void FrenetILQRController::addCostsFromPlugins()
   std::vector<std::string> default_cost_checker_plugins = {};
   std::vector<std::string> cost_checker_plugins;
 
-  nav2_util::declare_parameter_if_not_declared(
+  nav2::declare_parameter_if_not_declared(
     node, plugin_name_ + ".cost_checker_plugins",
     rclcpp::ParameterValue(default_cost_checker_plugins));
 
@@ -150,7 +155,7 @@ void FrenetILQRController::addCostsFromPlugins()
   for (const auto & cost_checker_plugin_name : cost_checker_plugins) {
     std::string absolute_cost_checker_plugin_name = plugin_name_ + ".";
     absolute_cost_checker_plugin_name += cost_checker_plugin_name;
-    auto cost_checker_plugin_type = nav2_util::get_plugin_type_param(
+    auto cost_checker_plugin_type = nav2::get_plugin_type_param(
       node,
       absolute_cost_checker_plugin_name);
     RCLCPP_INFO(
