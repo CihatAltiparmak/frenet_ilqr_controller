@@ -26,6 +26,8 @@
 #include <frenet_trajectory_planner/policies/acceleration_policy.hpp>
 
 #include <memory>
+#include <iostream>
+#include <cmath>
 
 namespace frenet_trajectory_planner
 {
@@ -107,6 +109,11 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
     if (!best_frenet_trajectory_optional.has_value()) {
       break;
     }
+
+    // for (auto miku : best_frenet_trajectory_optional.value()) {
+    //   std::cout << "MIKU : " << miku[1] << " | " << miku[4] << " | " << std::hypot(miku[1], miku[4]) << std::endl;
+    // }
+
     auto best_frenet_trajectory = best_frenet_trajectory_optional.value();
     if (best_frenet_trajectory.size() <= 1) {
       break;
@@ -119,6 +126,8 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
     remaining_state_number_ = frenet_trajectory_planner_config_.max_state_in_trajectory -
       planned_frenet_trajectory.size();
   }
+
+  // std::cout << "ADMIRABLE MIKu" << std::endl;
 
   return frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 }

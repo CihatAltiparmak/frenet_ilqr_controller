@@ -37,6 +37,7 @@
 #include "frenet_trajectory_planner/type_definitions.hpp"
 #include "frenet_trajectory_planner/frenet_trajectory_planner.hpp"
 #include "ilqr_trajectory_tracker/models/diff_robot_model.hpp"
+#include "ilqr_trajectory_tracker/models/omni_robot_model.hpp"
 #include "ilqr_trajectory_tracker/ilqr_optimizer.hpp"
 
 namespace nav2_frenet_ilqr_controller
@@ -108,7 +109,7 @@ public:
     const geometry_msgs::msg::Twist & velocity,
     nav2_core::GoalChecker * /*goal_checker*/) override;
 
-  Vector2d findOptimalInputForTrajectory(
+  Vector3d findOptimalInputForTrajectory(
     const Vector3d & c_state_robot,
     const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory);
 
