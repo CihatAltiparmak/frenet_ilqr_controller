@@ -48,7 +48,7 @@ int main(int argc, char ** argv)
   }
 
   Matrix3d Q = Matrix3d::Identity() * 10;
-  Matrix2d R = Matrix2d::Identity() * 0.1;
+  Matrix3d R = Matrix3d::Identity() * 0.1;
   double alpha = 1;
 
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;

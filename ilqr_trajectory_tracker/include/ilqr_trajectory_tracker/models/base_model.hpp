@@ -34,7 +34,7 @@ public:
 
   virtual InputT applyLimits(const InputT & u) = 0;
 
-  void setLimits(const Vector2d & input_limits_min, const Vector2d & input_limits_max);
+  void setLimits(const InputT & input_limits_min, const InputT & input_limits_max);
 
   virtual MatrixXd getStateMatrix(const StateT & x_eq, const InputT & u_eq, const double dt) = 0;
 
@@ -50,14 +50,14 @@ protected:
 template<typename StateT, typename InputT>
 Model<StateT, InputT>::Model()
 {
-  input_limits_min_ << -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity();
-  input_limits_max_ << +std::numeric_limits<double>::infinity(), +std::numeric_limits<double>::infinity();
+  input_limits_min_ << -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity();
+  input_limits_max_ << +std::numeric_limits<double>::infinity(), +std::numeric_limits<double>::infinity(), +std::numeric_limits<double>::infinity();
 }
 
 template<typename StateT, typename InputT>
 void Model<StateT, InputT>::setLimits(
-  const Vector2d & input_limits_min,
-  const Vector2d & input_limits_max) {
+  const InputT & input_limits_min,
+  const InputT & input_limits_max) {
 
   input_limits_min_ = input_limits_min;
   input_limits_max_ = input_limits_max;

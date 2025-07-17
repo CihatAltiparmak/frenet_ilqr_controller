@@ -81,10 +81,10 @@ ParameterHandler::ParameterHandler(
     node, plugin_name_ + ".ilqr_trajectory_tracker.alpha", rclcpp::ParameterValue(1.0));
 
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min", rclcpp::ParameterValue(std::vector<double>({0.0, -1.5})));
+    node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min", rclcpp::ParameterValue(std::vector<double>({-0.5, -0.5, -0.3})));
 
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max", rclcpp::ParameterValue(std::vector<double>({1.0, 1.5})));
+    node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max", rclcpp::ParameterValue(std::vector<double>({0.5, 0.5, 0.3})));
 
 
   node->get_parameter(
