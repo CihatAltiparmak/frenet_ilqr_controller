@@ -30,6 +30,8 @@
 #include "nav2_costmap_2d/costmap_filters/filter_values.hpp"
 #include <pluginlib/class_loader.hpp>
 
+#include <iostream>
+
 using std::hypot;
 using std::min;
 using std::max;
