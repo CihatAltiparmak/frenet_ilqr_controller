@@ -278,14 +278,16 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   frenet_trajectory_planner::CartesianState robot_cartesian_state =
     frenet_trajectory_planner::CartesianState::Zero();
   double robot_yaw = tf2::getYaw(robot_pose.pose.orientation);
-  double linear_speed = speed.linear.x;
-  if (linear_speed == 0) {
-    linear_speed = 0.001;
-  }
+  
   robot_cartesian_state[0] = robot_pose.pose.position.x;
-  robot_cartesian_state[1] = linear_speed * std::cos(robot_yaw);
+  robot_cartesian_state[1] = speed.linear.x * std::cos(robot_yaw) - speed.linear.y * std::sin(robot_yaw);
   robot_cartesian_state[3] = robot_pose.pose.position.y;
-  robot_cartesian_state[4] = linear_speed * std::sin(robot_yaw);
+  robot_cartesian_state[4] = speed.linear.x * std::sin(robot_yaw) + speed.linear.y * std::cos(robot_yaw);
+
+  if (std::hypot(speed.linear.x, speed.linear.y) < 0.01 ) {
+    robot_cartesian_state[2] = 2.0 * std::cos(robot_yaw);
+    robot_cartesian_state[5] = 2.0 * std::sin(robot_yaw);
+  }
 
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
     params_->frenet_trajectory_planner_config);
