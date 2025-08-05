@@ -26,6 +26,7 @@
 #include <frenet_trajectory_planner/policies/acceleration_policy.hpp>
 
 #include <memory>
+#include <iostream>
 
 namespace frenet_trajectory_planner
 {
@@ -90,6 +91,8 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   FrenetState robot_frenet_state =
     frenet_frame_converter->convertCartesian2FrenetForSegment(robot_cartesian_state, 0);
 
+  // std::cout << "ROBOT C TO FRENET : " << robot_frenet_state << std::endl;
+
   FrenetTrajectory planned_frenet_trajectory = {robot_frenet_state};
   size_t remaining_state_number_ = frenet_trajectory_planner_config_.max_state_in_trajectory - 1;
   while (remaining_state_number_ > 0) {
@@ -120,6 +123,10 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
       planned_frenet_trajectory.size();
   }
 
+  for (auto f_state : planned_frenet_trajectory) {
+    std::cout << "BBBBBBBBBBBBB : " << f_state[1] << " | " << f_state[4] << " | " <<  std::hypot(f_state[1], f_state[4]) << std::endl;
+  }
+
   return frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 }
 
@@ -137,6 +144,8 @@ void FrenetTrajectoryPlanner::setFrenetTrajectoryPlannerConfig(
   const FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config)
 {
   frenet_trajectory_planner_config_ = frenet_trajectory_planner_config;
+  frenet_trajectory_generator_ =
+    std::make_shared<FrenetTrajectoryGenerator>(frenet_trajectory_planner_config_);
 }
 
 }

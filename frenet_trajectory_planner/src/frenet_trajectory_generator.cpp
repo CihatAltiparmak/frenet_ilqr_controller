@@ -18,6 +18,7 @@
 #include <frenet_trajectory_planner/frenet_trajectory_generator.hpp>
 
 #include <frenet_trajectory_planner/type_definitions.hpp>
+#include <iostream>
 
 namespace frenet_trajectory_planner
 {
@@ -25,12 +26,16 @@ namespace frenet_trajectory_planner
 FrenetTrajectoryGenerator::FrenetTrajectoryGenerator(
   const FrenetTrajectoryPlannerConfig & frenet_planner_config)
 : frenet_planner_config_(frenet_planner_config)
-{}
+{
+
+  std::cout << "I DONT CARE ABOUT THE VIP : " << frenet_planner_config.max_longtitutal_velocity << " | " << frenet_planner_config_.max_longtitutal_velocity << std::endl;
+}
 
 std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::getAllPossibleFrenetTrajectories(
   const FrenetState & frenet_state_initial, size_t max_state_number)
 {
 
+  std::cout << "XXXXXXXXXXXXXX: " << frenet_planner_config_.max_longtitutal_velocity << std::endl;
   std::vector<FrenetTrajectory> frenet_trajectories;
   for (double longtitutal_velocity_final = frenet_planner_config_.min_longtitutal_velocity;
     longtitutal_velocity_final <= frenet_planner_config_.max_longtitutal_velocity;

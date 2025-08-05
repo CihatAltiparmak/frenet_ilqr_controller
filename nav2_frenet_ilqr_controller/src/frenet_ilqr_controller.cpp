@@ -21,6 +21,7 @@
 #include <memory>
 #include <vector>
 #include <utility>
+#include <iostream>
 
 #include "angles/angles.h"
 #include "nav2_frenet_ilqr_controller/frenet_ilqr_controller.hpp"
@@ -206,7 +207,7 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
 }
 
 Vector2d FrenetILQRController::findOptimalInputForTrajectory(
-  const Vector3d & c_state_robot,
+  const Vector4d & c_state_robot,
   const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
 {
 
@@ -214,21 +215,30 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   using ilqr_trajectory_tracker::DiffDriveRobotModelState;
   using ilqr_trajectory_tracker::DiffDriveRobotModelInput;
 
+  // std::cout << "PABLO : [" << c_state_robot[0] << ", " << c_state_robot[1] << ", " << c_state_robot[2] << "]" << std::endl;
   std::vector<DiffDriveRobotModelState> X_feasible;
   for (auto cartesian_state : robot_cartesian_trajectory) {
     DiffDriveRobotModelState x;
+    double vel = std::hypot(cartesian_state[1], cartesian_state[4]);
     x << cartesian_state[0],
       cartesian_state[3],
-      cartesian_state[6];
+      cartesian_state[6],
+      vel;
     X_feasible.push_back(x);
+    std::cout << "VELLL : " << vel << std::endl;
+    // std::cout << "[" << cartesian_state[0] << ", " << cartesian_state[1] << ", " << cartesian_state[2] << "]" << std::endl;
   }
+  std::cout << "-------------------" << std::endl;
 
-  Matrix3d Q = Matrix3d::Identity() * 10;
-  Matrix2d R = Matrix2d::Identity() * 2;
+  X_feasible.erase(X_feasible.begin());
+
+  Matrix4d Q = Matrix4d::Identity() * 1;
+  // Q(3, 3) = 0.0;
+  Matrix2d R = Matrix2d::Identity() * 0.2;
   double alpha = 1;
   double dt = 0.05;
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
-  newton_optimizer.setIterationNumber(20);
+  newton_optimizer.setIterationNumber(40);
   newton_optimizer.setAlpha(alpha);
   newton_optimizer.setInputConstraints(params_->input_limits_min, params_->input_limits_max);
   auto U_optimal = newton_optimizer.optimize(c_state_robot, X_feasible, Q, R, dt);
@@ -237,6 +247,7 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
     throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
   }
 
+  U_optimal[0][0] = c_state_robot[3] + U_optimal[0][0] * dt;
   return U_optimal[0];
 }
 
@@ -284,10 +295,10 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   robot_cartesian_state[3] = robot_pose.pose.position.y;
   robot_cartesian_state[4] = speed.linear.x * std::sin(robot_yaw) + speed.linear.y * std::cos(robot_yaw);
 
-  if (std::hypot(speed.linear.x, speed.linear.y) < 0.01 ) {
-    robot_cartesian_state[2] = 2.0 * std::cos(robot_yaw);
-    robot_cartesian_state[5] = 2.0 * std::sin(robot_yaw);
-  }
+  // if (std::hypot(speed.linear.x, speed.linear.y) < 0.01 ) {
+  //   robot_cartesian_state[2] = 0.5 * std::cos(robot_yaw);
+  //   robot_cartesian_state[5] = 0.5 * std::sin(robot_yaw);
+  // }
 
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
     params_->frenet_trajectory_planner_config);
@@ -298,21 +309,30 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   // get yaw angles from velocities along x axis and y axis in cartesian coordinate system
   for (auto & cartesian_state : planned_cartesian_trajectory) {
     cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
+    std::cout << "AAAAAAAAAAAAAAAA : " << std::hypot(cartesian_state[1], cartesian_state[4]) << std::endl;
   }
 
   nav_msgs::msg::Path frenet_plan = convertFromCartesianTrajectory(
     transformed_plan.header.frame_id,
     planned_cartesian_trajectory);
   frenet_plan = path_handler_->transformPath(costmap_ros_->getBaseFrameID(), frenet_plan);
+
+  // ? Hızı sıfırlıyor, bunu istemiyoruz
+  frenet_trajectory_planner::CartesianTrajectory old_planned_c_traj = planned_cartesian_trajectory;
   planned_cartesian_trajectory = convertToCartesianTrajectory(frenet_plan);
+
+  for (size_t i = 0; i < old_planned_c_traj.size(); ++i) {
+    planned_cartesian_trajectory[i][1] = old_planned_c_traj[i][1];
+    planned_cartesian_trajectory[i][4] = old_planned_c_traj[i][4];
+  }
 
   truncated_path_pub_->publish(frenet_plan);
   robot_pose_pub_->publish(robot_pose);
 
   path_handler_->transformPose(costmap_ros_->getBaseFrameID(), robot_pose, robot_pose);
-  Vector3d c_state_robot;
+  Vector4d c_state_robot;
   c_state_robot << robot_pose.pose.position.x, robot_pose.pose.position.y,
-    tf2::getYaw(robot_pose.pose.orientation);
+    tf2::getYaw(robot_pose.pose.orientation), speed.linear.x;
   auto u_opt = findOptimalInputForTrajectory(c_state_robot, planned_cartesian_trajectory);
 
   // populate and return message

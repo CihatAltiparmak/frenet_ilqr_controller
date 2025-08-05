@@ -66,6 +66,8 @@ bool ObstaclePolicy::isCollides(const CartesianState & cartesian_state)
   switch (point_cost) {
     case (nav2_costmap_2d::LETHAL_OBSTACLE):
       return true;
+    case (nav2_costmap_2d::INSCRIBED_INFLATED_OBSTACLE):
+      return true;
     case (nav2_costmap_2d::NO_INFORMATION):
       return false;   // TODO (CihatAltiparmak) : we should control if it's tracking unknown
     default:

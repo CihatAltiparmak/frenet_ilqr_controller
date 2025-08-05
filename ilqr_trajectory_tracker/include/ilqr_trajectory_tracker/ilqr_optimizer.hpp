@@ -24,6 +24,8 @@
 #include <algorithm>
 #include <limits>
 
+#include <iostream>
+
 using namespace Eigen;
 
 namespace ilqr_trajectory_tracker
@@ -64,7 +66,7 @@ public:
 
   std::vector<typename RobotModel::InputT> optimize(
     const typename RobotModel::StateT & x0,
-    const std::vector<typename RobotModel::StateT> & x_feasible, const Matrix3d & Q,
+    const std::vector<typename RobotModel::StateT> & x_feasible, const Matrix4d & Q,
     const Matrix2d & R, const double dt);
 
   double cost(
@@ -154,7 +156,7 @@ std::tuple<std::vector<typename RobotModel::StateT>,
   for (size_t i = 0; i < x_feasible.size() - 1; ++i)
   {
     auto x_error = x_tracked[i] - x_feasible[i];
-    Vector<double, 4> z_error;
+    Vector<double, 5> z_error;
     z_error << x_error, alpha;
 
     u_applied[i] = u_feasible[i] + K_gains[i] * z_error;
@@ -182,7 +184,7 @@ std::tuple<MatrixXd, MatrixXd> NewtonOptimizer<RobotModel>::solveDiscreteLQRProb
 template<typename RobotModel>
 std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
   const typename RobotModel::StateT & x0,
-  const std::vector<typename RobotModel::StateT> & x_trajectory, const Matrix3d & Q,
+  const std::vector<typename RobotModel::StateT> & x_trajectory, const Matrix4d & Q,
   const Matrix2d & R, const double dt)
 {
   // assert trajectory_size > 0
@@ -216,12 +218,16 @@ std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
         break;
       }
 
-      alpha *= 0.7;
+      alpha *= 0.5;
     } else {
-      alpha /= 0.7;
+      alpha /= 0.5;
     }
   }
 
+  // std::cout << "OPTIMIZE X  : " << x0 << " | " << x_trajectory[0] << std::endl;
+  // std::cout << "OPTIMIZE U  : " << u_best_trajectory[0] << " | " << u_best_trajectory[1] << std::endl;
+  std::cout << "COST : " << best_trajectory_cost << std::endl;
+  std::cout << "**************" << std::endl;
   return u_best_trajectory;
 }
 

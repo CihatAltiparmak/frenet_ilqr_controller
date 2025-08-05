@@ -27,7 +27,7 @@ using namespace Eigen;
 namespace ilqr_trajectory_tracker
 {
 
-using DiffDriveRobotModelState = Vector3d;
+using DiffDriveRobotModelState = Vector4d;
 using DiffDriveRobotModelInput = Vector2d;
 
 class DiffDriveRobotModel : public Model<DiffDriveRobotModelState, DiffDriveRobotModelInput>
