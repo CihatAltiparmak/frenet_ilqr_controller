@@ -233,7 +233,6 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   X_feasible.erase(X_feasible.begin());
 
   Matrix4d Q = Matrix4d::Identity() * 1;
-  // Q(3, 3) = 0.0;
   Matrix2d R = Matrix2d::Identity() * 0.2;
   double alpha = 1;
   double dt = 0.05;
@@ -247,8 +246,7 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
     throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
   }
 
-  U_optimal[0][0] = c_state_robot[3] + U_optimal[0][0] * dt;
-  return U_optimal[0];
+  return newton_optimizer.getTwistCommand(c_state_robot, U_optimal[0], dt);
 }
 
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
@@ -294,11 +292,6 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   robot_cartesian_state[1] = speed.linear.x * std::cos(robot_yaw) - speed.linear.y * std::sin(robot_yaw);
   robot_cartesian_state[3] = robot_pose.pose.position.y;
   robot_cartesian_state[4] = speed.linear.x * std::sin(robot_yaw) + speed.linear.y * std::cos(robot_yaw);
-
-  // if (std::hypot(speed.linear.x, speed.linear.y) < 0.01 ) {
-  //   robot_cartesian_state[2] = 0.5 * std::cos(robot_yaw);
-  //   robot_cartesian_state[5] = 0.5 * std::sin(robot_yaw);
-  // }
 
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
     params_->frenet_trajectory_planner_config);

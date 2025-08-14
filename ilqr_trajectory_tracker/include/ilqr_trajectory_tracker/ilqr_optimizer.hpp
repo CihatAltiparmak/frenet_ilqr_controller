@@ -38,6 +38,7 @@ public:
   // virtual void forward_pass();
   // virtual void backward_pass();
   // virtual void optimize();
+  // Vecttor2d getTwistCommand();
 };
 
 template<typename RobotModel>
@@ -68,6 +69,12 @@ public:
     const typename RobotModel::StateT & x0,
     const std::vector<typename RobotModel::StateT> & x_feasible, const Matrix4d & Q,
     const Matrix2d & R, const double dt);
+
+  Vector2d getTwistCommand(
+    const typename RobotModel::StateT & x_initial,
+    const typename RobotModel::InputT & u,
+    const double dt
+  );
 
   double cost(
     const std::vector<typename RobotModel::StateT> & x_tracked,
@@ -229,6 +236,15 @@ std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
   std::cout << "COST : " << best_trajectory_cost << std::endl;
   std::cout << "**************" << std::endl;
   return u_best_trajectory;
+}
+
+template<typename RobotModel>
+Vector2d NewtonOptimizer<RobotModel>::getTwistCommand(
+  const typename RobotModel::StateT & x_initial,
+  const typename RobotModel::InputT & u,
+  const double dt)
+{
+  return robot_model_->getTwistCommand(x_initial, u, dt);
 }
 
 template<typename RobotModel>
