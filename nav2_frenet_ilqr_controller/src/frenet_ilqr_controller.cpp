@@ -206,7 +206,7 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
 }
 
 Vector2d FrenetILQRController::findOptimalInputForTrajectory(
-  const Vector3d & c_state_robot,
+  const Vector4d & c_state_robot,
   const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
 {
 
@@ -217,18 +217,23 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   std::vector<DiffDriveRobotModelState> X_feasible;
   for (auto cartesian_state : robot_cartesian_trajectory) {
     DiffDriveRobotModelState x;
+    // TODO (CihatAltiparmak) : find the signs of the velocitites as well
+    double vel = std::hypot(cartesian_state[1], cartesian_state[4]);
     x << cartesian_state[0],
       cartesian_state[3],
-      cartesian_state[6];
+      cartesian_state[6],
+      vel;
     X_feasible.push_back(x);
   }
 
-  Matrix3d Q = Matrix3d::Identity() * 10;
-  Matrix2d R = Matrix2d::Identity() * 2;
+  X_feasible.erase(X_feasible.begin());
+
+  Matrix4d Q = Matrix4d::Identity() * 1;
+  Matrix2d R = Matrix2d::Identity() * 0.2;
   double alpha = 1;
   double dt = 0.05;
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
-  newton_optimizer.setIterationNumber(20);
+  newton_optimizer.setIterationNumber(40);
   newton_optimizer.setAlpha(alpha);
   newton_optimizer.setInputConstraints(params_->input_limits_min, params_->input_limits_max);
   auto U_optimal = newton_optimizer.optimize(c_state_robot, X_feasible, Q, R, dt);
@@ -237,7 +242,7 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
     throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
   }
 
-  return U_optimal[0];
+  return newton_optimizer.getTwistCommand(c_state_robot, U_optimal[0], dt);
 }
 
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
@@ -249,24 +254,26 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   std::unique_lock<nav2_costmap_2d::Costmap2D::mutex_t> lock(*(costmap_->getMutex()));
 
   geometry_msgs::msg::PoseStamped robot_pose;
-  if (!path_handler_->transformPose(costmap_ros_->getGlobalFrameID(), pose, robot_pose)) {
-    throw nav2_core::ControllerTFError("Unable to transform robot pose into global plan's frame");
+  if (!path_handler_->transformPose(costmap_ros_->getBaseFrameID(), pose, robot_pose)) {
+    throw nav2_core::ControllerTFError("Unable to transform robot pose into robot base frame");
   }
 
   // Transform path to robot base frame
   auto transformed_plan = path_handler_->transformGlobalPlan(
     robot_pose, params_->max_robot_pose_search_dist, params_->interpolate_curvature_after_goal);
+    transformed_plan = path_handler_->transformPath(costmap_ros_->getBaseFrameID(), transformed_plan);
 
   double lookahead_distance = 0.3;
   // TODO (CihatAltiparmak) : we should ignore the waypoints whose angles between them equal to zero or extremely large
   transformed_plan = truncateGlobalPlanWithLookAheadDist(
     robot_pose, transformed_plan,
     lookahead_distance);
-  global_path_pub_->publish(transformed_plan);
 
   if (transformed_plan.poses.size() < 2) {
     transformed_plan.poses.insert(transformed_plan.poses.begin(), robot_pose);
   }
+
+  global_path_pub_->publish(transformed_plan);
 
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
   for (const auto & pose_stamped : transformed_plan.poses) {
@@ -278,14 +285,11 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   frenet_trajectory_planner::CartesianState robot_cartesian_state =
     frenet_trajectory_planner::CartesianState::Zero();
   double robot_yaw = tf2::getYaw(robot_pose.pose.orientation);
-  double linear_speed = speed.linear.x;
-  if (linear_speed == 0) {
-    linear_speed = 0.001;
-  }
+  
   robot_cartesian_state[0] = robot_pose.pose.position.x;
-  robot_cartesian_state[1] = linear_speed * std::cos(robot_yaw);
+  robot_cartesian_state[1] = speed.linear.x * std::cos(robot_yaw) - speed.linear.y * std::sin(robot_yaw);
   robot_cartesian_state[3] = robot_pose.pose.position.y;
-  robot_cartesian_state[4] = linear_speed * std::sin(robot_yaw);
+  robot_cartesian_state[4] = speed.linear.x * std::sin(robot_yaw) + speed.linear.y * std::cos(robot_yaw);
 
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
     params_->frenet_trajectory_planner_config);
@@ -298,19 +302,18 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
   }
 
+#if 0
   nav_msgs::msg::Path frenet_plan = convertFromCartesianTrajectory(
     transformed_plan.header.frame_id,
     planned_cartesian_trajectory);
-  frenet_plan = path_handler_->transformPath(costmap_ros_->getBaseFrameID(), frenet_plan);
-  planned_cartesian_trajectory = convertToCartesianTrajectory(frenet_plan);
 
   truncated_path_pub_->publish(frenet_plan);
   robot_pose_pub_->publish(robot_pose);
+#endif
 
-  path_handler_->transformPose(costmap_ros_->getBaseFrameID(), robot_pose, robot_pose);
-  Vector3d c_state_robot;
+  Vector4d c_state_robot;
   c_state_robot << robot_pose.pose.position.x, robot_pose.pose.position.y,
-    tf2::getYaw(robot_pose.pose.orientation);
+    tf2::getYaw(robot_pose.pose.orientation), speed.linear.x;
   auto u_opt = findOptimalInputForTrajectory(c_state_robot, planned_cartesian_trajectory);
 
   // populate and return message
@@ -342,21 +345,6 @@ nav_msgs::msg::Path FrenetILQRController::convertFromCartesianTrajectory(
   }
 
   return plan_msg;
-}
-
-CartesianTrajectory FrenetILQRController::convertToCartesianTrajectory(
-  const nav_msgs::msg::Path & path_msg)
-{
-  CartesianTrajectory cartesian_trajectory = {};
-  for (const auto & pose_st : path_msg.poses) {
-    CartesianState cartesian_state = CartesianState::Zero();
-    cartesian_state({0, 3, 6}) << pose_st.pose.position.x, pose_st.pose.position.y, tf2::getYaw(
-      pose_st.pose.orientation);
-
-    cartesian_trajectory.push_back(cartesian_state);
-  }
-
-  return cartesian_trajectory;
 }
 
 bool FrenetILQRController::cancel()
