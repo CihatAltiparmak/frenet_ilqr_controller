@@ -20,6 +20,15 @@ public:
   virtual MatrixXd getControlMatrix(
     const StateT & x_eq, const InputT & u_eq,
     const double dt) = 0;
+<<<<<<< HEAD
+=======
+
+  virtual Vector2d getTwistCommand(
+    const StateT & x_initial,
+    const InputT & u,
+    const double dt) = 0;
+
+>>>>>>> 56fa199 ( Add velocity profile to the differential drive model and remove unnecessary tf transformations from controller (#46))
 protected:
   InputT input_limits_min_;
   InputT input_limits_max_;
