@@ -24,8 +24,6 @@
 #include <algorithm>
 #include <limits>
 
-#include <iostream>
-
 using namespace Eigen;
 
 namespace ilqr_trajectory_tracker
@@ -231,10 +229,7 @@ std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
     }
   }
 
-  // std::cout << "OPTIMIZE X  : " << x0 << " | " << x_trajectory[0] << std::endl;
-  // std::cout << "OPTIMIZE U  : " << u_best_trajectory[0] << " | " << u_best_trajectory[1] << std::endl;
-  std::cout << "COST : " << best_trajectory_cost << std::endl;
-  std::cout << "**************" << std::endl;
+
   return u_best_trajectory;
 }
 

@@ -21,7 +21,6 @@
 #include <memory>
 #include <vector>
 #include <utility>
-#include <iostream>
 
 #include "angles/angles.h"
 #include "nav2_frenet_ilqr_controller/frenet_ilqr_controller.hpp"
@@ -215,20 +214,17 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   using ilqr_trajectory_tracker::DiffDriveRobotModelState;
   using ilqr_trajectory_tracker::DiffDriveRobotModelInput;
 
-  // std::cout << "PABLO : [" << c_state_robot[0] << ", " << c_state_robot[1] << ", " << c_state_robot[2] << "]" << std::endl;
   std::vector<DiffDriveRobotModelState> X_feasible;
   for (auto cartesian_state : robot_cartesian_trajectory) {
     DiffDriveRobotModelState x;
+    // TODO (CihatAltiparmak) : find the signs of the velocitites as well
     double vel = std::hypot(cartesian_state[1], cartesian_state[4]);
     x << cartesian_state[0],
       cartesian_state[3],
       cartesian_state[6],
       vel;
     X_feasible.push_back(x);
-    std::cout << "VELLL : " << vel << std::endl;
-    // std::cout << "[" << cartesian_state[0] << ", " << cartesian_state[1] << ", " << cartesian_state[2] << "]" << std::endl;
   }
-  std::cout << "-------------------" << std::endl;
 
   X_feasible.erase(X_feasible.begin());
 
@@ -258,24 +254,26 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   std::unique_lock<nav2_costmap_2d::Costmap2D::mutex_t> lock(*(costmap_->getMutex()));
 
   geometry_msgs::msg::PoseStamped robot_pose;
-  if (!path_handler_->transformPose(costmap_ros_->getGlobalFrameID(), pose, robot_pose)) {
-    throw nav2_core::ControllerTFError("Unable to transform robot pose into global plan's frame");
+  if (!path_handler_->transformPose(costmap_ros_->getBaseFrameID(), pose, robot_pose)) {
+    throw nav2_core::ControllerTFError("Unable to transform robot pose into robot base frame");
   }
 
   // Transform path to robot base frame
   auto transformed_plan = path_handler_->transformGlobalPlan(
     robot_pose, params_->max_robot_pose_search_dist, params_->interpolate_curvature_after_goal);
+    transformed_plan = path_handler_->transformPath(costmap_ros_->getBaseFrameID(), transformed_plan);
 
   double lookahead_distance = 0.3;
   // TODO (CihatAltiparmak) : we should ignore the waypoints whose angles between them equal to zero or extremely large
   transformed_plan = truncateGlobalPlanWithLookAheadDist(
     robot_pose, transformed_plan,
     lookahead_distance);
-  global_path_pub_->publish(transformed_plan);
 
   if (transformed_plan.poses.size() < 2) {
     transformed_plan.poses.insert(transformed_plan.poses.begin(), robot_pose);
   }
+
+  global_path_pub_->publish(transformed_plan);
 
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
   for (const auto & pose_stamped : transformed_plan.poses) {
@@ -302,27 +300,17 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   // get yaw angles from velocities along x axis and y axis in cartesian coordinate system
   for (auto & cartesian_state : planned_cartesian_trajectory) {
     cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
-    std::cout << "AAAAAAAAAAAAAAAA : " << std::hypot(cartesian_state[1], cartesian_state[4]) << std::endl;
   }
 
+#if 0
   nav_msgs::msg::Path frenet_plan = convertFromCartesianTrajectory(
     transformed_plan.header.frame_id,
     planned_cartesian_trajectory);
-  frenet_plan = path_handler_->transformPath(costmap_ros_->getBaseFrameID(), frenet_plan);
-
-  // ? Hızı sıfırlıyor, bunu istemiyoruz
-  frenet_trajectory_planner::CartesianTrajectory old_planned_c_traj = planned_cartesian_trajectory;
-  planned_cartesian_trajectory = convertToCartesianTrajectory(frenet_plan);
-
-  for (size_t i = 0; i < old_planned_c_traj.size(); ++i) {
-    planned_cartesian_trajectory[i][1] = old_planned_c_traj[i][1];
-    planned_cartesian_trajectory[i][4] = old_planned_c_traj[i][4];
-  }
 
   truncated_path_pub_->publish(frenet_plan);
   robot_pose_pub_->publish(robot_pose);
+#endif
 
-  path_handler_->transformPose(costmap_ros_->getBaseFrameID(), robot_pose, robot_pose);
   Vector4d c_state_robot;
   c_state_robot << robot_pose.pose.position.x, robot_pose.pose.position.y,
     tf2::getYaw(robot_pose.pose.orientation), speed.linear.x;
@@ -357,21 +345,6 @@ nav_msgs::msg::Path FrenetILQRController::convertFromCartesianTrajectory(
   }
 
   return plan_msg;
-}
-
-CartesianTrajectory FrenetILQRController::convertToCartesianTrajectory(
-  const nav_msgs::msg::Path & path_msg)
-{
-  CartesianTrajectory cartesian_trajectory = {};
-  for (const auto & pose_st : path_msg.poses) {
-    CartesianState cartesian_state = CartesianState::Zero();
-    cartesian_state({0, 3, 6}) << pose_st.pose.position.x, pose_st.pose.position.y, tf2::getYaw(
-      pose_st.pose.orientation);
-
-    cartesian_trajectory.push_back(cartesian_state);
-  }
-
-  return cartesian_trajectory;
 }
 
 bool FrenetILQRController::cancel()
