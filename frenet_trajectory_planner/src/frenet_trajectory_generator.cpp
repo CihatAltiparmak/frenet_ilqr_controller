@@ -25,9 +25,7 @@ namespace frenet_trajectory_planner
 FrenetTrajectoryGenerator::FrenetTrajectoryGenerator(
   const FrenetTrajectoryPlannerConfig & frenet_planner_config)
 : frenet_planner_config_(frenet_planner_config)
-{
-
-}
+{}
 
 std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::getAllPossibleFrenetTrajectories(
   const FrenetState & frenet_state_initial, size_t max_state_number)
