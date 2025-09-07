@@ -120,7 +120,6 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
       planned_frenet_trajectory.size();
   }
 
-
   return frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 }
 
