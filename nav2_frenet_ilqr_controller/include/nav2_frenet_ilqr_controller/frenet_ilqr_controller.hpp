@@ -109,7 +109,7 @@ public:
     nav2_core::GoalChecker * /*goal_checker*/) override;
 
   Vector2d findOptimalInputForTrajectory(
-    const Vector3d & c_state_robot,
+    const Vector4d & c_state_robot,
     const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory);
 
   bool cancel() override;
@@ -136,9 +136,6 @@ public:
 
   nav_msgs::msg::Path convertFromCartesianTrajectory(
     const std::string & frame_id, const CartesianTrajectory & cartesian_trajectory);
-
-  CartesianTrajectory convertToCartesianTrajectory(
-    const nav_msgs::msg::Path & path_msg);
 
 protected:
   nav2::LifecycleNode::WeakPtr node_;

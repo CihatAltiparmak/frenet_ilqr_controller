@@ -137,6 +137,8 @@ void FrenetTrajectoryPlanner::setFrenetTrajectoryPlannerConfig(
   const FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config)
 {
   frenet_trajectory_planner_config_ = frenet_trajectory_planner_config;
+  frenet_trajectory_generator_ =
+    std::make_shared<FrenetTrajectoryGenerator>(frenet_trajectory_planner_config_);
 }
 
 }
