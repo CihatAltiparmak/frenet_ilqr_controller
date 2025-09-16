@@ -28,7 +28,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "pluginlib/class_loader.hpp"
 #include "pluginlib/class_list_macros.hpp"
-#include "geometry_msgs/msg/pose2_d.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "nav2_frenet_ilqr_controller/path_handler.hpp"
 #include "nav2_frenet_ilqr_controller/parameter_handler.hpp"
