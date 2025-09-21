@@ -5,7 +5,11 @@ WORKDIR /root/nav2_ws
 RUN cd src && \
     git clone https://github.com/CihatAltiparmak/frenet_ilqr_controller.git -b humble
 
+<<<<<<< HEAD
 RUN wget https://gist.githubusercontent.com/CihatAltiparmak/b7fb6000309beb057d354fa4ac4a8b9a/raw/0928a66e1915dab6054f8887f1c19ae4d6501e1b/nav2_param_frenet_ilqr_controller_demo_humble.yaml -O src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
+=======
+RUN wget https://gist.githubusercontent.com/CihatAltiparmak/7171fbb514287501ce91e9c45c69dab2/raw/1420731578bc2d43270ee32880ee460e9eb080e7/nav2_param_frenet_ilqr_controller_demo.yaml -O src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
+>>>>>>> c966ea1 (Update parameters and docker instructions after velocity profiling PR (#49))
 
 RUN . /opt/ros/humble/setup.sh && \
     colcon build --packages-select nav2_bringup nav2_frenet_ilqr_controller frenet_trajectory_planner ilqr_trajectory_tracker --cmake-args -DCMAKE_BUILD_TYPE=Release
