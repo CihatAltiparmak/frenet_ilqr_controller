@@ -4,7 +4,7 @@
 > When in doubt, flat out.
 > ~ Colin McRae
 
-[Screencast from 05-11-2025 03:11:35 AM.webm](https://gist.github.com/user-attachments/assets/73521206-e1aa-48e7-9081-988030a7f946)
+[Screencast from 09-21-2025 10:10:19 PM.webm](https://gist.github.com/user-attachments/assets/3724fa44-ab6b-4c8b-8fb6-a4a16812625e)
 
 # Overview
 
@@ -42,7 +42,7 @@ xhost +
 
 Run docker image
 ```sh
-docker run -it --rm --net=host --privileged --volume="${XAUTHORITY}:/root/.Xauthority" --env="DISPLAY=$DISPLAY" -v="/tmp/.gazebo/:/root/.gazebo/" -v /tmp/.X11-unix:/tmp/.X11-unix:rw --shm-size=1000mb frenet_ilqr_controller_demo ros2 launch nav2_bringup tb3_simulation_launch.py params_file:=/root/nav2_ws/src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
+docker run -it --gpus=all -e NVIDIA_DRIVER_CAPABILITIES=all --runtime=nvidia --rm --net=host --privileged --volume="${XAUTHORITY}:/root/.Xauthority" --env="DISPLAY=$DISPLAY" -v="/tmp/.gazebo/:/root/.gazebo/" -v /tmp/.X11-unix:/tmp/.X11-unix:rw --shm-size=1000mb frenet_ilqr_controller_demo ros2 launch nav2_bringup tb3_simulation_launch.py params_file:=/root/nav2_ws/src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
 ```
 
 # Configurations
@@ -59,13 +59,13 @@ docker run -it --rm --net=host --privileged --volume="${XAUTHORITY}:/root/.Xauth
 
 | Parameter                  | Type   | Definition                                                                              |
 | ---------------------      | -------| --------------------------------------------------------------------------------------- |
-| min_lateral_distance       | double | Default: -1.0. Minimum lateral distance along interpolated curve. |
-| max_lateral_distance       | double | Default:  1.0. Maximum lateral distance along interpolated curve. |
-| step_lateral_distance      | double | Default: 0.5.  Increasing rate for producing lateral distance trajectories in Frenet Frame |
-| min_longitital_velocity    | double | Default: -0.1. Minimum longitutal velocity along interpolated curve. |
-| max_longitital_velocity    | double | Default:  2.0. Maximum longitutal velocity along interpolated curve. |
-| step_lateral_distance      | double | Default: 0.5.  Increasing rate for producing longtitutal velocity trajectories in Frenet Frame |
-| time_interval              | double | Default: 2.0.  time (s) required to achieve corresponding frenet state. Used by polynomial trajectory planning for both velocity planning and lateral distance planning, (e.g time (s) required to increase speed from 1.0 m/s to 2 m/s)|
+| min_lateral_distance       | double | Default: -0.5. Minimum lateral distance along interpolated curve. |
+| max_lateral_distance       | double | Default: +0.5. Maximum lateral distance along interpolated curve. |
+| step_lateral_distance      | double | Default: +0.05.  Increasing rate for producing lateral distance trajectories in Frenet Frame |
+| min_longitital_velocity    | double | Default:  0.0. Minimum longitutal velocity along interpolated curve. |
+| max_longitital_velocity    | double | Default: +0.5. Maximum longitutal velocity along interpolated curve. |
+| step_lateral_distance      | double | Default: +0.05.  Increasing rate for producing longtitutal velocity trajectories in Frenet Frame |
+| time_interval              | double | Default: 1.5.  time (s) required to achieve corresponding frenet state. Used by polynomial trajectory planning for both velocity planning and lateral distance planning, (e.g time (s) required to increase speed from 1.0 m/s to 2 m/s)|
 | max_state_in_trajectory    | int | Default: 40.  the number of how many state the generated trajectory can have at most.  |
 
 #### Iterative Linear Quadratic Regulator
@@ -74,13 +74,13 @@ docker run -it --rm --net=host --privileged --volume="${XAUTHORITY}:/root/.Xauth
 | ---------------------      | -------------| --------------------------------------------------------------------------------------- |
 | iteration_number           | int          | Default: 20. Maximum iteration number of newton optimizer. |
 | alpha                      | double       | Default: 1.0. Line search relavant parameter |
-| input_limits_min           | double array | Default: [0.0, -1.5]. Minimum values the input vectors during optimization should be. The default parameters are set for a differential drive robot, which means a robot's minimum linear velocity will be 0.0 and its angular velocity will be -1.5|
-| input_limits_max           | double array | Default: [1.0, 1.5]. Maximum values the input vectors during optimization should be. The default parameters are set for a differential drive robot, which means a robot's maximum linear velocity will be +1.0 and its maximum angular velocity will be +1.5|
+| input_limits_min           | double array | Default: [-2.5, -1.0]. Minimum values the input vectors should be during optimization. The default parameters are set for a differential drive robot, which means a robot's minimum linear acceleration will be -2.5 and its angular velocity will be -1.0|
+| input_limits_max           | double array | Default: [2.5, 1.5]. Maximum values the input vectors should be during optimization. The default parameters are set for a differential drive robot, which means a robot's maximum linear acceleration will be +2.5 and its maximum angular velocity will be +1.0|
 
 #### Lateral Distance Cost Checker
 | Parameter                  | Type   | Definition |
 | ---------------------      | -------| ------------------------------- |
-| K_lateral_distance         | double | Default: 10.0. Cost Coefficient for punishing lateral distance along curve |
+| K_lateral_distance         | double | Default: 5.0. Cost Coefficient for punishing lateral distance along curve |
 
 #### Longtitutal Velocity Cost Checker
 | Parameter                  | Type   | Definition |
@@ -102,23 +102,23 @@ controller_server:
       plugin: "nav2_frenet_ilqr_controller::FrenetILQRController"
       time_discretization: 0.05
       frenet_trajectory_planner:
-        min_lateral_distance: -1.0
-        max_lateral_distance: 1.0
-        step_lateral_distance: 0.5
-        min_longtitutal_velocity: -0.1
-        max_longtitutal_velocity: 2.0
-        step_longtitutal_velocity: 0.5
-        time_interval: 2.0
+        min_lateral_distance: -0.5
+        max_lateral_distance: 0.5
+        step_lateral_distance: 0.05
+        min_longtitutal_velocity: 0.0
+        max_longtitutal_velocity: 0.5
+        step_longtitutal_velocity: 0.05
+        time_interval: 1.5
         max_state_in_trajectory: 40
       ilqr_trajectory_tracker:
         iteration_number: 20
         alpha: 1.0
-        input_limits_min: [0.0, -1.5]
-        input_limits_max: [0.5, 1.5]
+        input_limits_min: [-2.5, -1.0]
+        input_limits_max: [2.5, 1.0]
       cost_checker_plugins: ["LateralDistanceCostChecker", "LongtitutalVelocityCostChecker"]
       LateralDistanceCostChecker:
         plugin: "nav2_frenet_ilqr_controller::costs::LateralDistanceCost"
-        K_lateral_distance: 10.0
+        K_lateral_distance: 5.0
       LongtitutalVelocityCostChecker:
         plugin: "nav2_frenet_ilqr_controller::costs::LongtitutalVelocityCost"
         K_longtitutal_velocity: 5.0
