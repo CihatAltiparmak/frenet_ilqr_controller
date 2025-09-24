@@ -325,7 +325,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
   }
 
-#if 0
+#if 1
   nav_msgs::msg::Path frenet_plan = convertFromCartesianTrajectory(
     transformed_plan.header.frame_id,
     planned_cartesian_trajectory);
