@@ -90,4 +90,18 @@ Vector2d DiffDriveRobotModel::getTwistCommand(
   return twist;
 }
 
+DiffDriveRobotModel::StateT
+DiffDriveRobotModel::fromFrenetCartesianState(
+  const frenet_trajectory_planner::CartesianState & c_state)
+{
+  StateT x;
+  // TODO (CihatAltiparmak) : find the signs of the velocitites as well
+  double vel = std::hypot(c_state[1], c_state[4]);
+  x << c_state[0],
+       c_state[3],
+       c_state[6],
+       vel;
+  return x;
+}
+
 }

@@ -206,28 +206,15 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
 }
 
 Vector2d FrenetILQRController::findOptimalInputForTrajectory(
-  const Vector4d & c_state_robot,
+  const frenet_trajectory_planner::CartesianState & c_state_robot,
   const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
 {
 
   using ilqr_trajectory_tracker::DiffDriveRobotModel;
-  using ilqr_trajectory_tracker::DiffDriveRobotModelState;
-  using ilqr_trajectory_tracker::DiffDriveRobotModelInput;
+  ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
 
-  std::vector<DiffDriveRobotModelState> X_feasible;
-  for (auto cartesian_state : robot_cartesian_trajectory) {
-    DiffDriveRobotModelState x;
-    // TODO (CihatAltiparmak) : find the signs of the velocitites as well
-    double vel = std::hypot(cartesian_state[1], cartesian_state[4]);
-    x << cartesian_state[0],
-      cartesian_state[3],
-      cartesian_state[6],
-      vel;
-    X_feasible.push_back(x);
-  }
-
-  // remove the first state which is the robot's current state
-  X_feasible.erase(X_feasible.begin());
+  auto x_robot = DiffDriveRobotModel::fromFrenetCartesianState(c_state_robot);
+  auto X_feasible = newton_optimizer.fromFrenetCartesianTrajectory(robot_cartesian_trajectory);
 
   // TODO (CihatAltiparmak) : add behavior mode into frenet_trajectory_planner. The velocity trajectory 
   // can be planned using Quinctic Polynom instead of Quartic Polynom  which takes into account 
@@ -235,30 +222,31 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   // If the robot is to approach to the goal, tell ILQR to deccelerate by filling velocity states by zero
   // and keep the goal's x, y and yaw angle states same
   size_t state_number_to_track = params_->frenet_trajectory_planner_config.max_state_in_trajectory - 1;
+  RCLCPP_INFO(logger_, "JARBAY ARIGATO %ld | %ld", state_number_to_track, robot_cartesian_trajectory.size());
   if (X_feasible.size() < state_number_to_track) {
     size_t state_number_for_stopping = state_number_to_track - X_feasible.size();
-    DiffDriveRobotModelState x_stop = X_feasible.back();
+    RCLCPP_INFO(logger_, "JARBAY MURASAME %ld ", state_number_for_stopping);
+    DiffDriveRobotModel::StateT x_stop = X_feasible.back();
     x_stop[3] = 0.0;
     for (size_t i = 0; i < state_number_for_stopping; ++i) {
       X_feasible.push_back(x_stop);
     }
   }
 
-  Matrix4d Q = Matrix4d::Identity() * 1;
-  Matrix2d R = Matrix2d::Identity() * 0.2;
+  MatrixXd Q = Matrix<double, DiffDriveRobotModel::StateDim, DiffDriveRobotModel::StateDim>::Identity() * 1;
+  MatrixXd R = Matrix<double, DiffDriveRobotModel::InputDim, DiffDriveRobotModel::InputDim>::Identity() * 0.2;
   double alpha = 1;
   double dt = 0.05;
-  ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
   newton_optimizer.setIterationNumber(40);
   newton_optimizer.setAlpha(alpha);
   newton_optimizer.setInputConstraints(params_->input_limits_min, params_->input_limits_max);
-  auto U_optimal = newton_optimizer.optimize(c_state_robot, X_feasible, Q, R, dt);
+  auto U_optimal = newton_optimizer.optimize(x_robot, X_feasible, Q, R, dt);
 
   if (U_optimal.empty()) {
     throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
   }
 
-  return newton_optimizer.getTwistCommand(c_state_robot, U_optimal[0], dt);
+  return newton_optimizer.getTwistCommand(x_robot, U_optimal[0], dt);
 }
 
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
@@ -305,25 +293,21 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     waypoint_list.push_back(point);
   }
 
-  frenet_trajectory_planner::CartesianState robot_cartesian_state =
+  frenet_trajectory_planner::CartesianState c_state_robot =
     frenet_trajectory_planner::CartesianState::Zero();
   double robot_yaw = tf2::getYaw(robot_pose.pose.orientation);
   
-  robot_cartesian_state[0] = robot_pose.pose.position.x;
-  robot_cartesian_state[1] = speed.linear.x * std::cos(robot_yaw) - speed.linear.y * std::sin(robot_yaw);
-  robot_cartesian_state[3] = robot_pose.pose.position.y;
-  robot_cartesian_state[4] = speed.linear.x * std::sin(robot_yaw) + speed.linear.y * std::cos(robot_yaw);
+  c_state_robot[0] = robot_pose.pose.position.x;
+  c_state_robot[1] = speed.linear.x * std::cos(robot_yaw) - speed.linear.y * std::sin(robot_yaw);
+  c_state_robot[3] = robot_pose.pose.position.y;
+  c_state_robot[4] = speed.linear.x * std::sin(robot_yaw) + speed.linear.y * std::cos(robot_yaw);
+  c_state_robot[6] = robot_yaw;
 
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
     params_->frenet_trajectory_planner_config);
   auto planned_cartesian_trajectory = frenet_trajectory_planner_.planByWaypoint(
-    robot_cartesian_state,
+    c_state_robot,
     waypoint_list);
-
-  // get yaw angles from velocities along x axis and y axis in cartesian coordinate system
-  for (auto & cartesian_state : planned_cartesian_trajectory) {
-    cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
-  }
 
 #if 1
   nav_msgs::msg::Path frenet_plan = convertFromCartesianTrajectory(
@@ -334,9 +318,6 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   robot_pose_pub_->publish(robot_pose);
 #endif
 
-  Vector4d c_state_robot;
-  c_state_robot << robot_pose.pose.position.x, robot_pose.pose.position.y,
-    tf2::getYaw(robot_pose.pose.orientation), speed.linear.x;
   auto u_opt = findOptimalInputForTrajectory(c_state_robot, planned_cartesian_trajectory);
 
   // populate and return message

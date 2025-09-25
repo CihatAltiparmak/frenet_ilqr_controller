@@ -21,6 +21,7 @@
 
 #include <Eigen/Dense>
 #include <cmath>
+#include "frenet_trajectory_planner/type_definitions.hpp"
 
 using namespace Eigen;
 
@@ -42,6 +43,8 @@ public:
     const StateT & x_initial,
     const InputT & u,
     const double dt);
+  
+  static StateT fromFrenetCartesianState(const frenet_trajectory_planner::CartesianState & c_state);
 };
 
 }

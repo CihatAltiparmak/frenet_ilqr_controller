@@ -23,6 +23,7 @@
 #include <tuple>
 #include <algorithm>
 #include <limits>
+#include "frenet_trajectory_planner/type_definitions.hpp"
 
 using namespace Eigen;
 
@@ -198,6 +199,16 @@ public:
     }
 
     return trajectory_cost;
+  }
+
+  std::vector<StateT> fromFrenetCartesianTrajectory(const frenet_trajectory_planner::CartesianTrajectory & c_trajectory) {
+    std::vector<StateT> converted_trajectory;
+    for (auto c_state : c_trajectory) {
+      StateT converted_state = RobotModel::fromFrenetCartesianState(c_state);
+      converted_trajectory.push_back(converted_state);
+    }
+
+    return converted_trajectory;
   }
 
   void setIterationNumber(const size_t iteration_number);

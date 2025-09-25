@@ -120,7 +120,11 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
       planned_frenet_trajectory.size();
   }
 
-  return frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
+  auto result_traj = frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
+  // remove the first state which is the robot's current state
+  result_traj.erase(result_traj.begin());
+
+  return result_traj;
 }
 
 void FrenetTrajectoryPlanner::addPolicy(const std::shared_ptr<policies::Policy> & policy)
