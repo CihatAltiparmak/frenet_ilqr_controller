@@ -15,6 +15,7 @@ endif()
 #   endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(frenet_trajectory_planner REQUIRED)
 
 add_library(ilqr_trajectory_tracker_lib SHARED src/models/diff_robot_model.cpp)
 
@@ -23,8 +24,11 @@ target_include_directories(
   PUBLIC $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-target_include_directories(ilqr_trajectory_tracker_lib PUBLIC ${Eigen3_INCLUDE_DIRS})
-target_link_libraries(ilqr_trajectory_tracker_lib  Eigen3::Eigen)
+target_include_directories(
+  ilqr_trajectory_tracker_lib 
+  PUBLIC 
+  ${Eigen3_INCLUDE_DIRS})
+target_link_libraries(ilqr_trajectory_tracker_lib  Eigen3::Eigen frenet_trajectory_planner::frenet_trajectory_planner_lib)
 
 # add_subdirectory(demos)
 
