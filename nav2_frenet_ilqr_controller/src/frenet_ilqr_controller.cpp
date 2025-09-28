@@ -210,6 +210,10 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
 {
 
+  if (robot_cartesian_trajectory.empty()) {
+    throw nav2_core::NoValidControl("There is no trajectory to be tracked!");
+  }
+
   using ilqr_trajectory_tracker::DiffDriveRobotModel;
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
 
@@ -222,10 +226,8 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   // If the robot is to approach to the goal, tell ILQR to deccelerate by filling velocity states by zero
   // and keep the goal's x, y and yaw angle states same
   size_t state_number_to_track = params_->frenet_trajectory_planner_config.max_state_in_trajectory - 1;
-  RCLCPP_INFO(logger_, "JARBAY ARIGATO %ld | %ld", state_number_to_track, robot_cartesian_trajectory.size());
   if (X_feasible.size() < state_number_to_track) {
     size_t state_number_for_stopping = state_number_to_track - X_feasible.size();
-    RCLCPP_INFO(logger_, "JARBAY MURASAME %ld ", state_number_for_stopping);
     DiffDriveRobotModel::StateT x_stop = X_feasible.back();
     x_stop[3] = 0.0;
     for (size_t i = 0; i < state_number_for_stopping; ++i) {
