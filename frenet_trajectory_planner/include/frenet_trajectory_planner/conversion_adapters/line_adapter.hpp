@@ -44,9 +44,7 @@ CartesianState LineAdapter::convertFrenet2Cartesian(const FrenetState & frenet_s
   cartesian_state({0, 3}) = T * frenet_state({0, 3}) + x0_;
   cartesian_state({1, 4}) = T * frenet_state({1, 4});
   cartesian_state({2, 5}) = T * frenet_state({2, 5});
-  cartesian_state[6] = std::atan2(t_frenet_[1], t_frenet_[0]) + std::atan2(
-    frenet_state[4],
-    frenet_state[1]);
+  cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
 
   return cartesian_state;
 
