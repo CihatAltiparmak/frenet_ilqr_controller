@@ -63,14 +63,14 @@ protected:
 };
 
 template<size_t _StateDim, size_t _InputDim>
-Model<StateNumber, InputNumber>::Model()
+Model<_StateDim, _InputDim>::Model()
 {
   input_limits_min_.fill(-std::numeric_limits<double>::infinity());
   input_limits_max_.fill(+std::numeric_limits<double>::infinity());
 }
 
 template<size_t _StateDim, size_t _InputDim>
-void Model<StateNumber, InputNumber>::setLimits(
+void Model<_StateDim, _InputDim>::setLimits(
   const InputT & input_limits_min,
   const InputT & input_limits_max) {
 
@@ -79,12 +79,12 @@ void Model<StateNumber, InputNumber>::setLimits(
 }
 
 template<size_t _StateDim, size_t _InputDim>
-size_t Model<StateNumber, InputNumber>::getStateDim() {
-  return StateNumber;
+size_t Model<_StateDim, _InputDim>::getStateDim() {
+  return _StateDim;
 }
 
 template<size_t _StateDim, size_t _InputDim>
-size_t Model<StateNumber, InputNumber>::getInputDim() {
+size_t Model<_StateDim, _InputDim>::getInputDim() {
   return InputDim;
 }
 
