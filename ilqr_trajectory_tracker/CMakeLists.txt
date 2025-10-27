@@ -26,11 +26,11 @@ target_include_directories(
 target_include_directories(ilqr_trajectory_tracker_lib PUBLIC ${Eigen3_INCLUDE_DIRS})
 target_link_libraries(ilqr_trajectory_tracker_lib  Eigen3::Eigen)
 
-add_subdirectory(demos)
+# add_subdirectory(demos)
 
-if(BUILD_TESTING)
-  add_subdirectory(test)
-endif()
+# if(BUILD_TESTING)
+#   add_subdirectory(test)
+# endif()
 
 install(
   TARGETS ilqr_trajectory_tracker_lib

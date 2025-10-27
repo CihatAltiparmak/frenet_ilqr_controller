@@ -19,6 +19,7 @@ public:
   // virtual void forward_pass();
   // virtual void backward_pass();
   // virtual void optimize();
+  // Vecttor2d getTwistCommand();
 };
 
 template<typename RobotModel>
@@ -44,8 +45,15 @@ public:
 
   std::vector<typename RobotModel::InputT> optimize(
     const typename RobotModel::StateT & x0,
-    const std::vector<typename RobotModel::StateT> & x_feasible, const Matrix3d & Q,
+    const std::vector<typename RobotModel::StateT> & x_feasible, const Matrix4d & Q,
     const Matrix2d & R, const double dt);
+
+  Vector2d getTwistCommand(
+    const typename RobotModel::StateT & x_initial,
+    const typename RobotModel::InputT & u,
+    const double dt
+  );
+
   double cost(
     const std::vector<typename RobotModel::StateT> & x_tracked,
     const std::vector<typename RobotModel::StateT> & x_trajectory);
@@ -130,7 +138,7 @@ std::tuple<std::vector<typename RobotModel::StateT>,
   for (size_t i = 0; i < x_feasible.size() - 1; ++i)
   {
     auto x_error = x_tracked[i] - x_feasible[i];
-    Vector<double, 4> z_error;
+    Vector<double, 5> z_error;
     z_error << x_error, alpha;
 
     u_applied[i] = u_feasible[i] + K_gains[i] * z_error;
@@ -159,7 +167,7 @@ std::tuple<MatrixXd, MatrixXd> NewtonOptimizer<RobotModel>::solveDiscreteLQRProb
 template<typename RobotModel>
 std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
   const typename RobotModel::StateT & x0,
-  const std::vector<typename RobotModel::StateT> & x_trajectory, const Matrix3d & Q,
+  const std::vector<typename RobotModel::StateT> & x_trajectory, const Matrix4d & Q,
   const Matrix2d & R, const double dt)
 {
   // assert trajectory_size > 0
@@ -193,13 +201,23 @@ std::vector<typename RobotModel::InputT> NewtonOptimizer<RobotModel>::optimize(
         break;
       }
 
-      alpha *= 0.7;
+      alpha *= 0.5;
     } else {
-      alpha /= 0.7;
+      alpha /= 0.5;
     }
   }
 
+
   return u_best_trajectory;
+}
+
+template<typename RobotModel>
+Vector2d NewtonOptimizer<RobotModel>::getTwistCommand(
+  const typename RobotModel::StateT & x_initial,
+  const typename RobotModel::InputT & u,
+  const double dt)
+{
+  return robot_model_->getTwistCommand(x_initial, u, dt);
 }
 
 template<typename RobotModel>

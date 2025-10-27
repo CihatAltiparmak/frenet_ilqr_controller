@@ -20,6 +20,12 @@ public:
   virtual MatrixXd getControlMatrix(
     const StateT & x_eq, const InputT & u_eq,
     const double dt) = 0;
+
+  virtual Vector2d getTwistCommand(
+    const StateT & x_initial,
+    const InputT & u,
+    const double dt) = 0;
+
 protected:
   InputT input_limits_min_;
   InputT input_limits_max_;
