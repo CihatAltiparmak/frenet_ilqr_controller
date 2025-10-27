@@ -238,7 +238,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
 
   geometry_msgs::msg::PoseStamped robot_pose;
   if (!path_handler_->transformPose(costmap_ros_->getBaseFrameID(), pose, robot_pose)) {
-    throw nav2_core::ControllerTFError("Unable to transform robot pose into robot base frame");
+    throw std::runtime_error("Unable to transform robot pose into robot base frame");
   }
 
   // Transform path to robot base frame
