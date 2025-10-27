@@ -209,7 +209,23 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
     X_feasible.push_back(x);
   }
 
+  // remove the first state which is the robot's current state
   X_feasible.erase(X_feasible.begin());
+
+  // TODO (CihatAltiparmak) : add behavior mode into frenet_trajectory_planner. The velocity trajectory 
+  // can be planned using Quinctic Polynom instead of Quartic Polynom  which takes into account 
+  // the finishing point as well
+  // If the robot is to approach to the goal, tell ILQR to deccelerate by filling velocity states by zero
+  // and keep the goal's x, y and yaw angle states same
+  size_t state_number_to_track = params_->frenet_trajectory_planner_config.max_state_in_trajectory - 1;
+  if (X_feasible.size() < state_number_to_track) {
+    size_t state_number_for_stopping = state_number_to_track - X_feasible.size();
+    DiffDriveRobotModelState x_stop = X_feasible.back();
+    x_stop[3] = 0.0;
+    for (size_t i = 0; i < state_number_for_stopping; ++i) {
+      X_feasible.push_back(x_stop);
+    }
+  }
 
   Matrix4d Q = Matrix4d::Identity() * 1;
   Matrix2d R = Matrix2d::Identity() * 0.2;
@@ -252,8 +268,15 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     robot_pose, transformed_plan,
     lookahead_distance);
 
-  if (transformed_plan.poses.size() < 2) {
+  if (transformed_plan.poses.size() == 1) {
     transformed_plan.poses.insert(transformed_plan.poses.begin(), robot_pose);
+  }
+
+  if (transformed_plan.poses.size() == 0) {
+    // if there is no path to track, stop the robot
+    geometry_msgs::msg::TwistStamped cmd_vel;
+    cmd_vel.header = pose.header;
+    return cmd_vel;
   }
 
   global_path_pub_->publish(transformed_plan);
