@@ -237,13 +237,8 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   std::unique_lock<nav2_costmap_2d::Costmap2D::mutex_t> lock(*(costmap_->getMutex()));
 
   geometry_msgs::msg::PoseStamped robot_pose;
-<<<<<<< HEAD
-  if (!path_handler_->transformPose(costmap_ros_->getGlobalFrameID(), pose, robot_pose)) {
-    throw std::runtime_error("Unable to transform robot pose into global plan's frame");
-=======
   if (!path_handler_->transformPose(costmap_ros_->getBaseFrameID(), pose, robot_pose)) {
     throw nav2_core::ControllerTFError("Unable to transform robot pose into robot base frame");
->>>>>>> 56fa199 ( Add velocity profile to the differential drive model and remove unnecessary tf transformations from controller (#46))
   }
 
   // Transform path to robot base frame
@@ -294,12 +289,6 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   nav_msgs::msg::Path frenet_plan = convertFromCartesianTrajectory(
     transformed_plan.header.frame_id,
     planned_cartesian_trajectory);
-<<<<<<< HEAD
-  frenet_plan = path_handler_->transformPath(costmap_ros_->getBaseFrameID(), frenet_plan);
-
-  planned_cartesian_trajectory = convertToCartesianTrajectory(frenet_plan);
-=======
->>>>>>> 56fa199 ( Add velocity profile to the differential drive model and remove unnecessary tf transformations from controller (#46))
 
   truncated_path_pub_->publish(frenet_plan);
   robot_pose_pub_->publish(robot_pose);
@@ -307,11 +296,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
 
   Vector4d c_state_robot;
   c_state_robot << robot_pose.pose.position.x, robot_pose.pose.position.y,
-<<<<<<< HEAD
-  tf2::getYaw(robot_pose.pose.orientation);
-=======
     tf2::getYaw(robot_pose.pose.orientation), speed.linear.x;
->>>>>>> 56fa199 ( Add velocity profile to the differential drive model and remove unnecessary tf transformations from controller (#46))
   auto u_opt = findOptimalInputForTrajectory(c_state_robot, planned_cartesian_trajectory);
 
   // populate and return message

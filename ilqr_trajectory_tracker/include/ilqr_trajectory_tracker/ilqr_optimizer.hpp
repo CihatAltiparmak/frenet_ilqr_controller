@@ -47,8 +47,6 @@ public:
     const typename RobotModel::StateT & x0,
     const std::vector<typename RobotModel::StateT> & x_feasible, const Matrix4d & Q,
     const Matrix2d & R, const double dt);
-<<<<<<< HEAD
-=======
 
   Vector2d getTwistCommand(
     const typename RobotModel::StateT & x_initial,
@@ -56,7 +54,6 @@ public:
     const double dt
   );
 
->>>>>>> 56fa199 ( Add velocity profile to the differential drive model and remove unnecessary tf transformations from controller (#46))
   double cost(
     const std::vector<typename RobotModel::StateT> & x_tracked,
     const std::vector<typename RobotModel::StateT> & x_trajectory);
