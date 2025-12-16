@@ -122,9 +122,6 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
 
   auto planned_cartesian_trajectory = frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 
-  // remove the first state which is the robot's current state
-  planned_cartesian_trajectory.erase(planned_cartesian_trajectory.begin());
-
   return planned_cartesian_trajectory;
 }
 
