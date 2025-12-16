@@ -194,7 +194,7 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
 {
 
   if (robot_cartesian_trajectory.empty()) {
-    throw nav2_core::NoValidControl("There is no trajectory to be tracked!");
+    throw std::runtime_error("There is no trajectory to be tracked!");
   }
 
   using ilqr_trajectory_tracker::DiffDriveRobotModel;
