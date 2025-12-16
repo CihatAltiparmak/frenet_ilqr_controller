@@ -40,9 +40,19 @@ Run below command not to fail gui works.
 xhost +
 ```
 
-Run docker image
+Open two terminals and start gazebo simulation from the first terminal like below and navigation2 from the second terminal. (you should continue from turtlebot3_navigation2 package because of navigation2's turtlebot3 sdf file is outdated and causes odom not handling cmd_vel commands well, who knows, maybe this repo's bug or navigation2's bug :/)
 ```sh
-docker run -it --gpus=all -e NVIDIA_DRIVER_CAPABILITIES=all --runtime=nvidia --rm --net=host --privileged --volume="${XAUTHORITY}:/root/.Xauthority" --env="DISPLAY=$DISPLAY" -v="/tmp/.gazebo/:/root/.gazebo/" -v /tmp/.X11-unix:/tmp/.X11-unix:rw --shm-size=1000mb frenet_ilqr_controller_demo ros2 launch nav2_bringup tb3_simulation_launch.py params_file:=/root/nav2_ws/src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
+docker run -it --gpus=all -e NVIDIA_DRIVER_CAPABILITIES=all --runtime=nvidia --rm --net=host --name frenet_ilqr_controller_demo --privileged --volume="${XAUTHORITY}:/root/.Xauthority" --env="DISPLAY=$DISPLAY" -v="/tmp/.gazebo/:/root/.gazebo/" -v /tmp/.X11-unix:/tmp/.X11-unix:rw --shm-size=1000mb ros-navigation/nav2_docker:humble
+(inside docker) source /opt/ros/humble/setup.bash
+(inside docker) source install/setup.bash
+(inside docker) ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+```
+
+```sh
+docker exec -it frenet_ilqr_controller_demo bash
+(inside docker) source /opt/ros/humble/setup.bash
+(inside docker) source install/setup.bash
+(inside docker) ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True params_file:=/root/nav2_ws/src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
 ```
 
 # Configurations
