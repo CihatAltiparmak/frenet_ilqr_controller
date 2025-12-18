@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      branch: [main, humble] 
+      matrix:
+        branch: [main, humble] 
     permissions:
       contents: read
       packages: write
