@@ -41,6 +41,9 @@ void ObstacleCost::initialize(
   node->get_parameter(
     cost_plugin_name_ + ".K_obstacle",
     K_obstacle_);
+  
+  RCLCPP_INFO(node->get_logger(), "======== ObstacleCost ========");
+  RCLCPP_INFO_STREAM(node->get_logger(), cost_plugin_name_ + ".K_obstacle = " << K_obstacle_);
 }
 
 double ObstacleCost::cost(

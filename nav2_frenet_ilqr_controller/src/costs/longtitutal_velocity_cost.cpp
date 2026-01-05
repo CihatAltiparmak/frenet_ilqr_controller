@@ -48,6 +48,10 @@ void LongtitutalVelocityCost::initialize(
   node->get_parameter(
     cost_plugin_name_ + ".desired_velocity",
     desired_velocity_);
+
+  RCLCPP_INFO(node->get_logger(), "======== LongtitutalVelocityCost ========");
+  RCLCPP_INFO_STREAM(node->get_logger(), cost_plugin_name_ + ".desired_velocity = " << desired_velocity_);
+  RCLCPP_INFO_STREAM(node->get_logger(), cost_plugin_name_ + ".K_longtitutal_velocity = " << K_longtitutal_velocity_);
 }
 
 double LongtitutalVelocityCost::cost(

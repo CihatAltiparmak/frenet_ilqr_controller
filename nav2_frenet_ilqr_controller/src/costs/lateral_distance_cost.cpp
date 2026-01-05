@@ -41,6 +41,9 @@ void LateralDistanceCost::initialize(
   node->get_parameter(
     cost_plugin_name_ + ".K_lateral_distance",
     K_lateral_distance_);
+
+  RCLCPP_INFO(node->get_logger(), "======== LateralDistanceCost ========");
+  RCLCPP_INFO_STREAM(node->get_logger(), cost_plugin_name_ + ".K_lateral_distance = " << K_lateral_distance_);
 }
 
 double LateralDistanceCost::cost(
