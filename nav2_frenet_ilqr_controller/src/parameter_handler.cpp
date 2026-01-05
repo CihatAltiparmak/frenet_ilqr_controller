@@ -85,6 +85,17 @@ ParameterHandler::ParameterHandler(
     node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min", rclcpp::ParameterValue(std::vector<double>({0.0, -1.5})));
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max", rclcpp::ParameterValue(std::vector<double>({1.0, 1.5})));
+<<<<<<< HEAD
+=======
+
+  declare_parameter_if_not_declared(
+    node, plugin_name_ + ".ilqr_trajectory_tracker.q_coefficients", rclcpp::ParameterValue(std::vector<double>({1.0, 1.0, 1.0, 1.0})));
+
+  declare_parameter_if_not_declared(
+    node, plugin_name_ + ".ilqr_trajectory_tracker.r_coefficients", rclcpp::ParameterValue(std::vector<double>({0.2, 0.2})));
+
+
+>>>>>>> b33f243 (Make some hardcoded parameters arrangable by ROS 2 and add q_coefficients and r_coeffcients (#63))
   node->get_parameter(
     plugin_name_ + ".interpolate_curvature_after_goal",
     params_.interpolate_curvature_after_goal);
@@ -141,6 +152,26 @@ ParameterHandler::ParameterHandler(
       plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max", input_limits_max);
     params_.input_limits_max = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_max.data(), input_limits_max.size());
   }
+<<<<<<< HEAD
+=======
+
+  {
+    std::vector<double> q_coefficients;
+    node->get_parameter(
+      plugin_name_ + ".ilqr_trajectory_tracker.q_coefficients", q_coefficients);
+    params_.Q = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
+      q_coefficients.data(), q_coefficients.size()).asDiagonal();
+  }
+
+  {
+    std::vector<double> r_coefficients;
+    node->get_parameter(
+      plugin_name_ + ".ilqr_trajectory_tracker.r_coefficients", r_coefficients);
+    params_.R = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
+      r_coefficients.data(), r_coefficients.size()).asDiagonal();
+  }
+
+>>>>>>> b33f243 (Make some hardcoded parameters arrangable by ROS 2 and add q_coefficients and r_coeffcients (#63))
   dynamic_params_handler_ = node->add_on_set_parameters_callback(
     std::bind(
       &ParameterHandler::dynamicParametersCallback,
@@ -174,6 +205,7 @@ ParameterHandler::dynamicParametersCallback(
       params_.transform_tolerance = parameter.as_double();
     } else if (name == plugin_name_ + ".time_discretization") {
       params_.time_discretization = parameter.as_double();
+      params_.frenet_trajectory_planner_config.dt = params_.time_discretization;
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.min_lateral_distance") {
       params_.frenet_trajectory_planner_config.min_lateral_distance = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.max_lateral_distance") {
@@ -202,6 +234,23 @@ ParameterHandler::dynamicParametersCallback(
       }
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.alpha") {
       params_.alpha = parameter.as_double();
+<<<<<<< HEAD
+=======
+    } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min") {
+      auto input_limits_min = parameter.as_double_array();
+      params_.input_limits_min = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_min.data(), input_limits_min.size());
+    } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max") {
+      auto input_limits_max = parameter.as_double_array();
+      params_.input_limits_max = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_max.data(), input_limits_max.size());
+    } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.q_coefficients") {
+      auto q_coefficients = parameter.as_double_array();
+      params_.Q = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
+        q_coefficients.data(), q_coefficients.size()).asDiagonal();
+    } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.r_coefficients") {
+      auto r_coefficients = parameter.as_double_array();
+      params_.R = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
+        r_coefficients.data(), r_coefficients.size()).asDiagonal();
+>>>>>>> b33f243 (Make some hardcoded parameters arrangable by ROS 2 and add q_coefficients and r_coeffcients (#63))
     }
     else if (name == plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min") {
     auto input_limits_min = parameter.as_double_array();

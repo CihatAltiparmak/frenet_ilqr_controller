@@ -82,6 +82,8 @@ docker exec -it frenet_ilqr_controller_demo bash
 
 | Parameter                  | Type         | Definition                                                                              |
 | ---------------------      | -------------| --------------------------------------------------------------------------------------- |
+| q_coefficients             | double array | Default: [1.0, 1.0, 1.0, 1.0]. The coefficients to penalize the error between desired state and estimated state. For instance, the first coefficient of this array can be increased in order to make optimizer focus on errors in x axis much more while trying to minimize the cost function. For those who understands how iterative quadratic regulator works, it's just a matter of setting Q matrix. In this parameter table, this array stands for the error in x axis(m), the error in y axis(m), the error at yaw angle(rad) and the error at velocity(m/s^2) respectively|
+| r_coefficients             | double array | Default: [0.2, 0.2]. The coefficients to penalize the unnecessary usage of input values. For instance, the first coefficient of this array can be increased in order to make optimizer focus on using as less acceleration as possible while trying to minimize the cost function. This functionality is useful when the resources used for inputs are much more important then being stable. For those who understands how iterative quadratic regulator works, it's just a matter of setting R matrix. In this parameter table, this array stands for acceleration in m/s^2 and angular velocity rad/s |
 | iteration_number           | int          | Default: 20. Maximum iteration number of newton optimizer. |
 | alpha                      | double       | Default: 1.0. Line search relavant parameter |
 | input_limits_min           | double array | Default: [-2.5, -1.0]. Minimum values the input vectors should be during optimization. The default parameters are set for a differential drive robot, which means a robot's minimum linear acceleration will be -2.5 and its angular velocity will be -1.0|
@@ -121,6 +123,8 @@ controller_server:
         time_interval: 1.5
         max_state_in_trajectory: 40
       ilqr_trajectory_tracker:
+        q_coefficients: [1.0, 1.0, 1.0, 1.0]
+        r_coefficients: [0.2, 0.2]
         iteration_number: 20
         alpha: 1.0
         input_limits_min: [-2.5, -1.0]
