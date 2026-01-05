@@ -176,7 +176,7 @@ void FrenetILQRController::addCostsFromPlugins()
 
     std::shared_ptr<costs::RclcppNodeCost> cost_checker = cost_loader.createSharedInstance(
       cost_checker_plugin_type);
-    cost_checker->initialize(cost_checker_plugin_name, node_, costmap_ros_);
+    cost_checker->initialize(absolute_cost_checker_plugin_name, node_, costmap_ros_);
     frenet_trajectory_planner_.addCost(cost_checker);
   }
 }
@@ -235,20 +235,16 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
     }
   }
 
-  MatrixXd Q = Matrix<double, DiffDriveRobotModel::StateDim, DiffDriveRobotModel::StateDim>::Identity() * 1;
-  MatrixXd R = Matrix<double, DiffDriveRobotModel::InputDim, DiffDriveRobotModel::InputDim>::Identity() * 0.2;
-  double alpha = 1;
-  double dt = 0.05;
-  newton_optimizer.setIterationNumber(40);
-  newton_optimizer.setAlpha(alpha);
+  newton_optimizer.setIterationNumber(params_->iteration_number);
+  newton_optimizer.setAlpha(1.0);
   newton_optimizer.setInputConstraints(params_->input_limits_min, params_->input_limits_max);
-  auto U_optimal = newton_optimizer.optimize(x_robot, X_feasible, Q, R, dt);
+  auto U_optimal = newton_optimizer.optimize(x_robot, X_feasible, params_->Q, params_->R, params_->time_discretization);
 
   if (U_optimal.empty()) {
     throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
   }
 
-  return newton_optimizer.getTwistCommand(x_robot, U_optimal[0], dt);
+  return newton_optimizer.getTwistCommand(x_robot, U_optimal[0], params_->time_discretization);
 }
 
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
