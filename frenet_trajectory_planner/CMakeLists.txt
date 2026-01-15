@@ -15,6 +15,7 @@ endif()
 #   endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(angles REQUIRED)
 
 add_library(frenet_trajectory_planner_lib SHARED
   src/frenet_trajectory_generator.cpp
@@ -24,10 +25,14 @@ add_library(frenet_trajectory_planner_lib SHARED
 target_include_directories(
   frenet_trajectory_planner_lib
   PUBLIC $<INSTALL_INTERFACE:include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${angles_INCLUDE_DIRS}>)
 
 target_include_directories(frenet_trajectory_planner_lib PUBLIC ${Eigen3_INCLUDE_DIRS})
-target_link_libraries(frenet_trajectory_planner_lib  Eigen3::Eigen)
+target_link_libraries(frenet_trajectory_planner_lib PUBLIC Eigen3::Eigen)
+target_link_libraries(frenet_trajectory_planner_lib PRIVATE
+  angles::angles
+)
 
 install(
   TARGETS frenet_trajectory_planner_lib

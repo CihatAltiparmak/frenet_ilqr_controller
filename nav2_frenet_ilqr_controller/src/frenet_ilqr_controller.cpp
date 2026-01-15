@@ -256,14 +256,14 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   std::unique_lock<nav2_costmap_2d::Costmap2D::mutex_t> lock(*(costmap_->getMutex()));
 
   geometry_msgs::msg::PoseStamped robot_pose;
-  if (!path_handler_->transformPose(costmap_ros_->getBaseFrameID(), pose, robot_pose)) {
-    throw nav2_core::ControllerTFError("Unable to transform robot pose into robot base frame");
+  if (!path_handler_->transformPose(costmap_ros_->getGlobalFrameID(), pose, robot_pose)) {
+    throw nav2_core::ControllerTFError("Unable to transform robot pose into global frame");
   }
 
   // Transform path to robot base frame
   auto transformed_plan = path_handler_->transformGlobalPlan(
     robot_pose, params_->max_robot_pose_search_dist, params_->interpolate_curvature_after_goal);
-    transformed_plan = path_handler_->transformPath(costmap_ros_->getBaseFrameID(), transformed_plan);
+  transformed_plan = path_handler_->transformPath(costmap_ros_->getGlobalFrameID(), transformed_plan);
 
   double lookahead_distance = 0.3;
   // TODO (CihatAltiparmak) : we should ignore the waypoints whose angles between them equal to zero or extremely large
