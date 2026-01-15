@@ -235,11 +235,6 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
     }
   }
 
-  for (int i = 1; i < (int)X_feasible.size(); ++i) {
-    double ang_diff = angles::shortest_angular_distance(X_feasible[i - 1][2], X_feasible[i][2]);
-    X_feasible[i][2] = X_feasible[i - 1][2] + ang_diff;
-  }
-
   newton_optimizer.setIterationNumber(params_->iteration_number);
   newton_optimizer.setAlpha(1.0);
   newton_optimizer.setInputConstraints(params_->input_limits_min, params_->input_limits_max);
