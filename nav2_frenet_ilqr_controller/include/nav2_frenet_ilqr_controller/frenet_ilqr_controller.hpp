@@ -135,6 +135,20 @@ public:
 
   nav_msgs::msg::Path convertFromCartesianTrajectory(
     const std::string & frame_id, const CartesianTrajectory & cartesian_trajectory);
+  
+  bool
+    transformFrenetStateInFrame(
+      const frenet_trajectory_planner::CartesianState & f_state,
+      frenet_trajectory_planner::CartesianState & f_state_out,
+      const std::string & in_frame,
+      const std::string & out_frame);
+  
+  bool
+    transformFrenetTrajectoryInFrame(
+      const frenet_trajectory_planner::CartesianTrajectory & f_trajectory,
+      frenet_trajectory_planner::CartesianTrajectory & f_trajectory_out,
+      const std::string & in_frame,
+      const std::string & out_frame);
 
 protected:
   nav2::LifecycleNode::WeakPtr node_;
