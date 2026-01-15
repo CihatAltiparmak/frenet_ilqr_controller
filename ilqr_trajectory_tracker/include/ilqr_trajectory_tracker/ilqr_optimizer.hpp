@@ -25,8 +25,6 @@
 #include <limits>
 #include "frenet_trajectory_planner/type_definitions.hpp"
 
-#include <iostream>
-
 using namespace Eigen;
 
 namespace ilqr_trajectory_tracker
@@ -178,19 +176,6 @@ public:
         alpha /= 0.5;
       }
     }
-
-    std::cout << "TRAJ COST = " << best_trajectory_cost << std::endl;
-    std::cout << "----------- x_robot -----------" << std::endl;
-    std::cout << x0[0] << ", " << x0[1] << ", " << x0[2] << ", " << x0[3] << std::endl;
-    std::cout << "----------- X desired traj -----------" << std::endl;
-    for (auto x : x_trajectory) {
-      std::cout << x[0] << ", " << x[1] << ", " << x[2] << ", " << x[3] << std::endl;
-    }
-    std::cout << "----------- X estimated traj -----------" << std::endl;
-    for (auto x : x_best_trajectory) {
-      std::cout << x[0] << ", " << x[1] << ", " << x[2] << ", " << x[3] << std::endl;
-    }
-    std::cout << "****************" << std::endl;
 
     return u_best_trajectory;
   }

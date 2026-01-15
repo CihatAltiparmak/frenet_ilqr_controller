@@ -16,7 +16,6 @@ find_package(rcl_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(tf2_eigen REQUIRED)
 find_package(frenet_trajectory_planner REQUIRED)
 find_package(ilqr_trajectory_tracker REQUIRED)
 find_package(nav2_ros_common REQUIRED)
@@ -34,7 +33,6 @@ target_include_directories(${library_name}
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
     "$<BUILD_INTERFACE:${nav2_ros_common_INCLUDE_DIRS}>"
-    "$<BUILD_INTERFACE:${tf2_eigen_INCLUDE_DIRS}>"
 )
 target_link_libraries(${library_name} PUBLIC
   ${geometry_msgs_TARGETS}
@@ -54,7 +52,6 @@ target_link_libraries(${library_name} PUBLIC
 )
 target_link_libraries(${library_name} PRIVATE
   angles::angles
-  tf2_eigen::tf2_eigen
 )
 
 add_library(nav2_frenet_ilqr_controller_costs SHARED
@@ -81,7 +78,6 @@ target_link_libraries(nav2_frenet_ilqr_controller_costs PUBLIC
 
 target_link_libraries(nav2_frenet_ilqr_controller_costs PRIVATE
   pluginlib::pluginlib
-  tf2_eigen::tf2_eigen
 )
 
 add_library(nav2_frenet_ilqr_controller_policies SHARED
@@ -106,7 +102,6 @@ target_link_libraries(nav2_frenet_ilqr_controller_policies PUBLIC
 
 target_link_libraries(nav2_frenet_ilqr_controller_policies PRIVATE
   pluginlib::pluginlib
-  tf2_eigen::tf2_eigen
 )
 
 install(TARGETS ${library_name} nav2_frenet_ilqr_controller_costs nav2_frenet_ilqr_controller_policies
@@ -148,7 +143,6 @@ ament_export_dependencies(
   tf2
   tf2_ros
   nav2_ros_common
-  tf2_eigen
 )
 ament_export_targets(${library_name})
 

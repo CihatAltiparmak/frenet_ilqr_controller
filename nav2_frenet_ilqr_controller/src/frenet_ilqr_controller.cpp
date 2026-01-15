@@ -29,7 +29,6 @@
 #include "nav2_util/geometry_utils.hpp"
 #include "nav2_costmap_2d/costmap_filters/filter_values.hpp"
 #include <pluginlib/class_loader.hpp>
-#include "tf2_eigen/tf2_eigen.hpp"
 
 using std::hypot;
 using std::min;
@@ -307,7 +306,6 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   c_state_robot[4] = speed.linear.x * std::sin(robot_yaw) + speed.linear.y * std::cos(robot_yaw);
   c_state_robot[6] = robot_yaw;
 
-  RCLCPP_INFO(logger_, "THINKING CAT yaw = %f", robot_yaw);
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
     params_->frenet_trajectory_planner_config);
   auto planned_cartesian_trajectory = frenet_trajectory_planner_.planByWaypoint(
@@ -323,26 +321,6 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   robot_pose_pub_->publish(robot_pose);
 #endif
 
-// frenet_trajectory_planner::CartesianState c_state_robot_new;
-//   bool isOk = transformFrenetStateInFrame(
-//     c_state_robot, c_state_robot_new, 
-//     costmap_ros_->getGlobalFrameID(), 
-//     costmap_ros_->getBaseFrameID());
-  
-//   if (!isOk) {
-//     throw nav2_core::ControllerTFError("Unable to transform jarbay st");
-//   }
-
-//   frenet_trajectory_planner::CartesianTrajectory planned_cartesian_trajectory_new;
-//   isOk &= transformFrenetTrajectoryInFrame(
-//     planned_cartesian_trajectory, 
-//     planned_cartesian_trajectory_new, 
-//     costmap_ros_->getGlobalFrameID(), 
-//     costmap_ros_->getBaseFrameID());
-  
-//   if (!isOk) {
-//     throw nav2_core::ControllerTFError("Unable to transform jarbay traj");
-//   }
   auto u_opt = findOptimalInputForTrajectory(c_state_robot, planned_cartesian_trajectory);
 
   // populate and return message
@@ -351,99 +329,6 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   cmd_vel.twist.linear.x = u_opt[0];
   cmd_vel.twist.angular.z = u_opt[1];
   return cmd_vel;
-}
-
-bool
-FrenetILQRController::transformFrenetStateInFrame(
-  const frenet_trajectory_planner::CartesianState & f_state,
-  frenet_trajectory_planner::CartesianState & f_state_out, 
-  const std::string & in_frame,
-  const std::string & out_frame) {
-
-  // Eigen::Translation3d p{f_state[0], f_state[3], 0.0};
-  // tf2::Stamped<Eigen::Vector3d> p_stamped{p};
-  // auto p_transformed = tf_->transform(p_stamped, in_frame, out_frame, transform_tolerance);
-
-  // Eigen::Translation3d v{f_state[1], f_state[4], 0.0};
-  // tf2::Stamped<Eigen::Vector3d> v_stamped{v};
-  // auto v_transformed = tf_->transform(v_stamped, in_frame, out_frame, transform_tolerance);
-
-  // Eigen::Translation3d a{f_state[2], f_state[5], 0.0};
-  // tf2::Stamped<Eigen::Vector3d> a_stamped{a};
-  // auto a_transformed = tf_->transform(a_stamped, in_frame, out_frame, transform_tolerance);
-
-  // Eigen::Quaterniond q{AngleAxisf(f_state[6], Vector3f::UnitZ());};
-  // tf2::Stamped<Quaterniond> q_stamped{q};
-  // auto q_transformed = tf_->transform(q_stamped, in_frame, out_frame, transform_tolerance);
-
-  // frenet_trajectory_planner::CartesianState f_state_new;
-  // f_state_new << p_stamped[0],
-  //         << v_stamped[0],
-  //         << a_stamped[0],
-  //         << p_stamped[1],
-  //         << v_stamped[1],
-  //         << a_stamped[1],
-  //         << q_transformed.toRotationMatrix().eulerAngles(2, 1, 0)[0];
-  // 
-  // return f_state_new;
-
-  try
-  {
-    auto transform = tf_->lookupTransform(
-      out_frame, in_frame, rclcpp::Time(0),
-      tf2::durationFromSec(params_->transform_tolerance));
-    
-    Eigen::Vector<double, 3> position, position_new;
-    position << f_state[0], f_state[3], 0.0;
-    tf2::doTransform(position, position_new, transform);
-
-    Eigen::VectorXd velocity, velocity_new;
-    velocity = Eigen::Vector<double, 6>::Zero();
-    velocity << 0.0, 0.0, 0.0, f_state[2], f_state[4], 0.0;
-    tf2::doTransform(velocity, velocity_new, transform);
-
-    Eigen::VectorXd accel, accel_new;
-    accel = Eigen::Vector<double, 6>::Zero();
-    accel << 0.0, 0.0, 0.0, f_state[3], f_state[5], 0.0;
-    tf2::doTransform(accel, accel_new, transform);
-
-    Eigen::Quaterniond quat, quat_new;
-    quat = AngleAxisd(f_state[6], Vector3d::UnitZ());
-    tf2::doTransform(quat, quat_new, transform);
-    
-    f_state_out({0, 3}) = position_new({0, 1});
-    f_state_out({1, 4}) = velocity_new({0, 1});
-    f_state_out({2, 5}) = accel_new({0, 1});
-    f_state_out[6] = quat_new.toRotationMatrix().eulerAngles(0, 1, 2)[2];
-    return true;
-  }
-  catch (const tf2::TransformException & e)
-  {
-    RCLCPP_ERROR(
-      logger_, "Transform exception: %s", e.what());
-    return false;
-  }
-  return false;
-}
-
-bool
-  FrenetILQRController::transformFrenetTrajectoryInFrame(
-    const frenet_trajectory_planner::CartesianTrajectory & f_trajectory,
-    frenet_trajectory_planner::CartesianTrajectory & f_trajectory_out,
-    const std::string & in_frame,
-    const std::string & out_frame) {
-
-  for (const auto & f_state : f_trajectory) {
-    frenet_trajectory_planner::CartesianState f_state_new;
-    if (!transformFrenetStateInFrame(
-      f_state, f_state_new, in_frame, out_frame)) {
-        return false;
-    }
-    f_trajectory_out.push_back(f_state_new);
-  }
-
-  return true;
-  
 }
 
 nav_msgs::msg::Path FrenetILQRController::convertFromCartesianTrajectory(

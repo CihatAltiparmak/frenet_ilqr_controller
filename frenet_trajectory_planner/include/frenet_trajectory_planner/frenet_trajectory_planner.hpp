@@ -26,7 +26,6 @@
 #include <frenet_trajectory_planner/policies/acceleration_policy.hpp>
 
 #include <memory>
-#include <iostream>
 
 namespace frenet_trajectory_planner
 {
@@ -121,19 +120,8 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
       planned_frenet_trajectory.size();
   }
 
-  // std::cout << "BEST TRAJECTORY IN FRENET FRAME" << std::endl;
-  // for (const auto & fs : planned_frenet_trajectory) {
-  //   std::cout << fs[0] << ", " << fs[1] << " | " << fs[3] << ", " << fs[4] << std::endl;
-  // }
-  // std::cout << "*************" << std::endl;
-
   auto planned_cartesian_trajectory = frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 
-  std::cout << "BEST FRENET TRAJECTORY IN CARTESIAN FRAME" << std::endl;
-  for (const auto & fs : planned_cartesian_trajectory) {
-    std::cout << fs[0] << ", " << fs[1] << " | " << fs[3] << ", " << fs[4] << " | " << std::atan2(fs[4], fs[1]) << std::endl;
-  }
-  std::cout << "*************" << std::endl;
   return planned_cartesian_trajectory;
 }
 
