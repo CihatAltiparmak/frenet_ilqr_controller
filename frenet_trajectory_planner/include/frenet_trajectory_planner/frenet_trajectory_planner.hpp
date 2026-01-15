@@ -7,6 +7,7 @@
 #include <frenet_trajectory_planner/conversion_adapters/line_adapter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
 #include <frenet_trajectory_planner/policies/acceleration_policy.hpp>
+#include "angles/angles.h"
 
 #include <memory>
 
@@ -104,6 +105,14 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   }
 
   auto planned_cartesian_trajectory = frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
+
+  // arrange yaw to make it feasible to follow by iterative lqr
+  for (size_t i = 1; i < planned_cartesian_trajectory.size(); ++i) {
+    double yaw_diff_min = angles::shortest_angular_distance(
+      planned_cartesian_trajectory[i - 1][6], planned_cartesian_trajectory[i][6]);
+    planned_cartesian_trajectory[i][6] 
+      = planned_cartesian_trajectory[i - 1][6] + yaw_diff_min;
+  }
 
   return planned_cartesian_trajectory;
 }
