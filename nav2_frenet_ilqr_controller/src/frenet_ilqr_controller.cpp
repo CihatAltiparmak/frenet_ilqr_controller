@@ -239,13 +239,8 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   std::unique_lock<nav2_costmap_2d::Costmap2D::mutex_t> lock(*(costmap_->getMutex()));
 
   geometry_msgs::msg::PoseStamped robot_pose;
-<<<<<<< HEAD
-  if (!path_handler_->transformPose(costmap_ros_->getBaseFrameID(), pose, robot_pose)) {
-    throw std::runtime_error("Unable to transform robot pose into robot base frame");
-=======
   if (!path_handler_->transformPose(costmap_ros_->getGlobalFrameID(), pose, robot_pose)) {
-    throw nav2_core::ControllerTFError("Unable to transform robot pose into global frame");
->>>>>>> 872cfc3 (Fix yaw angle flipping problem and generate trajectories in global frame of costmap (#65))
+    throw std::runtime_error("Unable to transform robot pose into global frame");
   }
 
   // Transform path to robot base frame
