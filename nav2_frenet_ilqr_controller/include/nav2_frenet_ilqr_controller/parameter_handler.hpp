@@ -32,8 +32,6 @@
 struct Parameters
 {
   bool interpolate_curvature_after_goal;
-  double max_robot_pose_search_dist;
-  double transform_tolerance;
   double time_discretization;
   int iteration_number;
   double alpha;
@@ -58,8 +56,7 @@ public:
    * @brief Constructor for nav2_frenet_ilqr_controller::ParameterHandler
    */
   ParameterHandler(
-    nav2::LifecycleNode::WeakPtr node, const std::string & plugin_name,
-    const double costmap_size_x_in_meters);
+    nav2::LifecycleNode::WeakPtr node, const std::string & plugin_name);
 
   /**
    * @brief Destrructor for nav2_frenet_ilqr_controller::ParameterHandler
