@@ -29,8 +29,13 @@ using nav2_util::declare_parameter_if_not_declared;
 using rcl_interfaces::msg::ParameterType;
 
 ParameterHandler::ParameterHandler(
+<<<<<<< HEAD
   rclcpp_lifecycle::LifecycleNode::WeakPtr parent,
   const std::string & plugin_name, const double costmap_size_x_in_meters)
+=======
+  nav2::LifecycleNode::WeakPtr parent,
+  const std::string & plugin_name)
+>>>>>>> 422c735 (Migrate to navigation2 PR : Centralize path handler logic in controller server (#67))
 : plugin_name_(plugin_name)
 {
   node_ = parent;
@@ -38,11 +43,6 @@ ParameterHandler::ParameterHandler(
 
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".interpolate_curvature_after_goal", rclcpp::ParameterValue(false));
-  declare_parameter_if_not_declared(
-    node, plugin_name_ + ".max_robot_pose_search_dist",
-    rclcpp::ParameterValue(costmap_size_x_in_meters / 2));
-  declare_parameter_if_not_declared(
-    node, plugin_name_ + ".transform_tolerance", rclcpp::ParameterValue(0.1));
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".time_discretization", rclcpp::ParameterValue(0.05));
 
@@ -96,10 +96,6 @@ ParameterHandler::ParameterHandler(
   node->get_parameter(
     plugin_name_ + ".interpolate_curvature_after_goal",
     params_.interpolate_curvature_after_goal);
-  node->get_parameter(
-    plugin_name_ + ".max_robot_pose_search_dist",
-    params_.max_robot_pose_search_dist);
-  node->get_parameter(plugin_name_ + ".transform_tolerance", params_.transform_tolerance);
 
   node->get_parameter(plugin_name_ + ".time_discretization", params_.time_discretization);
   params_.frenet_trajectory_planner_config.dt = params_.time_discretization;
@@ -193,10 +189,6 @@ ParameterHandler::dynamicParametersCallback(
 
     if (name == plugin_name_ + ".interpolate_curvature_after_goal") {
       params_.interpolate_curvature_after_goal = parameter.as_double();
-    } else if (name == plugin_name_ + ".max_robot_pose_search_dist") {
-      params_.max_robot_pose_search_dist = parameter.as_double();
-    } else if (name == plugin_name_ + ".transform_tolerance") {
-      params_.transform_tolerance = parameter.as_double();
     } else if (name == plugin_name_ + ".time_discretization") {
       params_.time_discretization = parameter.as_double();
       params_.frenet_trajectory_planner_config.dt = params_.time_discretization;

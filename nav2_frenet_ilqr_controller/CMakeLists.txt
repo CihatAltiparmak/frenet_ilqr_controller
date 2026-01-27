@@ -29,7 +29,6 @@ set(library_name nav2_frenet_ilqr_controller)
 
 add_library(${library_name} SHARED
   src/frenet_ilqr_controller.cpp
-  src/path_handler.cpp
   src/parameter_handler.cpp)
 
 ament_target_dependencies(${library_name}
