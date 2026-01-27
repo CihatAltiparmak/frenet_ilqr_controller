@@ -13,7 +13,6 @@
 #include "pluginlib/class_list_macros.hpp"
 #include "geometry_msgs/msg/pose2_d.hpp"
 #include "std_msgs/msg/bool.hpp"
-#include "nav2_frenet_ilqr_controller/path_handler.hpp"
 #include "nav2_frenet_ilqr_controller/parameter_handler.hpp"
 #include "nav2_frenet_ilqr_controller/policies/rclcpp_node_policy.hpp"
 #include "nav2_frenet_ilqr_controller/costs/rclcpp_node_cost.hpp"
@@ -87,9 +86,11 @@ public:
    * @return          Best command
    */
   geometry_msgs::msg::TwistStamped computeVelocityCommands(
-    const geometry_msgs::msg::PoseStamped & pose,
+    const geometry_msgs::msg::PoseStamped & robot_pose,
     const geometry_msgs::msg::Twist & velocity,
-    nav2_core::GoalChecker * /*goal_checker*/) override;
+    nav2_core::GoalChecker * /*goal_checker*/,
+    const nav_msgs::msg::Path & transformed_global_plan,
+    const geometry_msgs::msg::PoseStamped & global_goal) override;
 
   Vector2d findOptimalInputForTrajectory(
     const frenet_trajectory_planner::CartesianState & c_state_robot,
@@ -101,7 +102,7 @@ public:
    * @brief nav2_core setPlan - Sets the global plan
    * @param path The global plan
    */
-  void setPlan(const nav_msgs::msg::Path & path) override;
+  void newPathReceived(const nav_msgs::msg::Path & raw_global_path) override;
 
   /**
    * @brief Limits the maximum linear speed of the robot.
@@ -138,7 +139,6 @@ protected:
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::Path>> truncated_path_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::PoseStamped>>
   robot_pose_pub_;
-  std::unique_ptr<nav2_frenet_ilqr_controller::PathHandler> path_handler_;
   std::unique_ptr<nav2_frenet_ilqr_controller::ParameterHandler> parameter_handler_;
   frenet_trajectory_planner::FrenetTrajectoryPlanner frenet_trajectory_planner_;
   Parameters * params_;

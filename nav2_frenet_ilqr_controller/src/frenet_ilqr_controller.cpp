@@ -42,21 +42,15 @@ void FrenetILQRController::configure(
 
   parameter_handler_ = std::make_unique<nav2_frenet_ilqr_controller::ParameterHandler>(
     parent,
-    plugin_name_,
-    costmap_->getSizeInMetersX());
+    plugin_name_);
   params_ = parameter_handler_->getParams();
 
   addPoliciesFromPlugins();
   addCostsFromPlugins();
 
-  // Handles global path transformations
-  path_handler_ = std::make_unique<PathHandler>(
-    tf2::durationFromSec(params_->transform_tolerance), tf_, costmap_ros_);
-
   double control_frequency = 20.0;
   control_duration_ = 1.0 / control_frequency;
 
-  global_path_pub_ = node->create_publisher<nav_msgs::msg::Path>("received_plan", 1);
   truncated_path_pub_ = node->create_publisher<nav_msgs::msg::Path>("truncated_plan", 1);
   robot_pose_pub_ = node->create_publisher<geometry_msgs::msg::PoseStamped>("robot_test_pose", 1);
 }
@@ -68,7 +62,6 @@ void FrenetILQRController::cleanup()
     "Cleaning up controller: %s of type"
     " frenet_ilqr_controller::FrenetILQRController",
     plugin_name_.c_str());
-  global_path_pub_.reset();
   truncated_path_pub_.reset();
   robot_pose_pub_.reset();
 }
@@ -80,7 +73,6 @@ void FrenetILQRController::activate()
     "Activating controller: %s of type "
     "frenet_ilqr_controller::FrenetILQRController",
     plugin_name_.c_str());
-  global_path_pub_->on_activate();
   truncated_path_pub_->on_activate();
   robot_pose_pub_->on_activate();
 }
@@ -92,7 +84,6 @@ void FrenetILQRController::deactivate()
     "Deactivating controller: %s of type "
     "frenet_ilqr_controller::FrenetILQRController",
     plugin_name_.c_str());
-  global_path_pub_->on_deactivate();
   truncated_path_pub_->on_deactivate();
   robot_pose_pub_->on_deactivate();
 }
@@ -231,13 +222,16 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
 }
 
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
-  const geometry_msgs::msg::PoseStamped & pose,
+  const geometry_msgs::msg::PoseStamped & robot_pose,
   const geometry_msgs::msg::Twist & speed,
-  nav2_core::GoalChecker * /*goal_checker*/)
+  nav2_core::GoalChecker * /*goal_checker*/,
+  const nav_msgs::msg::Path & transformed_global_plan,
+  const geometry_msgs::msg::PoseStamped & /*global_goal*/)
 {
   std::lock_guard<std::mutex> lock_reinit(parameter_handler_->getMutex());
   std::unique_lock<nav2_costmap_2d::Costmap2D::mutex_t> lock(*(costmap_->getMutex()));
 
+<<<<<<< HEAD
   geometry_msgs::msg::PoseStamped robot_pose;
   if (!path_handler_->transformPose(costmap_ros_->getGlobalFrameID(), pose, robot_pose)) {
     throw std::runtime_error("Unable to transform robot pose into global frame");
@@ -248,27 +242,20 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     robot_pose, params_->max_robot_pose_search_dist, params_->interpolate_curvature_after_goal);
   transformed_plan = path_handler_->transformPath(costmap_ros_->getGlobalFrameID(), transformed_plan);
 
+=======
+>>>>>>> 422c735 (Migrate to navigation2 PR : Centralize path handler logic in controller server (#67))
   double lookahead_distance = 0.3;
   // TODO (CihatAltiparmak) : we should ignore the waypoints whose angles between them equal to zero or extremely large
-  transformed_plan = truncateGlobalPlanWithLookAheadDist(
-    robot_pose, transformed_plan,
+  auto clipped_plan = truncateGlobalPlanWithLookAheadDist(
+    robot_pose, transformed_global_plan,
     lookahead_distance);
 
-  if (transformed_plan.poses.size() == 1) {
-    transformed_plan.poses.insert(transformed_plan.poses.begin(), robot_pose);
-  }
-
-  if (transformed_plan.poses.size() == 0) {
-    // if there is no path to track, stop the robot
-    geometry_msgs::msg::TwistStamped cmd_vel;
-    cmd_vel.header = pose.header;
-    return cmd_vel;
-  }
-
-  global_path_pub_->publish(transformed_plan);
-
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
-  for (const auto & pose_stamped : transformed_plan.poses) {
+  frenet_trajectory_planner::CartesianPoint c_robot_point;
+  c_robot_point << robot_pose.pose.position.x, robot_pose.pose.position.y;
+  waypoint_list.push_back(c_robot_point);
+
+  for (const auto & pose_stamped : clipped_plan.poses) {
     frenet_trajectory_planner::CartesianPoint point;
     point << pose_stamped.pose.position.x, pose_stamped.pose.position.y;
     waypoint_list.push_back(point);
@@ -292,7 +279,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
 
 #if 1
   nav_msgs::msg::Path frenet_plan = convertFromCartesianTrajectory(
-    transformed_plan.header.frame_id,
+    transformed_global_plan.header.frame_id,
     planned_cartesian_trajectory);
 
   truncated_path_pub_->publish(frenet_plan);
@@ -303,7 +290,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
 
   // populate and return message
   geometry_msgs::msg::TwistStamped cmd_vel;
-  cmd_vel.header = pose.header;
+  cmd_vel.header = robot_pose.header;
   cmd_vel.twist.linear.x = u_opt[0];
   cmd_vel.twist.angular.z = u_opt[1];
   return cmd_vel;
@@ -337,9 +324,9 @@ bool FrenetILQRController::cancel()
   return true;
 }
 
-void FrenetILQRController::setPlan(const nav_msgs::msg::Path & path)
+void FrenetILQRController::newPathReceived(
+  const nav_msgs::msg::Path & /*raw_global_path*/)
 {
-  path_handler_->setPlan(path);
 }
 
 void FrenetILQRController::setSpeedLimit(
