@@ -99,7 +99,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
     // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
     auto all_frenet_trajectories =
       frenet_trajectory_generator_->getAllPossibleFrenetTrajectories(
-      robot_frenet_state, remaining_state_number_);
+      robot_frenet_state, remaining_state_number_, Behavior::KEEP_VELOCITY);
 
     auto best_frenet_trajectory_optional =
       frenet_trajectory_selector_.selectBestFrenetTrajectory(

@@ -19,16 +19,17 @@
 
 #include <Eigen/Dense>
 #include <cmath>
+#include "frenet_trajectory_planner/polynomial_trajectory_planner.hpp"
 
 using namespace Eigen;
 
 namespace frenet_trajectory_planner
 {
 
-class QuinticTrajectoryPlanner
+class QuinticTrajectoryPlanner : public PolynomialTrajectoryPlanner
 {
 public:
-  QuinticTrajectoryPlanner();
+  QuinticTrajectoryPlanner() : PolynomialTrajectoryPlanner() {}
   bool setCoefficientsOrReturnFalse(
     const double x0,
     const double dx0,
@@ -37,10 +38,10 @@ public:
     const double dx1,
     const double ddx1,
     const double t0,
-    const double t1);
-  double x(const double t);
-  double dx(const double t);
-  double ddx(const double t);
+    const double t1) override;
+  double x(const double t) override;
+  double dx(const double t) override;
+  double ddx(const double t) override;
 
 private:
   VectorXd coff_;

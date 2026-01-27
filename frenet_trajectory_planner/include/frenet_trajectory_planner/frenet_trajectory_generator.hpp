@@ -24,11 +24,17 @@
 #include <Eigen/Dense>
 #include <cmath>
 #include <vector>
+#include <memory>
 
 using namespace Eigen;
 
 namespace frenet_trajectory_planner
 {
+
+enum Behavior {
+  KEEP_VELOCITY,
+  MERGE_AND_THEN_STOP
+};
 
 class FrenetTrajectoryGenerator
 {
@@ -36,12 +42,15 @@ public:
   FrenetTrajectoryGenerator(const FrenetTrajectoryPlannerConfig & frenet_planner_config);
 
   std::vector<FrenetTrajectory> getAllPossibleFrenetTrajectories(
-    const FrenetState & frenet_state_initial, const size_t max_state_number);
+    const FrenetState & frenet_state_initial, 
+    const size_t max_state_number,
+    const Behavior & selected_behavior);
 
   FrenetTrajectory getFrenetTrajectory(
     const FrenetState & frenet_state_initial,
     const FrenetState & frenet_state_final,
-    const size_t max_state_number);
+    const size_t max_state_number,
+    const Behavior & selected_behavior);
 
 private:
   FrenetTrajectoryPlannerConfig frenet_planner_config_;

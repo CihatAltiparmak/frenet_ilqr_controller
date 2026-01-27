@@ -28,7 +28,7 @@ TEST(frenet_trajectory_planner, quartic_trajectory_planner_test_setCoefficientsO
 
   ASSERT_EQ(
     quartic_trajectory_planner.setCoefficientsOrReturnFalse(
-      0, 0, 0, 1, 0, 0, 1), true);
+      0, 0, 0, 0, 1, 0, 0, 1), true);
 
   // check if the longtitutal velocity is 1 when time is 1 sec
   ASSERT_NEAR(quartic_trajectory_planner.dx(1), 1, 1e-4);

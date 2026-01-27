@@ -20,13 +20,11 @@
 namespace frenet_trajectory_planner
 {
 
-QuarticTrajectoryPlanner::QuarticTrajectoryPlanner()
-{}
-
 bool QuarticTrajectoryPlanner::setCoefficientsOrReturnFalse(
   const double x0,
   const double dx0,
   const double ddx0,
+  const double x1,
   const double dx1,
   const double ddx1,
   const double t0,

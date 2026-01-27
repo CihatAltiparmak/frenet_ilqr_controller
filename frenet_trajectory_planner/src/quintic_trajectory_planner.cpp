@@ -20,9 +20,6 @@
 namespace frenet_trajectory_planner
 {
 
-QuinticTrajectoryPlanner::QuinticTrajectoryPlanner()
-{}
-
 bool QuinticTrajectoryPlanner::setCoefficientsOrReturnFalse(
   const double x0,
   const double dx0,
