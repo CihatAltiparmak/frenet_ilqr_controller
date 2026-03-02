@@ -87,6 +87,9 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
 
   frenet_trajectory_selector_.setFrenetFrameConverter(frenet_frame_converter);
 
+  Info info;
+  info.arclength = frenet_frame_converter->getArclength();
+
   // robot_cartesian_state should start from first segment
   FrenetState robot_frenet_state =
     frenet_frame_converter->convertCartesian2FrenetForSegment(robot_cartesian_state, 0);
@@ -103,7 +106,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
 
     auto best_frenet_trajectory_optional =
       frenet_trajectory_selector_.selectBestFrenetTrajectory(
-      all_frenet_trajectories);
+      all_frenet_trajectories, info);
 
     if (!best_frenet_trajectory_optional.has_value()) {
       break;
