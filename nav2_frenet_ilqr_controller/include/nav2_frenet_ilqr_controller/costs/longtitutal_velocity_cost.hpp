@@ -46,6 +46,8 @@ public:
 protected:
   double K_longtitutal_velocity_;
   double desired_velocity_;
+  double distance_to_approach_;
+  double desired_velocity_to_approach_;
 };
 
 }
