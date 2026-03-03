@@ -36,7 +36,7 @@ void ObstacleCost::initialize(
 
   auto node = parent.lock();
   declare_parameter_if_not_declared(
-    node, cost_plugin_name_ + ".K_obstacle", rclcpp::ParameterValue(2.0));
+    node, cost_plugin_name_ + ".K_obstacle", rclcpp::ParameterValue(2));
 
   node->get_parameter(
     cost_plugin_name_ + ".K_obstacle",

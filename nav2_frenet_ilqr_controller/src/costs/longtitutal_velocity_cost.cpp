@@ -41,6 +41,12 @@ void LongtitutalVelocityCost::initialize(
   declare_parameter_if_not_declared(
     node, cost_plugin_name_ + ".desired_velocity", rclcpp::ParameterValue(0.5));
 
+  declare_parameter_if_not_declared(
+    node, cost_plugin_name_ + ".distance_to_approach", rclcpp::ParameterValue(0.8));
+
+  declare_parameter_if_not_declared(
+    node, cost_plugin_name_ + ".desired_velocity_to_approach", rclcpp::ParameterValue(0.1));
+
   node->get_parameter(
     cost_plugin_name_ + ".K_longtitutal_velocity",
     K_longtitutal_velocity_);
@@ -48,6 +54,14 @@ void LongtitutalVelocityCost::initialize(
   node->get_parameter(
     cost_plugin_name_ + ".desired_velocity",
     desired_velocity_);
+
+  node->get_parameter(
+    cost_plugin_name_ + ".distance_to_approach",
+    distance_to_approach_);
+
+  node->get_parameter(
+    cost_plugin_name_ + ".desired_velocity_to_approach",
+    desired_velocity_to_approach_);
 }
 
 double LongtitutalVelocityCost::cost(
@@ -57,8 +71,8 @@ double LongtitutalVelocityCost::cost(
   double trajectory_cost = 0;
 
   for (auto frenet_state : frenet_trajectory) {
-    if (info_.arclength - frenet_state[0] < 0.8) {
-      trajectory_cost += std::abs(frenet_state[1] - 0.1);
+    if (info_.arclength - frenet_state[0] < distance_to_approach_) {
+      trajectory_cost += std::abs(frenet_state[1] - desired_velocity_to_approach_);
     } else {
       trajectory_cost += std::abs(frenet_state[1] - desired_velocity_);
     }
