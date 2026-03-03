@@ -23,6 +23,7 @@ public:
   CartesianState convertFrenet2CartesianForSegment(
     const FrenetState & frenet_state,
     const size_t segment_index);
+  double getArclength();
 
 private:
   std::vector<std::unique_ptr<BaseAdapter>> segments_;
@@ -125,5 +126,13 @@ CartesianState FrenetFrameConverter::convertFrenet2CartesianForSegment(
   const FrenetState & frenet_state, const size_t segment_index)
 {
   return segments_.at(segment_index)->convertFrenet2Cartesian(frenet_state);
+}
+
+double FrenetFrameConverter::getArclength() {
+  double total_arclength = 0.0;
+  for (const auto & segment : segments_) {
+    total_arclength += segment->getArclength();
+  }
+  return total_arclength;
 }
 }

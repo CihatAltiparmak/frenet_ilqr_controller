@@ -97,8 +97,11 @@ docker exec -it frenet_ilqr_controller_demo bash
 #### Longtitutal Velocity Cost Checker
 | Parameter                  | Type   | Definition |
 | ---------------------      | -------| ------------------------------- |
-| desired velocity           | double | Default: 0.5. desired velocity for velocity keeping during trajectory execution |
+| desired_velocity           | double | Default: 0.5. desired velocity for velocity keeping during trajectory execution |
 | K_longtitutal_velocity    | double | Default: 10.0. Cost Coefficient in order to keep longitutal velocity in desired longitutal velocity along curve |
+| distance_to_approach       | double | Default: 0.8. longtitutal approach distance to goal along path. When robot approached the finish of the path, the robot starts to decelerate to set velocity of robot as `desired_velocity_to_approach`|
+| desired_velocity_to_approach | double | Default: 0.1. The desired velocity when robot approached the finish of the path by `distance_to_approach` distance |
+
 
 #### Obstacle Policy
 
@@ -137,6 +140,8 @@ controller_server:
         plugin: "nav2_frenet_ilqr_controller::costs::LongtitutalVelocityCost"
         K_longtitutal_velocity: 5.0
         desired_velocity: 0.5
+        distance_to_approach: 0.8
+        desired_velocity_to_approach: 0.1
 
       policy_plugins: ["ObstaclePolicy"]
       ObstaclePolicy:
