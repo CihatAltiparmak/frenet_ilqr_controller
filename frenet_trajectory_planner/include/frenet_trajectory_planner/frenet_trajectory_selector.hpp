@@ -22,7 +22,8 @@ public:
   void addCost(const std::shared_ptr<costs::Cost> & cost);
 
   std::optional<FrenetTrajectory> selectBestFrenetTrajectory(
-    const std::vector<FrenetTrajectory> & frenet_trajectory);
+    const std::vector<FrenetTrajectory> & frenet_trajectory,
+    const Info & info);
 
   void setFrenetFrameConverter(
     const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
@@ -55,7 +56,7 @@ void FrenetTrajectorySelector::addCost(const std::shared_ptr<costs::Cost> & cost
 }
 
 std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajectory(
-  const std::vector<FrenetTrajectory> & frenet_trajectories)
+  const std::vector<FrenetTrajectory> & frenet_trajectories, const Info & info)
 {
 
   auto policy_checker =
@@ -70,10 +71,11 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajec
     };
 
   auto get_trajectory_cost =
-    [this](const FrenetTrajectory & frenet_trajectory,
+    [this, info](const FrenetTrajectory & frenet_trajectory,
       const CartesianTrajectory & cartesian_trajectory) -> double {
       double trajectory_cost = 0;
-      for (const auto & cost_checker : costs_) {
+      for (auto & cost_checker : costs_) {
+        cost_checker->setInfo(info);
         trajectory_cost += cost_checker->cost(frenet_trajectory, cartesian_trajectory);
       }
       return trajectory_cost;
