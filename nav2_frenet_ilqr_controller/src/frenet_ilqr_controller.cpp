@@ -211,12 +211,13 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   auto x_robot = DiffDriveRobotModel::fromFrenetCartesianState(c_state_robot);
   auto X_feasible = newton_optimizer.fromFrenetCartesianTrajectory(robot_cartesian_trajectory);
 
-  // TODO (CihatAltiparmak) : add behavior mode into frenet_trajectory_planner. The velocity trajectory 
-  // can be planned using Quinctic Polynom instead of Quartic Polynom  which takes into account 
+  // TODO (CihatAltiparmak) : add behavior mode into frenet_trajectory_planner. The velocity trajectory
+  // can be planned using Quinctic Polynom instead of Quartic Polynom  which takes into account
   // the finishing point as well
   // If the robot is to approach to the goal, tell ILQR to deccelerate by filling velocity states by zero
   // and keep the goal's x, y and yaw angle states same
-  size_t state_number_to_track = params_->frenet_trajectory_planner_config.max_state_in_trajectory - 1;
+  size_t state_number_to_track = params_->frenet_trajectory_planner_config.max_state_in_trajectory -
+    1;
   if (X_feasible.size() < state_number_to_track) {
     size_t state_number_for_stopping = state_number_to_track - X_feasible.size();
     DiffDriveRobotModel::StateT x_stop = X_feasible.back();
@@ -229,7 +230,8 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   newton_optimizer.setIterationNumber(params_->iteration_number);
   newton_optimizer.setAlpha(1.0);
   newton_optimizer.setInputConstraints(params_->input_limits_min, params_->input_limits_max);
-  auto U_optimal = newton_optimizer.optimize(x_robot, X_feasible, params_->Q, params_->R, params_->time_discretization);
+  auto U_optimal = newton_optimizer.optimize(x_robot, X_feasible, params_->Q, params_->R,
+      params_->time_discretization);
 
   if (U_optimal.empty()) {
     throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
@@ -268,7 +270,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   frenet_trajectory_planner::CartesianState c_state_robot =
     frenet_trajectory_planner::CartesianState::Zero();
   double robot_yaw = tf2::getYaw(robot_pose.pose.orientation);
-  
+
   c_state_robot[0] = robot_pose.pose.position.x;
   c_state_robot[1] = speed.linear.x * std::cos(robot_yaw) - speed.linear.y * std::sin(robot_yaw);
   c_state_robot[3] = robot_pose.pose.position.y;

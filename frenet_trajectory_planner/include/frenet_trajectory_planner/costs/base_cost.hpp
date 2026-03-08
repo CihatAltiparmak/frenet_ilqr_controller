@@ -22,7 +22,8 @@
 namespace frenet_trajectory_planner
 {
 
-struct Info {
+struct Info
+{
   double arclength;
 };
 
@@ -37,11 +38,13 @@ public:
   virtual double cost(
     const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) = 0;
-  void setInfo(const Info & info) {
+  void setInfo(const Info & info)
+  {
     info_ = info;
   }
+
 protected:
-    Info info_;
+  Info info_;
 };
 
 }

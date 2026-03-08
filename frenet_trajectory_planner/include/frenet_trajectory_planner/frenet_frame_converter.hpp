@@ -145,7 +145,8 @@ CartesianState FrenetFrameConverter::convertFrenet2CartesianForSegment(
   return segments_.at(segment_index)->convertFrenet2Cartesian(frenet_state);
 }
 
-double FrenetFrameConverter::getArclength() {
+double FrenetFrameConverter::getArclength()
+{
   double total_arclength = 0.0;
   for (const auto & segment : segments_) {
     total_arclength += segment->getArclength();
