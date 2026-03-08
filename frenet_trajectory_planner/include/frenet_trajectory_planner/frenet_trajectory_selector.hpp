@@ -78,7 +78,7 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajec
 
   auto policy_checker =
     [this](const FrenetTrajectory & frenet_trajectory,
-      const CartesianTrajectory & cartesian_trajectory) -> bool {
+    const CartesianTrajectory & cartesian_trajectory) -> bool {
       for (const auto & policy : policies_) {
         if (!policy->checkIfFeasible(frenet_trajectory, cartesian_trajectory)) {
           return false;
@@ -89,7 +89,7 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajec
 
   auto get_trajectory_cost =
     [this, info](const FrenetTrajectory & frenet_trajectory,
-      const CartesianTrajectory & cartesian_trajectory) -> double {
+    const CartesianTrajectory & cartesian_trajectory) -> double {
       double trajectory_cost = 0;
       for (auto & cost_checker : costs_) {
         cost_checker->setInfo(info);

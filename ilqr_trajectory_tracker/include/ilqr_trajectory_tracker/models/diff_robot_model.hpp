@@ -43,7 +43,7 @@ public:
     const StateT & x_initial,
     const InputT & u,
     const double dt);
-  
+
   static StateT fromFrenetCartesianState(const frenet_trajectory_planner::CartesianState & c_state);
 };
 

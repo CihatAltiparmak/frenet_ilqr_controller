@@ -44,7 +44,8 @@ DiffDriveRobotModel::StateT DiffDriveRobotModel::applySystemDynamics(
   return x_final;
 }
 
-DiffDriveRobotModel::InputT DiffDriveRobotModel::applyLimits(const InputT & u) {
+DiffDriveRobotModel::InputT DiffDriveRobotModel::applyLimits(const InputT & u)
+{
   return u.cwiseMin(input_limits_max_).cwiseMax(input_limits_min_);
 }
 
@@ -53,7 +54,7 @@ DiffDriveRobotModel::StateMatrixT DiffDriveRobotModel::getStateMatrix(
   const double dt)
 {
   StateMatrixT state_matrix;
-  state_matrix << 
+  state_matrix <<
     1, 0, -x_eq[3] * std::sin(x_eq[2]) * dt, std::cos(x_eq[2]) * dt,
     0, 1, +x_eq[3] * std::cos(x_eq[2]) * dt, std::sin(x_eq[2]) * dt,
     0, 0, 1, 0,
@@ -98,9 +99,9 @@ DiffDriveRobotModel::fromFrenetCartesianState(
   // TODO (CihatAltiparmak) : find the signs of the velocitites as well
   double vel = std::hypot(c_state[1], c_state[4]);
   x << c_state[0],
-       c_state[3],
-       c_state[6],
-       vel;
+    c_state[3],
+    c_state[6],
+    vel;
   return x;
 }
 

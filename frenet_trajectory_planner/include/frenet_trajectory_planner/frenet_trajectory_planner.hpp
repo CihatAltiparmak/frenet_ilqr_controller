@@ -124,14 +124,15 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
       planned_frenet_trajectory.size();
   }
 
-  auto planned_cartesian_trajectory = frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
+  auto planned_cartesian_trajectory =
+    frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 
   // arrange yaw to make it feasible to follow by iterative lqr
   for (size_t i = 1; i < planned_cartesian_trajectory.size(); ++i) {
     double yaw_diff_min = angles::shortest_angular_distance(
       planned_cartesian_trajectory[i - 1][6], planned_cartesian_trajectory[i][6]);
-    planned_cartesian_trajectory[i][6] 
-      = planned_cartesian_trajectory[i - 1][6] + yaw_diff_min;
+    planned_cartesian_trajectory[i][6] =
+      planned_cartesian_trajectory[i - 1][6] + yaw_diff_min;
   }
 
   return planned_cartesian_trajectory;
