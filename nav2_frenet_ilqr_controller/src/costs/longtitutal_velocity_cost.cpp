@@ -78,7 +78,7 @@ double LongtitutalVelocityCost::cost(
     }
   }
 
-  return K_longtitutal_velocity_ * trajectory_cost;
+  return K_longtitutal_velocity_ * trajectory_cost / frenet_trajectory.size();
 }
 
 }
