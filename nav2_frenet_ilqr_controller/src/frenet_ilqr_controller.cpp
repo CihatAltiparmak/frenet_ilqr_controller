@@ -70,6 +70,7 @@ void FrenetILQRController::configure(
 
   truncated_path_pub_ = node->create_publisher<nav_msgs::msg::Path>("truncated_plan", 1);
   robot_pose_pub_ = node->create_publisher<geometry_msgs::msg::PoseStamped>("robot_test_pose", 1);
+  trajectory_visualizer_.on_configure(parent, costmap_ros_->getGlobalFrameID());
 }
 
 void FrenetILQRController::cleanup()
@@ -81,6 +82,7 @@ void FrenetILQRController::cleanup()
     plugin_name_.c_str());
   truncated_path_pub_.reset();
   robot_pose_pub_.reset();
+  trajectory_visualizer_.on_cleanup();
 }
 
 void FrenetILQRController::activate()
@@ -92,6 +94,7 @@ void FrenetILQRController::activate()
     plugin_name_.c_str());
   truncated_path_pub_->on_activate();
   robot_pose_pub_->on_activate();
+  trajectory_visualizer_.on_activate();
 }
 
 void FrenetILQRController::deactivate()
@@ -103,6 +106,7 @@ void FrenetILQRController::deactivate()
     plugin_name_.c_str());
   truncated_path_pub_->on_deactivate();
   robot_pose_pub_->on_deactivate();
+  trajectory_visualizer_.on_deactivate();
 }
 
 void FrenetILQRController::addPoliciesFromPlugins()
@@ -277,9 +281,12 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
 
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
     params_->frenet_trajectory_planner_config);
+  auto debug_info = frenet_trajectory_planner::DebugInfo();
   auto planned_cartesian_trajectory = frenet_trajectory_planner_.planByWaypoint(
     c_state_robot,
-    waypoint_list);
+    waypoint_list, debug_info);
+  
+  trajectory_visualizer_.visualize(debug_info);
 
 #if 1
   nav_msgs::msg::Path frenet_plan = convertFromCartesianTrajectory(
