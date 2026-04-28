@@ -41,7 +41,7 @@ template<typename Parameters>
 class BasePolicy : public Policy
 {
 public:
-  BasePolicy(const Parameters & parameters)
+  explicit BasePolicy(const Parameters & parameters)
   : parameters_(parameters)
   {
   }
@@ -55,5 +55,5 @@ protected:
   Parameters parameters_;
 };
 
-}
+}  // namespace policies
 }  // namespace frenet_trajectory_planner

@@ -18,6 +18,8 @@
 #ifndef NAV2_FRENET_ILQR_CONTROLLER__POLICIES__RCLCPP_NODE_POLICY_HPP_
 #define NAV2_FRENET_ILQR_CONTROLLER__POLICIES__RCLCPP_NODE_POLICY_HPP_
 
+#include <memory>
+#include <string>
 #include "frenet_trajectory_planner/policies/base_policy.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "nav2_costmap_2d/costmap_2d_ros.hpp"
@@ -60,7 +62,7 @@ RclcppNodePolicy::RclcppNodePolicy()
 {
 }
 
-}
-}
+}  // namespace policies
+}  // namespace nav2_frenet_ilqr_controller
 
-#endif
+#endif  // NAV2_FRENET_ILQR_CONTROLLER__POLICIES__RCLCPP_NODE_POLICY_HPP_

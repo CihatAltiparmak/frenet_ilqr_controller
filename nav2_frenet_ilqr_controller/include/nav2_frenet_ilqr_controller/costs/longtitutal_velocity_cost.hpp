@@ -19,6 +19,7 @@
 #define NAV2_FRENET_ILQR_CONTROLLER__COSTS__LONGTITUTAL_VELOCITY_COST_HPP_
 
 #include <memory>
+#include <string>
 #include "nav2_ros_common/node_utils.hpp"
 #include "nav2_frenet_ilqr_controller/costs/rclcpp_node_cost.hpp"
 
@@ -32,7 +33,6 @@ namespace costs
 
 class LongtitutalVelocityCost : public RclcppNodeCost
 {
-
 public:
   LongtitutalVelocityCost();
   void initialize(
@@ -50,8 +50,8 @@ protected:
   double desired_velocity_to_approach_;
 };
 
-}
-}
+}  // namespace costs
+}  // namespace nav2_frenet_ilqr_controller
 
 #include <pluginlib/class_list_macros.hpp>
 
@@ -59,4 +59,4 @@ PLUGINLIB_EXPORT_CLASS(
   nav2_frenet_ilqr_controller::costs::LongtitutalVelocityCost,
   nav2_frenet_ilqr_controller::costs::RclcppNodeCost)
 
-#endif
+#endif  // NAV2_FRENET_ILQR_CONTROLLER__COSTS__LONGTITUTAL_VELOCITY_COST_HPP_

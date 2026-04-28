@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <frenet_trajectory_planner/quintic_trajectory_planner.hpp>
 #include <gtest/gtest.h>
+#include <frenet_trajectory_planner/quintic_trajectory_planner.hpp>
 
 TEST(frenet_trajectory_planner, quintic_trajectory_planner_test_initialization) {
   auto quintic_trajectory_planner = frenet_trajectory_planner::QuinticTrajectoryPlanner();

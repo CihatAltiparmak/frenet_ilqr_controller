@@ -75,7 +75,7 @@ void FrenetFrameConverter::createSegments(const std::vector<CartesianPoint> & wa
     Vector2d xi = (qi - li * yi - ci) / (qi - li * yi - ci).norm();
 
     // determinant calculations to determine direction
-    // TODO (CihatAltiparmak) : seems it works but take a look at again later
+    // TODO(CihatAltiparmak) : seems it works but take a look at again later
     double chross = yip1.x() * yi.y() - yip1.y() * yi.x();
     int sign_indicactor = (chross > 0) ? 1 : -1;
 
@@ -102,7 +102,6 @@ void FrenetFrameConverter::createSegments(const std::vector<CartesianPoint> & wa
 
   segments_.push_back(
     std::make_unique<LineAdapter>(last_waypoint, waypoint_list.back()));
-
 }
 
 CartesianTrajectory FrenetFrameConverter::convertFrenet2Cartesian(

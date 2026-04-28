@@ -47,7 +47,6 @@ double LateralDistanceCost::cost(
   const FrenetTrajectory & frenet_trajectory,
   const CartesianTrajectory & /*cartesian_trajectory*/)
 {
-
   double trajectory_cost = 0;
 
   for (auto frenet_state : frenet_trajectory) {
@@ -57,8 +56,8 @@ double LateralDistanceCost::cost(
   return K_lateral_distance_ * trajectory_cost;
 }
 
-}
-}
+}  // namespace costs
+}  // namespace nav2_frenet_ilqr_controller
 
 #include <pluginlib/class_list_macros.hpp>
 

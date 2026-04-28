@@ -17,10 +17,9 @@
 
 #pragma once
 
-#include <ilqr_trajectory_tracker/models/base_model.hpp>
-
 #include <Eigen/Dense>
 #include <cmath>
+#include <ilqr_trajectory_tracker/models/base_model.hpp>
 #include "frenet_trajectory_planner/type_definitions.hpp"
 
 using namespace Eigen;
@@ -47,4 +46,4 @@ public:
   static StateT fromFrenetCartesianState(const frenet_trajectory_planner::CartesianState & c_state);
 };
 
-}
+}  // namespace ilqr_trajectory_tracker

@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <cmath>
+#include <memory>
 #include <frenet_trajectory_planner/policies/base_policy.hpp>
 #include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 
@@ -53,14 +54,12 @@ AccelerationPolicy::AccelerationPolicy(
 : BasePolicy<AccelerationPolicyParameters>(acceleration_policy_parameters),
   frenet_frame_converter_(frenet_frame_converter)
 {
-
 }
 
 bool AccelerationPolicy::checkIfFeasible(
   const FrenetTrajectory & frenet_trajectory,
   const CartesianTrajectory & cartesian_trajectory)
 {
-
   // assert that frenet_trajectory equals a presentation in frenet frame of cartesian_trajectory
   for (const auto & state : cartesian_trajectory) {
     double acceleration = (state({2, 5})).norm();
@@ -74,5 +73,5 @@ bool AccelerationPolicy::checkIfFeasible(
   return true;
 }
 
-}
+}  // namespace policies
 }  // namespace frenet_trajectory_planner

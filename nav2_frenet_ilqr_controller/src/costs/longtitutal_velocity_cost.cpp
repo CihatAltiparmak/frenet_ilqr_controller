@@ -81,8 +81,8 @@ double LongtitutalVelocityCost::cost(
   return K_longtitutal_velocity_ * trajectory_cost;
 }
 
-}
-}
+}  // namespace costs
+}  // namespace nav2_frenet_ilqr_controller
 
 #include <pluginlib/class_list_macros.hpp>
 

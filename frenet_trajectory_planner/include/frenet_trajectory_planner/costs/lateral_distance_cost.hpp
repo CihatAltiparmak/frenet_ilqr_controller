@@ -28,7 +28,7 @@ namespace costs
 class LateralDistanceCost : public Cost
 {
 public:
-  LateralDistanceCost(const double & K_distance);
+  explicit LateralDistanceCost(const double & K_distance);
   double cost(
     const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) override;
@@ -55,5 +55,5 @@ double LateralDistanceCost::cost(
   return K_distance_ * trajectory_cost;
 }
 
-}
+}  // namespace costs
 }  // namespace frenet_trajectory_planner

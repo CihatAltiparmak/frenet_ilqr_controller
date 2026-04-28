@@ -19,6 +19,7 @@
 #define NAV2_FRENET_ILQR_CONTROLLER__COSTS__LATERAL_DISTANCE_COST_HPP_
 
 #include <memory>
+#include <string>
 #include "nav2_ros_common/node_utils.hpp"
 #include "nav2_frenet_ilqr_controller/costs/rclcpp_node_cost.hpp"
 
@@ -32,7 +33,6 @@ namespace costs
 
 class LateralDistanceCost : public RclcppNodeCost
 {
-
 public:
   LateralDistanceCost();
   void initialize(
@@ -47,7 +47,7 @@ protected:
   double K_lateral_distance_;
 };
 
-}
-}
+}  // namespace costs
+}  // namespace nav2_frenet_ilqr_controller
 
-#endif
+#endif  // NAV2_FRENET_ILQR_CONTROLLER__COSTS__LATERAL_DISTANCE_COST_HPP_

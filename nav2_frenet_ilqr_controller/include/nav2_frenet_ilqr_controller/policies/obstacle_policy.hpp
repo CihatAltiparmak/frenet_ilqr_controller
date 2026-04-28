@@ -18,8 +18,9 @@
 #ifndef NAV2_FRENET_ILQR_CONTROLLER__POLICIES__OBSTACLE_POLICY_HPP_
 #define NAV2_FRENET_ILQR_CONTROLLER__POLICIES__OBSTACLE_POLICY_HPP_
 
-#include "nav2_frenet_ilqr_controller/policies/rclcpp_node_policy.hpp"
 #include <memory>
+#include <string>
+#include "nav2_frenet_ilqr_controller/policies/rclcpp_node_policy.hpp"
 
 namespace nav2_frenet_ilqr_controller
 {
@@ -28,7 +29,6 @@ namespace policies
 
 class ObstaclePolicy : public RclcppNodePolicy
 {
-
 public:
   ObstaclePolicy();
   void initialize(
@@ -46,7 +46,7 @@ private:
     nullptr};
 };
 
-}
-}
+}  // namespace policies
+}  // namespace nav2_frenet_ilqr_controller
 
-#endif
+#endif  // NAV2_FRENET_ILQR_CONTROLLER__POLICIES__OBSTACLE_POLICY_HPP_

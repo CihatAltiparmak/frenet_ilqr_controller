@@ -15,12 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <gtest/gtest.h>
+
 #include <frenet_trajectory_planner/type_definitions.hpp>
 #include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/line_adapter.hpp>
-
-#include <gtest/gtest.h>
-
 
 TEST(
   frenet_trajectory_planner,

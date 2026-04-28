@@ -32,7 +32,8 @@ namespace frenet_trajectory_planner
 class FrenetTrajectoryGenerator
 {
 public:
-  FrenetTrajectoryGenerator(const FrenetTrajectoryPlannerConfig & frenet_planner_config);
+  explicit FrenetTrajectoryGenerator(
+    const FrenetTrajectoryPlannerConfig & frenet_planner_config);
 
   std::vector<FrenetTrajectory> getAllPossibleFrenetTrajectories(
     const FrenetState & frenet_state_initial, const size_t max_state_number);

@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <gtest/gtest.h>
+#include <vector>
+
 #include <frenet_trajectory_planner/conversion_adapters/line_adapter.hpp>
 #include <frenet_trajectory_planner/type_definitions.hpp>
-
-#include <vector>
-#include <gtest/gtest.h>
 
 #define _USE_MATH_DEFINES
 
@@ -36,7 +36,6 @@ TEST(frenet_trajectory_planner, conversion_adapters_line_adapter_test_initializa
 TEST(frenet_trajectory_planner, conversion_adapters_line_adapter_test_convertFrenet2Cartesian) {
   using frenet_trajectory_planner::CartesianPoint;
   {
-
     CartesianPoint x_start;
     x_start << 1, 1;
     CartesianPoint x_finish;

@@ -28,7 +28,8 @@ namespace costs
 class LongtitutalVelocityCost : public Cost
 {
 public:
-  LongtitutalVelocityCost(const double & K_longtitutal_velocity, const double desired_velocity);
+  explicit LongtitutalVelocityCost(
+    const double & K_longtitutal_velocity, const double desired_velocity);
   double cost(
     const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) override;
@@ -58,5 +59,5 @@ double LongtitutalVelocityCost::cost(
   return K_longtitutal_velocity_ * trajectory_cost;
 }
 
-}
+}  // namespace costs
 }  // namespace frenet_trajectory_planner

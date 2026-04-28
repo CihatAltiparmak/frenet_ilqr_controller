@@ -47,5 +47,5 @@ protected:
   Info info_;
 };
 
-}
+}  // namespace costs
 }  // namespace frenet_trajectory_planner

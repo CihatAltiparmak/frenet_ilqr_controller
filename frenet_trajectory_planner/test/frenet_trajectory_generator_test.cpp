@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <frenet_trajectory_planner/frenet_trajectory_generator.hpp>
 #include <gtest/gtest.h>
+#include <frenet_trajectory_planner/frenet_trajectory_generator.hpp>
 
 TEST(frenet_trajectory_planner, frenet_trajectory_generator_test_initialization) {
   using frenet_trajectory_planner::FrenetTrajectoryPlannerConfig;
@@ -34,7 +34,6 @@ TEST(frenet_trajectory_planner, frenet_trajectory_generator_test_initialization)
 TEST(
   frenet_trajectory_planner,
   frenet_trajectory_generator_test_getAllPossibleFrenetTrajectories) {
-
   using frenet_trajectory_planner::FrenetState;
   using frenet_trajectory_planner::FrenetTrajectoryPlannerConfig;
 

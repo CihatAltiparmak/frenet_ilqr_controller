@@ -16,11 +16,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
-#include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
-#include <frenet_trajectory_planner/type_definitions.hpp>
-
 #include <Eigen/Dense>
 #include <cmath>
+
+#include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
+#include <frenet_trajectory_planner/type_definitions.hpp>
 
 using namespace Eigen;
 
@@ -64,7 +64,6 @@ CartesianState LineAdapter::convertFrenet2Cartesian(const FrenetState & frenet_s
   cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
 
   return cartesian_state;
-
 }
 
 FrenetState LineAdapter::convertCartesian2Frenet(const CartesianState & cartesian_state)

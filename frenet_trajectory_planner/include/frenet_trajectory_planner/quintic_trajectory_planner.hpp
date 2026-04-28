@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <cmath>
 #include <Eigen/Dense>
+#include <cmath>
 
 using namespace Eigen;
 

@@ -15,18 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <ilqr_trajectory_tracker/models/diff_robot_model.hpp>
 #include <gtest/gtest.h>
+#include <ilqr_trajectory_tracker/models/diff_robot_model.hpp>
 
 #define _USE_MATH_DEFINES
 
 TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_initialization) {
-
   ilqr_trajectory_tracker::DiffDriveRobotModel diff_drive_robot_model;
 }
 
 TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_applySystemDynamics) {
-
   ilqr_trajectory_tracker::DiffDriveRobotModel diff_drive_robot_model;
 
   {
@@ -53,7 +51,6 @@ TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_applySystemDynamics) {
 }
 
 TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_getStateMatrix) {
-
   ilqr_trajectory_tracker::DiffDriveRobotModel diff_drive_robot_model;
 
   {
@@ -69,7 +66,6 @@ TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_getStateMatrix) {
 }
 
 TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_getControlMatrix) {
-
   ilqr_trajectory_tracker::DiffDriveRobotModel diff_drive_robot_model;
 
   {

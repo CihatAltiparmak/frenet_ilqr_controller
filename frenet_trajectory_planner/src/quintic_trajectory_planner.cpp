@@ -91,4 +91,4 @@ double QuinticTrajectoryPlanner::ddx(const double t)
   // clang-format on
 }
 
-}
+}  // namespace frenet_trajectory_planner

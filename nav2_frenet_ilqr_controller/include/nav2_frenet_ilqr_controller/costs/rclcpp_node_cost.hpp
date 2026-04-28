@@ -18,6 +18,8 @@
 #ifndef NAV2_FRENET_ILQR_CONTROLLER__COSTS__RCLCPP_NODE_COST_HPP_
 #define NAV2_FRENET_ILQR_CONTROLLER__COSTS__RCLCPP_NODE_COST_HPP_
 
+#include <string>
+#include <memory>
 #include "frenet_trajectory_planner/costs/base_cost.hpp"
 #include "nav2_ros_common/node_utils.hpp"
 #include "nav2_costmap_2d/costmap_2d_ros.hpp"
@@ -53,7 +55,7 @@ protected:
   nav2_costmap_2d::Costmap2D * costmap_{nullptr};
 };
 
-}
-}
+}  // namespace costs
+}  // namespace nav2_frenet_ilqr_controller
 
-#endif
+#endif  // NAV2_FRENET_ILQR_CONTROLLER__COSTS__RCLCPP_NODE_COST_HPP_

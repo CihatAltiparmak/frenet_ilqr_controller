@@ -33,7 +33,8 @@ class FrenetTrajectorySelector
 {
 public:
   FrenetTrajectorySelector();
-  FrenetTrajectorySelector(const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
+  explicit FrenetTrajectorySelector(
+    const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
 
   void addPolicy(const std::shared_ptr<policies::Policy> & policy);
   void addCost(const std::shared_ptr<costs::Cost> & cost);
@@ -59,7 +60,6 @@ FrenetTrajectorySelector::FrenetTrajectorySelector(
   const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter)
 : frenet_frame_converter_(frenet_frame_converter)
 {
-
 }
 
 void FrenetTrajectorySelector::addPolicy(const std::shared_ptr<policies::Policy> & policy)
@@ -75,7 +75,6 @@ void FrenetTrajectorySelector::addCost(const std::shared_ptr<costs::Cost> & cost
 std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajectory(
   const std::vector<FrenetTrajectory> & frenet_trajectories, const Info & info)
 {
-
   auto policy_checker =
     [this](const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) -> bool {

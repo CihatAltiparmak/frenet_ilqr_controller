@@ -17,8 +17,9 @@
 
 #pragma once
 
-#include <cmath>
 #include <Eigen/Dense>
+#include <cmath>
+#include <vector>
 
 using namespace Eigen;
 
@@ -27,10 +28,10 @@ namespace frenet_trajectory_planner
 
 using StateLateral = Vector3d;
 using StateLongtitutal = Vector3d;
-using FrenetState = Vector<double, 6>; // s, s_dot, s_dot_dot, d, d_dot, d_dot_dot
+using FrenetState = Vector<double, 6>;  // s, s_dot, s_dot_dot, d, d_dot, d_dot_dot
 using FrenetTrajectory = std::vector<FrenetState>;
 
-using CartesianState = Vector<double, 7>; // x, x_dot, x_dot_dot, y, y_dot, y_dot_dot, yaw
+using CartesianState = Vector<double, 7>;  // x, x_dot, x_dot_dot, y, y_dot, y_dot_dot, yaw
 using CartesianTrajectory = std::vector<CartesianState>;
 
 using CartesianPoint = Vector2d;
@@ -43,9 +44,9 @@ typedef struct FrenetTrajectoryPlannerConfig
   double min_longtitutal_velocity;
   double max_longtitutal_velocity;
   double step_longtitutal_velocity;
-  double time_interval = 1; // 100;
+  double time_interval = 1;
   int max_state_in_trajectory = 40;
-  double dt = 0.05; // time discretization
+  double dt = 0.05;  // time discretization
 } FrenetTrajectoryPlannerConfig;
 
 }  // namespace frenet_trajectory_planner

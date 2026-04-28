@@ -19,6 +19,7 @@
 
 #include <Eigen/Dense>
 #include <cmath>
+#include <limits>
 
 using namespace Eigen;
 
@@ -76,7 +77,6 @@ void Model<_StateDim, _InputDim>::setLimits(
   const InputT & input_limits_min,
   const InputT & input_limits_max)
 {
-
   input_limits_min_ = input_limits_min;
   input_limits_max_ = input_limits_max;
 }
@@ -93,4 +93,4 @@ size_t Model<_StateDim, _InputDim>::getInputDim()
   return InputDim;
 }
 
-}
+}  // namespace ilqr_trajectory_tracker

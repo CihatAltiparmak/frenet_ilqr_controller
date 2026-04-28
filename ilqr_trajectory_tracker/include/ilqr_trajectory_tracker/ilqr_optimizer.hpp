@@ -23,6 +23,7 @@
 #include <tuple>
 #include <algorithm>
 #include <limits>
+#include <vector>
 #include "frenet_trajectory_planner/type_definitions.hpp"
 
 using namespace Eigen;
@@ -52,7 +53,7 @@ public:
   using ControlMatrixT = typename RobotModel::ControlMatrixT;
 
   template<typename ... RobotModelParams>
-  NewtonOptimizer(const RobotModelParams ... model_params);
+  explicit NewtonOptimizer(const RobotModelParams ... model_params);
 
   std::vector<MatrixXd> backwardPass(
     const std::vector<StateT> & x_feasible,
@@ -61,7 +62,6 @@ public:
     const Matrix<double, InputDim, InputDim> & R,
     const double dt)
   {
-
     MatrixXd P_tilda = MatrixXd::Identity(StateDim + 1, StateDim + 1);
     P_tilda.topLeftCorner(StateDim, StateDim) = Q;
 
@@ -100,7 +100,6 @@ public:
     const MatrixXd & Q, const MatrixXd & R,
     const MatrixXd & P)
   {
-
     auto BTmP = B.transpose() * P;
     auto K = -(R + BTmP * B).completeOrthogonalDecomposition().pseudoInverse() * BTmP * A;
 
@@ -117,7 +116,6 @@ public:
     const std::vector<InputT> & u_feasible,
     const std::vector<MatrixXd> & K_gains, const double dt, const double alpha)
   {
-
     auto trajectory_size = x_feasible.size();
     std::vector<StateT> x_tracked(trajectory_size);
 
@@ -260,4 +258,4 @@ void NewtonOptimizer<RobotModel>::setInputConstraints(
   robot_model_->setLimits(input_limits_min, input_limits_max);
 }
 
-}
+}  // namespace ilqr_trajectory_tracker

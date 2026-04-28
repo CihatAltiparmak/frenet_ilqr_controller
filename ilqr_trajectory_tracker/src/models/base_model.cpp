@@ -35,4 +35,4 @@ BaseModel::BaseModel()
 {
 }
 
-}
+}  // namespace ilqr_trajectory_tracker

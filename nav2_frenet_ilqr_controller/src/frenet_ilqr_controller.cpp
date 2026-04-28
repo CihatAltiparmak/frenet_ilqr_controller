@@ -107,7 +107,6 @@ void FrenetILQRController::deactivate()
 
 void FrenetILQRController::addPoliciesFromPlugins()
 {
-
   auto node = node_.lock();
 
   std::vector<std::string> default_policy_plugins = {};
@@ -139,7 +138,6 @@ void FrenetILQRController::addPoliciesFromPlugins()
 
 void FrenetILQRController::addCostsFromPlugins()
 {
-
   auto node = node_.lock();
 
   std::vector<std::string> default_cost_checker_plugins = {};
@@ -177,7 +175,7 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
   const nav_msgs::msg::Path & path,
   const double lookahead_distance)
 {
-  // TODO (CihatAltiparmak) : find better algorithm to handle this
+  // TODO(CihatAltiparmak) : find better algorithm to handle this
   size_t lookahead_index = 0;
   for (size_t index = 0; index < path.poses.size(); ++index) {
     if (euclidean_distance(
@@ -200,7 +198,6 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   const frenet_trajectory_planner::CartesianState & c_state_robot,
   const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
 {
-
   if (robot_cartesian_trajectory.empty()) {
     throw nav2_core::NoValidControl("There is no trajectory to be tracked!");
   }
@@ -211,13 +208,14 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   auto x_robot = DiffDriveRobotModel::fromFrenetCartesianState(c_state_robot);
   auto X_feasible = newton_optimizer.fromFrenetCartesianTrajectory(robot_cartesian_trajectory);
 
-  // TODO (CihatAltiparmak) : add behavior mode into frenet_trajectory_planner. The velocity trajectory
+  // TODO(CihatAltiparmak) : add behavior mode into frenet_trajectory_planner.
+  // The velocity trajectory
   // can be planned using Quinctic Polynom instead of Quartic Polynom  which takes into account
   // the finishing point as well
-  // If the robot is to approach to the goal, tell ILQR to deccelerate by filling velocity states by zero
-  // and keep the goal's x, y and yaw angle states same
-  size_t state_number_to_track = params_->frenet_trajectory_planner_config.max_state_in_trajectory -
-    1;
+  // If the robot is to approach to the goal, tell ILQR to deccelerate
+  // by filling velocity states by zero and keep the goal's x, y and yaw angle states same
+  size_t state_number_to_track =
+    params_->frenet_trajectory_planner_config.max_state_in_trajectory - 1;
   if (X_feasible.size() < state_number_to_track) {
     size_t state_number_for_stopping = state_number_to_track - X_feasible.size();
     DiffDriveRobotModel::StateT x_stop = X_feasible.back();
@@ -251,7 +249,8 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   std::unique_lock<nav2_costmap_2d::Costmap2D::mutex_t> lock(*(costmap_->getMutex()));
 
   double lookahead_distance = 0.3;
-  // TODO (CihatAltiparmak) : we should ignore the waypoints whose angles between them equal to zero or extremely large
+  // TODO(CihatAltiparmak) : we should ignore the waypoints
+  // whose angles between them equal to zero or extremely large
   auto clipped_plan = truncateGlobalPlanWithLookAheadDist(
     robot_pose, transformed_global_plan,
     lookahead_distance);
@@ -305,7 +304,6 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
 nav_msgs::msg::Path FrenetILQRController::convertFromCartesianTrajectory(
   const std::string & frame_id, const CartesianTrajectory & cartesian_trajectory)
 {
-
   nav_msgs::msg::Path plan_msg;
   plan_msg.header.frame_id = frame_id;
   for (const auto & cartesian_state : cartesian_trajectory) {

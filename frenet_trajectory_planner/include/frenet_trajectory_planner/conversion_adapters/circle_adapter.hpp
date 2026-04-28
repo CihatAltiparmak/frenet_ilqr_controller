@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <cmath>
 #include <Eigen/Dense>
+#include <cmath>
 #include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
 #include <frenet_trajectory_planner/type_definitions.hpp>
 
@@ -49,7 +49,6 @@ private:
   Vector2d y_;
   double alpha_;
   int sign_indicactor_;
-
 };
 
 CircleAdapter::CircleAdapter(
@@ -65,7 +64,6 @@ CircleAdapter::CircleAdapter(
   const Vector2d & y, const double alpha)
 : BaseAdapter(), c_(c), r_(r), x_(x), y_(y), alpha_(alpha), sign_indicactor_(1)
 {
-
 }
 
 CircleAdapter::CircleAdapter(
@@ -107,7 +105,6 @@ CartesianState CircleAdapter::convertFrenet2Cartesian(const FrenetState & frenet
   //   frenet_state[1]);
 
   return cartesian_state;
-
 }
 
 FrenetState CircleAdapter::convertCartesian2Frenet(const CartesianState & cartesian_state)

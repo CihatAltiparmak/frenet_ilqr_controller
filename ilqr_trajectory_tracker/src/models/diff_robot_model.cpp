@@ -27,7 +27,6 @@ namespace ilqr_trajectory_tracker
 DiffDriveRobotModel::DiffDriveRobotModel()
 : Model<4, 2>()
 {
-
 }
 
 DiffDriveRobotModel::StateT DiffDriveRobotModel::applySystemDynamics(
@@ -96,7 +95,7 @@ DiffDriveRobotModel::fromFrenetCartesianState(
   const frenet_trajectory_planner::CartesianState & c_state)
 {
   StateT x;
-  // TODO (CihatAltiparmak) : find the signs of the velocitites as well
+  // TODO(CihatAltiparmak) : find the signs of the velocitites as well
   double vel = std::hypot(c_state[1], c_state[4]);
   x << c_state[0],
     c_state[3],
@@ -105,4 +104,4 @@ DiffDriveRobotModel::fromFrenetCartesianState(
   return x;
 }
 
-}
+}  // namespace ilqr_trajectory_tracker
