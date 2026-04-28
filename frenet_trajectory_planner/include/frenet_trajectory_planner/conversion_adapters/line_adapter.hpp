@@ -82,4 +82,4 @@ FrenetState LineAdapter::convertCartesian2Frenet(const CartesianState & cartesia
   return frenet_state;
 }
 
-}
+}  // namespace frenet_trajectory_planner

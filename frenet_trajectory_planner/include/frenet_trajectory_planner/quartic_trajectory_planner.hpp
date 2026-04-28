@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <Eigen/Dense>
 #include <cmath>
+#include <Eigen/Dense>
 
 using namespace Eigen;
 
@@ -48,4 +48,4 @@ private:
   double x0_;
 };
 
-}
+}  // namespace frenet_trajectory_planner

@@ -17,12 +17,12 @@
 
 #pragma once
 
+#include <vector>
+#include <memory>
 #include <frenet_trajectory_planner/type_definitions.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/line_adapter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
-#include <vector>
-#include <memory>
 
 namespace frenet_trajectory_planner
 {
@@ -153,4 +153,4 @@ double FrenetFrameConverter::getArclength()
   }
   return total_arclength;
 }
-}
+}  // namespace frenet_trajectory_planner

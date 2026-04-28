@@ -17,13 +17,12 @@
 
 #pragma once
 
-#include <frenet_trajectory_planner/type_definitions.hpp>
-#include <frenet_trajectory_planner/quartic_trajectory_planner.hpp>
-#include <frenet_trajectory_planner/quintic_trajectory_planner.hpp>
-
 #include <Eigen/Dense>
 #include <cmath>
 #include <vector>
+#include <frenet_trajectory_planner/type_definitions.hpp>
+#include <frenet_trajectory_planner/quartic_trajectory_planner.hpp>
+#include <frenet_trajectory_planner/quintic_trajectory_planner.hpp>
 
 using namespace Eigen;
 
@@ -47,4 +46,4 @@ private:
   FrenetTrajectoryPlannerConfig frenet_planner_config_;
 };
 
-}
+}  // namespace frenet_trajectory_planner

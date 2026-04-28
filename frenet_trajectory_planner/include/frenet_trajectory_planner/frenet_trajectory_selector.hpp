@@ -17,14 +17,14 @@
 
 #pragma once
 
-#include <frenet_trajectory_planner/type_definitions.hpp>
-#include <frenet_trajectory_planner/policies/base_policy.hpp>
-#include <frenet_trajectory_planner/costs/base_cost.hpp>
-#include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 #include <vector>
 #include <memory>
 #include <optional>
 #include <limits>
+#include <frenet_trajectory_planner/type_definitions.hpp>
+#include <frenet_trajectory_planner/policies/base_policy.hpp>
+#include <frenet_trajectory_planner/costs/base_cost.hpp>
+#include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 
 namespace frenet_trajectory_planner
 {
@@ -124,4 +124,4 @@ void FrenetTrajectorySelector::setFrenetFrameConverter(
   frenet_frame_converter_ = frenet_frame_converter;
 }
 
-}
+}  // namespace frenet_trajectory_planner

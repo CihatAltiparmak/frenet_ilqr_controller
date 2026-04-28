@@ -15,10 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <iostream>
+
 #include <frenet_trajectory_planner/type_definitions.hpp>
 #include <frenet_trajectory_planner/frenet_trajectory_planner.hpp>
 #include <frenet_trajectory_planner/frenet_trajectory_selector.hpp>
-#include <iostream>
 
 int main()
 {

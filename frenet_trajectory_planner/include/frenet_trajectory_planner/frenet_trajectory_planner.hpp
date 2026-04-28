@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <memory>
 #include <frenet_trajectory_planner/type_definitions.hpp>
 #include <frenet_trajectory_planner/frenet_trajectory_selector.hpp>
 #include <frenet_trajectory_planner/frenet_trajectory_generator.hpp>
@@ -25,8 +26,6 @@
 #include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
 #include <frenet_trajectory_planner/policies/acceleration_policy.hpp>
 #include "angles/angles.h"
-
-#include <memory>
 
 namespace frenet_trajectory_planner
 {
@@ -156,4 +155,4 @@ void FrenetTrajectoryPlanner::setFrenetTrajectoryPlannerConfig(
     std::make_shared<FrenetTrajectoryGenerator>(frenet_trajectory_planner_config_);
 }
 
-}
+}  // namespace frenet_trajectory_planner

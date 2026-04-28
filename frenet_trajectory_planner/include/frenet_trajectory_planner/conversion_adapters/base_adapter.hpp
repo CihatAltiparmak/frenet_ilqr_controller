@@ -43,4 +43,4 @@ double BaseAdapter::getArclength()
   return arclength_;
 }
 
-}
+}  // namespace frenet_trajectory_planner

@@ -48,4 +48,4 @@ protected:
 };
 
 }
-}
+}  // namespace frenet_trajectory_planner

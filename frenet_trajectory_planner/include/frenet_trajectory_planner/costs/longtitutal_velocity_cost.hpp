@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <frenet_trajectory_planner/costs/base_cost.hpp>
 #include <cmath>
+#include <frenet_trajectory_planner/costs/base_cost.hpp>
 
 namespace frenet_trajectory_planner
 {
@@ -59,4 +59,4 @@ double LongtitutalVelocityCost::cost(
 }
 
 }
-}
+}  // namespace frenet_trajectory_planner

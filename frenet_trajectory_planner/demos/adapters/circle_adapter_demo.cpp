@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
-#include <frenet_trajectory_planner/type_definitions.hpp>
-
 #include <vector>
 #include <iostream>
+
+#include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
+#include <frenet_trajectory_planner/type_definitions.hpp>
 
 int main()
 {
@@ -92,6 +92,5 @@ int main()
 
     std::cout << "error: " << std::endl
               << (frenet_state2 - frenet_state).norm() << std::endl;
-
   }
 }

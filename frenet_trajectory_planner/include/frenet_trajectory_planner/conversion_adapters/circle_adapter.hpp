@@ -16,11 +16,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
+
+#include <cmath>
+#include <Eigen/Dense>
 #include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
 #include <frenet_trajectory_planner/type_definitions.hpp>
-
-#include <Eigen/Dense>
-#include <cmath>
 
 using namespace Eigen;
 
@@ -100,7 +100,7 @@ CartesianState CircleAdapter::convertFrenet2Cartesian(const FrenetState & frenet
       frenet_state[1],
       2) * rPd / std::pow(r_, 2) + sign_indicactor_ * frenet_state[5]) * x_cosPy_sin;
 
-  // TODO (CihatAltiparmak) : Implement in a correct way. This solution may not be elegant.
+  // TODO(CihatAltiparmak) : Implement in a correct way. This solution may not be elegant.
   cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
   // cartesian_state[6] = std::atan2(t_frenet_[1], t_frenet_[0]) + std::atan2(
   //   frenet_state[4],
@@ -162,4 +162,4 @@ FrenetState CircleAdapter::convertCartesian2Frenet(const CartesianState & cartes
   return frenet_state;
 }
 
-}
+}  // namespace frenet_trajectory_planner

@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include <frenet_trajectory_planner/type_definitions.hpp>
 #include <vector>
 #include <iostream>
 
+#include <frenet_trajectory_planner/type_definitions.hpp>
 
 namespace frenet_trajectory_planner
 {
@@ -56,4 +56,4 @@ protected:
 };
 
 }
-}
+}  // namespace frenet_trajectory_planner

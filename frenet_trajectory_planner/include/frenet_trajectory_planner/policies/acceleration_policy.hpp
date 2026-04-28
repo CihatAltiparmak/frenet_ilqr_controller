@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include <frenet_trajectory_planner/policies/base_policy.hpp>
-#include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 #include <vector>
 #include <cmath>
+#include <frenet_trajectory_planner/policies/base_policy.hpp>
+#include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 
 namespace frenet_trajectory_planner
 {
@@ -75,4 +75,4 @@ bool AccelerationPolicy::checkIfFeasible(
 }
 
 }
-}
+}  // namespace frenet_trajectory_planner
