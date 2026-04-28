@@ -68,8 +68,8 @@ int main()
     frenet_trajectory_planner::Frenet2CartesianConverter<frenet_trajectory_planner::LineAdapter>(
     start_point, final_point);
 
-  auto best_cartesian_trajectory
-    = frenet2cartesian_converter.convert_trajectory(
+  auto best_cartesian_trajectory =
+    frenet2cartesian_converter.convert_trajectory(
       best_frenet_trajectory);
 
   return 0;
