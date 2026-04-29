@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <frenet_trajectory_planner/frenet_trajectory_generator.hpp>
 #include <gtest/gtest.h>
+#include <frenet_trajectory_planner/frenet_trajectory_generator.hpp>
 
 TEST(frenet_trajectory_planner, frenet_trajectory_generator_test_initialization) {
   using frenet_trajectory_planner::FrenetTrajectoryPlannerConfig;
@@ -34,7 +34,6 @@ TEST(frenet_trajectory_planner, frenet_trajectory_generator_test_initialization)
 TEST(
   frenet_trajectory_planner,
   frenet_trajectory_generator_test_getAllPossibleFrenetTrajectories) {
-
   using frenet_trajectory_planner::FrenetState;
   using frenet_trajectory_planner::FrenetTrajectoryPlannerConfig;
 

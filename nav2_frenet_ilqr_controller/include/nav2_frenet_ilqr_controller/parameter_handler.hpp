@@ -20,6 +20,7 @@
 #include <memory>
 #include <algorithm>
 #include <mutex>
+#include <iostream>
 
 #include "nav2_util/odometry_utils.hpp"
 #include "nav2_util/geometry_utils.hpp"
@@ -27,7 +28,6 @@
 #include "nav2_ros_common/node_utils.hpp"
 
 #include "frenet_trajectory_planner/type_definitions.hpp"
-#include <iostream>
 
 struct Parameters
 {

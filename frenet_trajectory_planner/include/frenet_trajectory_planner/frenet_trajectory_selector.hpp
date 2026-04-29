@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
 
 #pragma once
 
-#include <frenet_trajectory_planner/type_definitions.hpp>
-#include <frenet_trajectory_planner/policies/base_policy.hpp>
-#include <frenet_trajectory_planner/costs/base_cost.hpp>
-#include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 #include <vector>
 #include <memory>
 #include <optional>
 #include <limits>
+#include <frenet_trajectory_planner/type_definitions.hpp>
+#include <frenet_trajectory_planner/policies/base_policy.hpp>
+#include <frenet_trajectory_planner/costs/base_cost.hpp>
+#include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 
 namespace frenet_trajectory_planner
 {
@@ -33,7 +33,8 @@ class FrenetTrajectorySelector
 {
 public:
   FrenetTrajectorySelector();
-  FrenetTrajectorySelector(const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
+  explicit FrenetTrajectorySelector(
+    const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
 
   void addPolicy(const std::shared_ptr<policies::Policy> & policy);
   void addCost(const std::shared_ptr<costs::Cost> & cost);
@@ -60,7 +61,6 @@ FrenetTrajectorySelector::FrenetTrajectorySelector(
   const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter)
 : frenet_frame_converter_(frenet_frame_converter)
 {
-
 }
 
 void FrenetTrajectorySelector::addPolicy(const std::shared_ptr<policies::Policy> & policy)
@@ -78,10 +78,9 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajec
   const Info & info,
   DebugInfo & debug_info)
 {
-
   auto policy_checker =
     [this](const FrenetTrajectory & frenet_trajectory,
-      const CartesianTrajectory & cartesian_trajectory) -> bool {
+    const CartesianTrajectory & cartesian_trajectory) -> bool {
       for (const auto & policy : policies_) {
         if (!policy->checkIfFeasible(frenet_trajectory, cartesian_trajectory)) {
           return false;
@@ -92,7 +91,7 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajec
 
   auto get_trajectory_cost =
     [this, info](const FrenetTrajectory & frenet_trajectory,
-      const CartesianTrajectory & cartesian_trajectory) -> double {
+    const CartesianTrajectory & cartesian_trajectory) -> double {
       double trajectory_cost = 0;
       for (auto & cost_checker : costs_) {
         cost_checker->setInfo(info);
@@ -131,4 +130,4 @@ void FrenetTrajectorySelector::setFrenetFrameConverter(
   frenet_frame_converter_ = frenet_frame_converter;
 }
 
-}
+}  // namespace frenet_trajectory_planner

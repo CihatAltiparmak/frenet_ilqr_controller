@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 int main()
 {
-
   frenet_trajectory_planner::CartesianState robot_cartesian_state;
   frenet_trajectory_planner::CartesianPoint start_point;
   start_point << 1, 1;
@@ -44,7 +43,7 @@ int main()
 
   auto frenet_trajectory_generator = frenet_trajectory_planner::FrenetTrajectoryGenerator(
     planner_config);
-  // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
+  // TODO(CihatAltiparmak) : eliminate some trajectories in frenet level
   auto all_frenet_trajectories = frenet_trajectory_generator.get_all_possible_frenet_trajectories(
     frenet_state_initial);
 

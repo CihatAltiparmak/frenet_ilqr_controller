@@ -54,19 +54,23 @@ ParameterHandler::ParameterHandler(
 
   // for longtitutal velocity
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".frenet_trajectory_planner.min_longtitutal_velocity", rclcpp::ParameterValue(
+    node, plugin_name_ + ".frenet_trajectory_planner.min_longtitutal_velocity",
+      rclcpp::ParameterValue(
       0.0));
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".frenet_trajectory_planner.max_longtitutal_velocity", rclcpp::ParameterValue(
+    node, plugin_name_ + ".frenet_trajectory_planner.max_longtitutal_velocity",
+      rclcpp::ParameterValue(
       2.0));
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".frenet_trajectory_planner.step_longtitutal_velocity", rclcpp::ParameterValue(
+    node, plugin_name_ + ".frenet_trajectory_planner.step_longtitutal_velocity",
+      rclcpp::ParameterValue(
       0.5));
 
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.time_interval", rclcpp::ParameterValue(1.0));
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory", rclcpp::ParameterValue(
+    node, plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory",
+      rclcpp::ParameterValue(
       2));
 
   declare_parameter_if_not_declared(
@@ -76,16 +80,20 @@ ParameterHandler::ParameterHandler(
     node, plugin_name_ + ".ilqr_trajectory_tracker.alpha", rclcpp::ParameterValue(1.0));
 
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min", rclcpp::ParameterValue(std::vector<double>({0.0, -1.5})));
+    node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min",
+      rclcpp::ParameterValue(std::vector<double>({0.0, -1.5})));
 
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max", rclcpp::ParameterValue(std::vector<double>({1.0, 1.5})));
+    node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max",
+      rclcpp::ParameterValue(std::vector<double>({1.0, 1.5})));
 
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".ilqr_trajectory_tracker.q_coefficients", rclcpp::ParameterValue(std::vector<double>({1.0, 1.0, 1.0, 1.0})));
+    node, plugin_name_ + ".ilqr_trajectory_tracker.q_coefficients",
+      rclcpp::ParameterValue(std::vector<double>({1.0, 1.0, 1.0, 1.0})));
 
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".ilqr_trajectory_tracker.r_coefficients", rclcpp::ParameterValue(std::vector<double>({0.2, 0.2})));
+    node, plugin_name_ + ".ilqr_trajectory_tracker.r_coefficients",
+      rclcpp::ParameterValue(std::vector<double>({0.2, 0.2})));
 
 
   node->get_parameter(
@@ -131,14 +139,16 @@ ParameterHandler::ParameterHandler(
     std::vector<double> input_limits_min;
     node->get_parameter(
       plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min", input_limits_min);
-    params_.input_limits_min = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_min.data(), input_limits_min.size());
+    params_.input_limits_min = Eigen::Map<Eigen::VectorXd,
+        Eigen::Unaligned>(input_limits_min.data(), input_limits_min.size());
   }
 
   {
     std::vector<double> input_limits_max;
     node->get_parameter(
       plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max", input_limits_max);
-    params_.input_limits_max = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_max.data(), input_limits_max.size());
+    params_.input_limits_max = Eigen::Map<Eigen::VectorXd,
+        Eigen::Unaligned>(input_limits_max.data(), input_limits_max.size());
   }
 
   {
@@ -217,10 +227,12 @@ ParameterHandler::dynamicParametersCallback(
       params_.alpha = parameter.as_double();
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min") {
       auto input_limits_min = parameter.as_double_array();
-      params_.input_limits_min = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_min.data(), input_limits_min.size());
+      params_.input_limits_min = Eigen::Map<Eigen::VectorXd,
+          Eigen::Unaligned>(input_limits_min.data(), input_limits_min.size());
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max") {
       auto input_limits_max = parameter.as_double_array();
-      params_.input_limits_max = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_limits_max.data(), input_limits_max.size());
+      params_.input_limits_max = Eigen::Map<Eigen::VectorXd,
+          Eigen::Unaligned>(input_limits_max.data(), input_limits_max.size());
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.q_coefficients") {
       auto q_coefficients = parameter.as_double_array();
       params_.Q = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(

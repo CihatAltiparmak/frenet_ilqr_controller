@@ -8,9 +8,9 @@ Under Constuction but nearly ready
 
   author={Werling, Moritz and Ziegler, Julius and Kammel, Sören and Thrun, Sebastian},
 
-  booktitle={2010 IEEE International Conference on Robotics and Automation}, 
+  booktitle={2010 IEEE International Conference on Robotics and Automation},
 
-  title={Optimal trajectory generation for dynamic street scenarios in a Frenét Frame}, 
+  title={Optimal trajectory generation for dynamic street scenarios in a Frenét Frame},
 
   year={2010},
 

@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <frenet_trajectory_planner/costs/base_cost.hpp>
 #include <cmath>
+#include <frenet_trajectory_planner/costs/base_cost.hpp>
 
 namespace frenet_trajectory_planner
 {
@@ -28,7 +28,7 @@ namespace costs
 class LateralDistanceCost : public Cost
 {
 public:
-  LateralDistanceCost(const double & K_distance);
+  explicit LateralDistanceCost(const double & K_distance);
   double cost(
     const FrenetTrajectory & frenet_trajectory,
     const CartesianTrajectory & cartesian_trajectory) override;
@@ -55,5 +55,5 @@ double LateralDistanceCost::cost(
   return K_distance_ * trajectory_cost;
 }
 
-}
-}
+}  // namespace costs
+}  // namespace frenet_trajectory_planner
