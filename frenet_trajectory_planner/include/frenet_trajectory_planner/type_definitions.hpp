@@ -49,10 +49,10 @@ typedef struct FrenetTrajectoryPlannerConfig
   double dt = 0.05;  // time discretization
 } FrenetTrajectoryPlannerConfig;
 
-struct DebugInfo {
+struct DebugInfo
+{
   std::vector<CartesianTrajectory> cartesian_trajectories;
   std::vector<double> costs;
 };
 
-}
 }  // namespace frenet_trajectory_planner

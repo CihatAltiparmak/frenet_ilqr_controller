@@ -286,7 +286,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   auto planned_cartesian_trajectory = frenet_trajectory_planner_.planByWaypoint(
     c_state_robot,
     waypoint_list, debug_info);
-  
+
   trajectory_visualizer_.visualize(debug_info);
 
 #if 1
