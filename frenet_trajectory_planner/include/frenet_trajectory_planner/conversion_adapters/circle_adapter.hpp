@@ -1,11 +1,31 @@
+<<<<<<< HEAD
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #pragma once
-#include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
-#include <frenet_trajectory_planner/type_definitions.hpp>
 
 #include <Eigen/Dense>
 #include <cmath>
+#include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
+#include <frenet_trajectory_planner/type_definitions.hpp>
 
-using namespace Eigen;
+using namespace Eigen;  // NOLINT
 
 namespace frenet_trajectory_planner
 {
@@ -32,7 +52,6 @@ private:
   Vector2d y_;
   double alpha_;
   int sign_indicactor_;
-
 };
 
 CircleAdapter::CircleAdapter(
@@ -48,7 +67,6 @@ CircleAdapter::CircleAdapter(
   const Vector2d & y, const double alpha)
 : BaseAdapter(), c_(c), r_(r), x_(x), y_(y), alpha_(alpha), sign_indicactor_(1)
 {
-
 }
 
 CircleAdapter::CircleAdapter(
@@ -83,14 +101,13 @@ CartesianState CircleAdapter::convertFrenet2Cartesian(const FrenetState & frenet
       frenet_state[1],
       2) * rPd / std::pow(r_, 2) + sign_indicactor_ * frenet_state[5]) * x_cosPy_sin;
 
-  // TODO (CihatAltiparmak) : Implement in a correct way. This solution may not be elegant. 
+  // TODO(CihatAltiparmak) : Implement in a correct way. This solution may not be elegant.
   cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
   // cartesian_state[6] = std::atan2(t_frenet_[1], t_frenet_[0]) + std::atan2(
   //   frenet_state[4],
   //   frenet_state[1]);
 
   return cartesian_state;
-
 }
 
 FrenetState CircleAdapter::convertCartesian2Frenet(const CartesianState & cartesian_state)
@@ -145,4 +162,4 @@ FrenetState CircleAdapter::convertCartesian2Frenet(const CartesianState & cartes
   return frenet_state;
 }
 
-}
+}  // namespace frenet_trajectory_planner

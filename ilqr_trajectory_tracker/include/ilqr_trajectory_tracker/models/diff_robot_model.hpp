@@ -1,12 +1,31 @@
-#pragma once
+<<<<<<< HEAD
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <ilqr_trajectory_tracker/models/base_model.hpp>
+>>>>>>> 4094837 (Format code according to ros standard (#71))
+#pragma once
 
 #include <Eigen/Dense>
 #include <cmath>
+#include <ilqr_trajectory_tracker/models/base_model.hpp>
 #include "frenet_trajectory_planner/type_definitions.hpp"
 
-using namespace Eigen;
+using namespace Eigen;  // NOLINT
 
 namespace ilqr_trajectory_tracker
 {
@@ -26,8 +45,8 @@ public:
     const StateT & x_initial,
     const InputT & u,
     const double dt);
-  
+
   static StateT fromFrenetCartesianState(const frenet_trajectory_planner::CartesianState & c_state);
 };
 
-}
+}  // namespace ilqr_trajectory_tracker

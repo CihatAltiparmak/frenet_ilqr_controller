@@ -20,6 +20,7 @@
 #include <memory>
 #include <algorithm>
 #include <mutex>
+#include <iostream>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
@@ -28,7 +29,6 @@
 #include "nav2_util/node_utils.hpp"
 
 #include "frenet_trajectory_planner/type_definitions.hpp"
-#include <iostream>
 
 struct Parameters
 {

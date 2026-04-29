@@ -1,5 +1,27 @@
+<<<<<<< HEAD
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #pragma once
 
+#include <memory>
+#include <vector>
 #include <frenet_trajectory_planner/type_definitions.hpp>
 #include <frenet_trajectory_planner/frenet_trajectory_selector.hpp>
 #include <frenet_trajectory_planner/frenet_trajectory_generator.hpp>
@@ -9,8 +31,6 @@
 #include <frenet_trajectory_planner/policies/acceleration_policy.hpp>
 #include "angles/angles.h"
 
-#include <memory>
-
 namespace frenet_trajectory_planner
 {
 
@@ -18,7 +38,8 @@ class FrenetTrajectoryPlanner
 {
 public:
   FrenetTrajectoryPlanner();
-  FrenetTrajectoryPlanner(const FrenetTrajectoryPlannerConfig & frenet_trajectory_planner_config);
+  explicit FrenetTrajectoryPlanner(
+    const FrenetTrajectoryPlannerConfig & frenet_trajectory_planner_config);
   CartesianTrajectory plan(
     const CartesianState & robot_cartesian_state,
     const CartesianPoint & start_point, const CartesianPoint & final_point);
@@ -39,7 +60,8 @@ private:
   std::shared_ptr<FrenetTrajectoryGenerator> frenet_trajectory_generator_;
 };
 
-// TODO (CihatAltiparmak) : move the source parts of FrenetTrajectoryPlanner to cpp file. Now to move to cpp file throws out multiple definition error when built
+// TODO(CihatAltiparmak) : move the source parts of FrenetTrajectoryPlanner to cpp file.
+// Now to move to cpp file throws out multiple definition error when built
 FrenetTrajectoryPlanner::FrenetTrajectoryPlanner()
 {
   frenet_trajectory_planner_config_.min_lateral_distance = -1;
@@ -82,7 +104,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   while (remaining_state_number_ > 0) {
     robot_frenet_state = planned_frenet_trajectory.back();
 
-    // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
+    // TODO(CihatAltiparmak) : eliminate some trajectories in frenet level
     auto all_frenet_trajectories =
       frenet_trajectory_generator_->getAllPossibleFrenetTrajectories(
       robot_frenet_state, remaining_state_number_);
@@ -107,14 +129,15 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
       planned_frenet_trajectory.size();
   }
 
-  auto planned_cartesian_trajectory = frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
+  auto planned_cartesian_trajectory =
+    frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 
   // arrange yaw to make it feasible to follow by iterative lqr
   for (size_t i = 1; i < planned_cartesian_trajectory.size(); ++i) {
     double yaw_diff_min = angles::shortest_angular_distance(
       planned_cartesian_trajectory[i - 1][6], planned_cartesian_trajectory[i][6]);
-    planned_cartesian_trajectory[i][6] 
-      = planned_cartesian_trajectory[i - 1][6] + yaw_diff_min;
+    planned_cartesian_trajectory[i][6] =
+      planned_cartesian_trajectory[i - 1][6] + yaw_diff_min;
   }
 
   return planned_cartesian_trajectory;
@@ -138,4 +161,4 @@ void FrenetTrajectoryPlanner::setFrenetTrajectoryPlannerConfig(
     std::make_shared<FrenetTrajectoryGenerator>(frenet_trajectory_planner_config_);
 }
 
-}
+}  // namespace frenet_trajectory_planner

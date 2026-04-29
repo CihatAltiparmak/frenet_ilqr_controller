@@ -1,8 +1,33 @@
+<<<<<<< HEAD
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #ifndef NAV2_FRENET_ILQR_CONTROLLER__COSTS__LONGTITUTAL_VELOCITY_COST_HPP_
 #define NAV2_FRENET_ILQR_CONTROLLER__COSTS__LONGTITUTAL_VELOCITY_COST_HPP_
 
 #include <memory>
+<<<<<<< HEAD
 #include "nav2_util/node_utils.hpp"
+=======
+#include <string>
+#include "nav2_ros_common/node_utils.hpp"
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #include "nav2_frenet_ilqr_controller/costs/rclcpp_node_cost.hpp"
 
 using nav2_util::declare_parameter_if_not_declared;
@@ -15,7 +40,6 @@ namespace costs
 
 class LongtitutalVelocityCost : public RclcppNodeCost
 {
-
 public:
   LongtitutalVelocityCost();
   void initialize(
@@ -33,8 +57,8 @@ protected:
   double desired_velocity_to_approach_;
 };
 
-}
-}
+}  // namespace costs
+}  // namespace nav2_frenet_ilqr_controller
 
 #include <pluginlib/class_list_macros.hpp>
 
@@ -42,4 +66,4 @@ PLUGINLIB_EXPORT_CLASS(
   nav2_frenet_ilqr_controller::costs::LongtitutalVelocityCost,
   nav2_frenet_ilqr_controller::costs::RclcppNodeCost)
 
-#endif
+#endif  // NAV2_FRENET_ILQR_CONTROLLER__COSTS__LONGTITUTAL_VELOCITY_COST_HPP_

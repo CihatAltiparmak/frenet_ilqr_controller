@@ -1,12 +1,34 @@
+<<<<<<< HEAD
 #include <ilqr_trajectory_tracker/models/diff_robot_model.hpp>
 #include <ilqr_trajectory_tracker/ilqr_optimizer.hpp>
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #include <gtest/gtest.h>
 #include <limits>
+#include <iostream>
+#include <ilqr_trajectory_tracker/models/diff_robot_model.hpp>
+#include <ilqr_trajectory_tracker/ilqr_optimizer.hpp>
 
 #define _USE_MATH_DEFINES
 
 TEST(ilqr_trajectory_tracker, ilqr_optimizer_test_initialization) {
-
   using ilqr_trajectory_tracker::DiffDriveRobotModel;
   using ilqr_trajectory_tracker::DiffDriveRobotModelState;
   using ilqr_trajectory_tracker::DiffDriveRobotModelInput;
@@ -14,10 +36,8 @@ TEST(ilqr_trajectory_tracker, ilqr_optimizer_test_initialization) {
   DiffDriveRobotModel diff_drive_robot_model;
 
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
-
 }
 
-#include <iostream>
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);

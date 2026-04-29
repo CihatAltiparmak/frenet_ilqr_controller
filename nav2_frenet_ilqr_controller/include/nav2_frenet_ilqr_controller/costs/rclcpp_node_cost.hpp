@@ -1,12 +1,34 @@
+<<<<<<< HEAD
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #ifndef NAV2_FRENET_ILQR_CONTROLLER__COSTS__RCLCPP_NODE_COST_HPP_
 #define NAV2_FRENET_ILQR_CONTROLLER__COSTS__RCLCPP_NODE_COST_HPP_
 
+#include <string>
+#include <memory>
 #include "frenet_trajectory_planner/costs/base_cost.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "nav2_costmap_2d/costmap_2d_ros.hpp"
 
-using namespace frenet_trajectory_planner::costs;
-using namespace frenet_trajectory_planner;
+using namespace frenet_trajectory_planner::costs;  // NOLINT
+using namespace frenet_trajectory_planner;  // NOLINT
 
 namespace nav2_frenet_ilqr_controller
 {
@@ -36,7 +58,7 @@ protected:
   nav2_costmap_2d::Costmap2D * costmap_{nullptr};
 };
 
-}
-}
+}  // namespace costs
+}  // namespace nav2_frenet_ilqr_controller
 
-#endif
+#endif  // NAV2_FRENET_ILQR_CONTROLLER__COSTS__RCLCPP_NODE_COST_HPP_
