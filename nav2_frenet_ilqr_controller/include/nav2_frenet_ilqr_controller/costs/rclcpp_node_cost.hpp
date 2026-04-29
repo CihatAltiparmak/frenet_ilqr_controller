@@ -24,6 +24,9 @@
 #include "nav2_ros_common/node_utils.hpp"
 #include "nav2_costmap_2d/costmap_2d_ros.hpp"
 
+using namespace frenet_trajectory_planner::costs;  // NOLINT
+using namespace frenet_trajectory_planner;  // NOLINT
+
 namespace nav2_frenet_ilqr_controller
 {
 namespace costs

@@ -24,6 +24,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "nav2_costmap_2d/costmap_2d_ros.hpp"
 
+using namespace frenet_trajectory_planner::policies;  // NOLINT
+using namespace frenet_trajectory_planner;  // NOLINT
+
 namespace nav2_frenet_ilqr_controller
 {
 namespace policies
