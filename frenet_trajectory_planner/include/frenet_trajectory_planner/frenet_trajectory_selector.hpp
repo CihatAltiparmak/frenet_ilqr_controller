@@ -1,13 +1,33 @@
+<<<<<<< HEAD
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #pragma once
 
-#include <frenet_trajectory_planner/type_definitions.hpp>
-#include <frenet_trajectory_planner/policies/base_policy.hpp>
-#include <frenet_trajectory_planner/costs/base_cost.hpp>
-#include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 #include <vector>
 #include <memory>
 #include <optional>
 #include <limits>
+#include <frenet_trajectory_planner/type_definitions.hpp>
+#include <frenet_trajectory_planner/policies/base_policy.hpp>
+#include <frenet_trajectory_planner/costs/base_cost.hpp>
+#include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 
 namespace frenet_trajectory_planner
 {
@@ -16,7 +36,8 @@ class FrenetTrajectorySelector
 {
 public:
   FrenetTrajectorySelector();
-  FrenetTrajectorySelector(const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
+  explicit FrenetTrajectorySelector(
+    const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter);
 
   void addPolicy(const std::shared_ptr<policies::Policy> & policy);
   void addCost(const std::shared_ptr<costs::Cost> & cost);
@@ -42,7 +63,6 @@ FrenetTrajectorySelector::FrenetTrajectorySelector(
   const std::shared_ptr<FrenetFrameConverter> & frenet_frame_converter)
 : frenet_frame_converter_(frenet_frame_converter)
 {
-
 }
 
 void FrenetTrajectorySelector::addPolicy(const std::shared_ptr<policies::Policy> & policy)
@@ -58,10 +78,9 @@ void FrenetTrajectorySelector::addCost(const std::shared_ptr<costs::Cost> & cost
 std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajectory(
   const std::vector<FrenetTrajectory> & frenet_trajectories, const Info & info)
 {
-
   auto policy_checker =
     [this](const FrenetTrajectory & frenet_trajectory,
-      const CartesianTrajectory & cartesian_trajectory) -> bool {
+    const CartesianTrajectory & cartesian_trajectory) -> bool {
       for (const auto & policy : policies_) {
         if (!policy->checkIfFeasible(frenet_trajectory, cartesian_trajectory)) {
           return false;
@@ -72,7 +91,7 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajec
 
   auto get_trajectory_cost =
     [this, info](const FrenetTrajectory & frenet_trajectory,
-      const CartesianTrajectory & cartesian_trajectory) -> double {
+    const CartesianTrajectory & cartesian_trajectory) -> double {
       double trajectory_cost = 0;
       for (auto & cost_checker : costs_) {
         cost_checker->setInfo(info);
@@ -107,4 +126,4 @@ void FrenetTrajectorySelector::setFrenetFrameConverter(
   frenet_frame_converter_ = frenet_frame_converter;
 }
 
-}
+}  // namespace frenet_trajectory_planner

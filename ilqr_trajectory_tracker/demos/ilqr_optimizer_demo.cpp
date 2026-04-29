@@ -1,8 +1,31 @@
+<<<<<<< HEAD
 #include <ilqr_trajectory_tracker/models/diff_robot_model.hpp>
 #include <ilqr_trajectory_tracker/ilqr_optimizer.hpp>
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #include <limits>
 #include <iostream>
 #include <chrono>
+
+#include <ilqr_trajectory_tracker/models/diff_robot_model.hpp>
+#include <ilqr_trajectory_tracker/ilqr_optimizer.hpp>
 
 #define _USE_MATH_DEFINES
 
@@ -39,6 +62,11 @@ int main(int argc, char ** argv)
   newton_optimizer.setAlpha(alpha);
 
   const auto start{std::chrono::steady_clock::now()};
+<<<<<<< HEAD
+=======
+  // TODO(CihatAltiparmak): Fix demo later, we should pass the actual robot pose instead of
+  // the beginning pose of the feasible trajectory
+>>>>>>> 4094837 (Format code according to ros standard (#71))
   auto u_optimal = newton_optimizer.optimize(x_feasible[0], x_feasible, Q, R, dt);
   const auto end{std::chrono::steady_clock::now()};
 

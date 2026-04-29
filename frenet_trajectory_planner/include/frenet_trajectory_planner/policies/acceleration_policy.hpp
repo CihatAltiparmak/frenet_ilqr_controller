@@ -1,9 +1,30 @@
+<<<<<<< HEAD
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #pragma once
 
-#include <frenet_trajectory_planner/policies/base_policy.hpp>
-#include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 #include <vector>
 #include <cmath>
+#include <memory>
+#include <frenet_trajectory_planner/policies/base_policy.hpp>
+#include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 
 namespace frenet_trajectory_planner
 {
@@ -36,14 +57,12 @@ AccelerationPolicy::AccelerationPolicy(
 : BasePolicy<AccelerationPolicyParameters>(acceleration_policy_parameters),
   frenet_frame_converter_(frenet_frame_converter)
 {
-
 }
 
 bool AccelerationPolicy::checkIfFeasible(
   const FrenetTrajectory & frenet_trajectory,
   const CartesianTrajectory & cartesian_trajectory)
 {
-
   // assert that frenet_trajectory equals a presentation in frenet frame of cartesian_trajectory
   for (const auto & state : cartesian_trajectory) {
     double acceleration = (state({2, 5})).norm();
@@ -57,5 +76,5 @@ bool AccelerationPolicy::checkIfFeasible(
   return true;
 }
 
-}
-}
+}  // namespace policies
+}  // namespace frenet_trajectory_planner

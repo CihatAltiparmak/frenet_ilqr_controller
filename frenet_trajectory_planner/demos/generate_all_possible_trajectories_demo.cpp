@@ -1,10 +1,29 @@
+<<<<<<< HEAD
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #include <frenet_trajectory_planner/frenet_trajectory_generator.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/line_adapter.hpp>
 #include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 
 int main()
 {
-
   frenet_trajectory_planner::CartesianState robot_cartesian_state;
   frenet_trajectory_planner::CartesianPoint start_point;
   start_point << 1, 1;
@@ -27,7 +46,7 @@ int main()
 
   auto frenet_trajectory_generator = frenet_trajectory_planner::FrenetTrajectoryGenerator(
     planner_config);
-  // TODO (CihatAltiparmak) : eliminate some trajectories in frenet level
+  // TODO(CihatAltiparmak) : eliminate some trajectories in frenet level
   auto all_frenet_trajectories = frenet_trajectory_generator.get_all_possible_frenet_trajectories(
     frenet_state_initial);
 

@@ -1,8 +1,27 @@
+<<<<<<< HEAD
+=======
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#include <gtest/gtest.h>
+#include <vector>
+>>>>>>> 4094837 (Format code according to ros standard (#71))
 #include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
 #include <frenet_trajectory_planner/type_definitions.hpp>
-
-#include <vector>
-#include <gtest/gtest.h>
 
 #define _USE_MATH_DEFINES
 
@@ -72,7 +91,6 @@ TEST(frenet_trajectory_planner, conversion_adapters_circle_adapter_test_convertF
       << frenet_state
       << "\nconverted frenet state\n"
       << frenet_state2;
-
   }
 
   // {
