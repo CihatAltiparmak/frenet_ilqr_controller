@@ -104,7 +104,7 @@ target_link_libraries(nav2_frenet_ilqr_controller_policies PRIVATE
 )
 
 install(TARGETS ${library_name} nav2_frenet_ilqr_controller_costs nav2_frenet_ilqr_controller_policies
-  EXPORT ${library_name} 
+  EXPORT ${library_name}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -119,9 +119,9 @@ install(DIRECTORY include/
 #   # the following line skips the linter which checks for copyrights
 #   set(ament_cmake_copyright_FOUND TRUE)
 #   ament_lint_auto_find_test_dependencies()
-# 
+#
 #   find_package(tf2_geometry_msgs REQUIRED)
-# 
+#
 #   ament_find_gtest()
 #   add_subdirectory(test)
 # endif()

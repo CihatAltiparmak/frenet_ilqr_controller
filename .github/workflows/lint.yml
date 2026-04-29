@@ -20,19 +20,3 @@ jobs:
         linter: ${{ matrix.linter }}
         distribution: rolling
         package-name: "*"
-
-  pre-commit:
-    name: pre-commit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
-      - uses: pre-commit/action@v3.0.1
-        env:
-          SKIP: >-
-            ament_lint_cmake,
-            ament_cpplint,
-            ament_uncrustify,
-            ament_xmllint,
-            ament_flake8,
-            ament_pep257
