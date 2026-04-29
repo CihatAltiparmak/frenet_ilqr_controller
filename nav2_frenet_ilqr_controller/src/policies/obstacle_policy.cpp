@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "nav2_frenet_ilqr_controller/policies/obstacle_policy.hpp"
 #include <memory>
+#include "nav2_frenet_ilqr_controller/policies/obstacle_policy.hpp"
 
 namespace nav2_frenet_ilqr_controller
 {
@@ -41,7 +41,6 @@ bool ObstaclePolicy::checkIfFeasible(
   const FrenetTrajectory & /*frenet_trajectory*/,
   const CartesianTrajectory & cartesian_trajectory)
 {
-
   for (auto cartesian_state : cartesian_trajectory) {
     if (isCollides(cartesian_state)) {
       return false;
@@ -53,7 +52,6 @@ bool ObstaclePolicy::checkIfFeasible(
 
 bool ObstaclePolicy::isCollides(const CartesianState & cartesian_state)
 {
-
   const double & x = cartesian_state[0];
   const double & y = cartesian_state[3];
   unsigned int x_i, y_i;
@@ -69,14 +67,14 @@ bool ObstaclePolicy::isCollides(const CartesianState & cartesian_state)
     case (nav2_costmap_2d::INSCRIBED_INFLATED_OBSTACLE):
       return true;
     case (nav2_costmap_2d::NO_INFORMATION):
-      return false;   // TODO (CihatAltiparmak) : we should control if it's tracking unknown
+      return false;   // TODO(CihatAltiparmak) : we should control if it's tracking unknown
     default:
       return false;
   }
 }
 
-}
-}
+}  // namespace policies
+}  // namespace nav2_frenet_ilqr_controller
 
 #include <pluginlib/class_list_macros.hpp>
 

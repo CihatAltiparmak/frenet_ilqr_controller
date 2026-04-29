@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,8 +19,9 @@
 
 #include <Eigen/Dense>
 #include <cmath>
+#include <limits>
 
-using namespace Eigen;
+using namespace Eigen;  // NOLINT
 
 namespace ilqr_trajectory_tracker
 {
@@ -43,7 +44,9 @@ public:
 
   void setLimits(const InputT & input_limits_min, const InputT & input_limits_max);
 
-  virtual StateMatrixT getStateMatrix(const StateT & x_eq, const InputT & u_eq, const double dt) = 0;
+  virtual StateMatrixT getStateMatrix(
+    const StateT & x_eq, const InputT & u_eq,
+    const double dt) = 0;
 
   virtual ControlMatrixT getControlMatrix(
     const StateT & x_eq, const InputT & u_eq,
@@ -58,8 +61,8 @@ public:
   static size_t getInputDim();
 
 protected:
-    InputT input_limits_min_;
-    InputT input_limits_max_;
+  InputT input_limits_min_;
+  InputT input_limits_max_;
 };
 
 template<size_t _StateDim, size_t _InputDim>
@@ -72,20 +75,22 @@ Model<_StateDim, _InputDim>::Model()
 template<size_t _StateDim, size_t _InputDim>
 void Model<_StateDim, _InputDim>::setLimits(
   const InputT & input_limits_min,
-  const InputT & input_limits_max) {
-
+  const InputT & input_limits_max)
+{
   input_limits_min_ = input_limits_min;
   input_limits_max_ = input_limits_max;
 }
 
 template<size_t _StateDim, size_t _InputDim>
-size_t Model<_StateDim, _InputDim>::getStateDim() {
+size_t Model<_StateDim, _InputDim>::getStateDim()
+{
   return _StateDim;
 }
 
 template<size_t _StateDim, size_t _InputDim>
-size_t Model<_StateDim, _InputDim>::getInputDim() {
+size_t Model<_StateDim, _InputDim>::getInputDim()
+{
   return InputDim;
 }
 
-}
+}  // namespace ilqr_trajectory_tracker

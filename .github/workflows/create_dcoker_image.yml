@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        branch: [main, humble] 
+        branch: [main, humble]
     permissions:
       contents: read
       packages: write
@@ -57,4 +57,3 @@ jobs:
           min-versions-to-keep: 5
           delete-only-untagged-versions: 'true'
           token: ${{ secrets.GITHUB_TOKEN }}
-

@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,13 +16,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
-#include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
-#include <frenet_trajectory_planner/type_definitions.hpp>
-
 #include <Eigen/Dense>
 #include <cmath>
 
-using namespace Eigen;
+#include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
+#include <frenet_trajectory_planner/type_definitions.hpp>
+
+using namespace Eigen;  // NOLINT
 
 namespace frenet_trajectory_planner
 {
@@ -64,7 +64,6 @@ CartesianState LineAdapter::convertFrenet2Cartesian(const FrenetState & frenet_s
   cartesian_state[6] = std::atan2(cartesian_state[4], cartesian_state[1]);
 
   return cartesian_state;
-
 }
 
 FrenetState LineAdapter::convertCartesian2Frenet(const CartesianState & cartesian_state)
@@ -82,4 +81,4 @@ FrenetState LineAdapter::convertCartesian2Frenet(const CartesianState & cartesia
   return frenet_state;
 }
 
-}
+}  // namespace frenet_trajectory_planner

@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,9 +23,10 @@
 #include <tuple>
 #include <algorithm>
 #include <limits>
+#include <vector>
 #include "frenet_trajectory_planner/type_definitions.hpp"
 
-using namespace Eigen;
+using namespace Eigen;  // NOLINT
 
 namespace ilqr_trajectory_tracker
 {
@@ -46,24 +47,24 @@ class NewtonOptimizer : public Optimizer
 public:
   static const size_t StateDim {RobotModel::StateDim};
   static const size_t InputDim {RobotModel::InputDim};
-  using StateT         = typename RobotModel::StateT;
-  using InputT         = typename RobotModel::InputT;
-  using StateMatrixT   = typename RobotModel::StateMatrixT;
+  using StateT = typename RobotModel::StateT;
+  using InputT = typename RobotModel::InputT;
+  using StateMatrixT = typename RobotModel::StateMatrixT;
   using ControlMatrixT = typename RobotModel::ControlMatrixT;
 
   template<typename ... RobotModelParams>
-  NewtonOptimizer(const RobotModelParams ... model_params);
+  explicit NewtonOptimizer(const RobotModelParams ... model_params);
 
   std::vector<MatrixXd> backwardPass(
     const std::vector<StateT> & x_feasible,
     const std::vector<InputT> & u_feasible,
-    const Matrix<double, StateDim, StateDim> & Q, 
+    const Matrix<double, StateDim, StateDim> & Q,
     const Matrix<double, InputDim, InputDim> & R,
-    const double dt) {
-
+    const double dt)
+  {
     MatrixXd P_tilda = MatrixXd::Identity(StateDim + 1, StateDim + 1);
     P_tilda.topLeftCorner(StateDim, StateDim) = Q;
-      
+
     std::vector<MatrixXd> K_gain(x_feasible.size() - 1,
       MatrixXd::Zero(InputDim, StateDim + 1));
 
@@ -97,8 +98,8 @@ public:
   std::tuple<MatrixXd, MatrixXd> solveDiscreteLQRProblem(
     const MatrixXd & A, const MatrixXd & B,
     const MatrixXd & Q, const MatrixXd & R,
-    const MatrixXd & P) {
-
+    const MatrixXd & P)
+  {
     auto BTmP = B.transpose() * P;
     auto K = -(R + BTmP * B).completeOrthogonalDecomposition().pseudoInverse() * BTmP * A;
 
@@ -113,8 +114,8 @@ public:
     const StateT & x0,
     const std::vector<StateT> & x_feasible,
     const std::vector<InputT> & u_feasible,
-    const std::vector<MatrixXd> & K_gains, const double dt, const double alpha) {
-
+    const std::vector<MatrixXd> & K_gains, const double dt, const double alpha)
+  {
     auto trajectory_size = x_feasible.size();
     std::vector<StateT> x_tracked(trajectory_size);
 
@@ -123,8 +124,7 @@ public:
 
     // assert trajectory_size > 0
     x_tracked[0] = x0;
-    for (size_t i = 0; i < x_feasible.size() - 1; ++i)
-    {
+    for (size_t i = 0; i < x_feasible.size() - 1; ++i) {
       auto x_error = x_tracked[i] - x_feasible[i];
       VectorXd z_error(StateDim + 1);
       z_error << x_error, alpha;
@@ -142,7 +142,8 @@ public:
     const std::vector<StateT> & x_trajectory,
     const Matrix<double, StateDim, StateDim> & Q,
     const Matrix<double, InputDim, InputDim> & R,
-    const double dt) {
+    const double dt)
+  {
     // assert trajectory_size > 0
 
     double alpha = alpha_;
@@ -184,13 +185,15 @@ public:
     const StateT & x_initial,
     const InputT & u,
     const double dt
-  ) {
+  )
+  {
     return robot_model_->getTwistCommand(x_initial, u, dt);
   }
 
   double cost(
     const std::vector<StateT> & x_tracked,
-    const std::vector<StateT> & x_trajectory) {
+    const std::vector<StateT> & x_trajectory)
+  {
     double trajectory_cost = 0;
     for (size_t i = 0; i < x_trajectory.size();
       ++i)
@@ -201,7 +204,9 @@ public:
     return trajectory_cost;
   }
 
-  std::vector<StateT> fromFrenetCartesianTrajectory(const frenet_trajectory_planner::CartesianTrajectory & c_trajectory) {
+  std::vector<StateT> fromFrenetCartesianTrajectory(
+    const frenet_trajectory_planner::CartesianTrajectory & c_trajectory)
+  {
     std::vector<StateT> converted_trajectory;
     for (auto c_state : c_trajectory) {
       StateT converted_state = RobotModel::fromFrenetCartesianState(c_state);
@@ -230,7 +235,7 @@ template<typename ... RobotModelParams>
 NewtonOptimizer<RobotModel>::NewtonOptimizer(const RobotModelParams ... model_params)
 : Optimizer()
 {
-  robot_model_ = std::make_unique<RobotModel>(model_params...);
+  robot_model_ = std::make_unique<RobotModel>(model_params ...);
 }
 
 template<typename RobotModel>
@@ -253,4 +258,4 @@ void NewtonOptimizer<RobotModel>::setInputConstraints(
   robot_model_->setLimits(input_limits_min, input_limits_max);
 }
 
-}
+}  // namespace ilqr_trajectory_tracker

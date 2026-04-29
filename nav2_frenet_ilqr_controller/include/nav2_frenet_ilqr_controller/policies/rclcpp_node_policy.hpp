@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,12 +18,14 @@
 #ifndef NAV2_FRENET_ILQR_CONTROLLER__POLICIES__RCLCPP_NODE_POLICY_HPP_
 #define NAV2_FRENET_ILQR_CONTROLLER__POLICIES__RCLCPP_NODE_POLICY_HPP_
 
+#include <memory>
+#include <string>
 #include "frenet_trajectory_planner/policies/base_policy.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "nav2_costmap_2d/costmap_2d_ros.hpp"
 
-using namespace frenet_trajectory_planner::policies;
-using namespace frenet_trajectory_planner;
+using namespace frenet_trajectory_planner::policies;  // NOLINT
+using namespace frenet_trajectory_planner;  // NOLINT
 
 namespace nav2_frenet_ilqr_controller
 {
@@ -60,7 +62,7 @@ RclcppNodePolicy::RclcppNodePolicy()
 {
 }
 
-}
-}
+}  // namespace policies
+}  // namespace nav2_frenet_ilqr_controller
 
-#endif
+#endif  // NAV2_FRENET_ILQR_CONTROLLER__POLICIES__RCLCPP_NODE_POLICY_HPP_

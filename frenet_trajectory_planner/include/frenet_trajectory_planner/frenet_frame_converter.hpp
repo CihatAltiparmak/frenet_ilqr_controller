@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
 
 #pragma once
 
+#include <vector>
+#include <memory>
 #include <frenet_trajectory_planner/type_definitions.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/line_adapter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
-#include <vector>
-#include <memory>
 
 namespace frenet_trajectory_planner
 {
@@ -75,7 +75,7 @@ void FrenetFrameConverter::createSegments(const std::vector<CartesianPoint> & wa
     Vector2d xi = (qi - li * yi - ci) / (qi - li * yi - ci).norm();
 
     // determinant calculations to determine direction
-    // TODO (CihatAltiparmak) : seems it works but take a look at again later
+    // TODO(CihatAltiparmak) : seems it works but take a look at again later
     double chross = yip1.x() * yi.y() - yip1.y() * yi.x();
     int sign_indicactor = (chross > 0) ? 1 : -1;
 
@@ -102,7 +102,6 @@ void FrenetFrameConverter::createSegments(const std::vector<CartesianPoint> & wa
 
   segments_.push_back(
     std::make_unique<LineAdapter>(last_waypoint, waypoint_list.back()));
-
 }
 
 CartesianTrajectory FrenetFrameConverter::convertFrenet2Cartesian(
@@ -145,11 +144,12 @@ CartesianState FrenetFrameConverter::convertFrenet2CartesianForSegment(
   return segments_.at(segment_index)->convertFrenet2Cartesian(frenet_state);
 }
 
-double FrenetFrameConverter::getArclength() {
+double FrenetFrameConverter::getArclength()
+{
   double total_arclength = 0.0;
   for (const auto & segment : segments_) {
     total_arclength += segment->getArclength();
   }
   return total_arclength;
 }
-}
+}  // namespace frenet_trajectory_planner

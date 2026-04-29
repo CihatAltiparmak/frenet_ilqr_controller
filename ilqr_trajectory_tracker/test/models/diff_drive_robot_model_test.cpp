@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,18 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <ilqr_trajectory_tracker/models/diff_robot_model.hpp>
 #include <gtest/gtest.h>
+#include <ilqr_trajectory_tracker/models/diff_robot_model.hpp>
 
 #define _USE_MATH_DEFINES
 
 TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_initialization) {
-
   ilqr_trajectory_tracker::DiffDriveRobotModel diff_drive_robot_model;
 }
 
 TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_applySystemDynamics) {
-
   ilqr_trajectory_tracker::DiffDriveRobotModel diff_drive_robot_model;
 
   {
@@ -53,7 +51,6 @@ TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_applySystemDynamics) {
 }
 
 TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_getStateMatrix) {
-
   ilqr_trajectory_tracker::DiffDriveRobotModel diff_drive_robot_model;
 
   {
@@ -69,7 +66,6 @@ TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_getStateMatrix) {
 }
 
 TEST(ilqr_trajectory_tracker, diff_drive_robot_model_test_getControlMatrix) {
-
   ilqr_trajectory_tracker::DiffDriveRobotModel diff_drive_robot_model;
 
   {

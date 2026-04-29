@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,15 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <gtest/gtest.h>
+#include <vector>
+
 #include <frenet_trajectory_planner/type_definitions.hpp>
 #include <frenet_trajectory_planner/policies/acceleration_policy.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/line_adapter.hpp>
 
-#include <vector>
-#include <gtest/gtest.h>
-
 TEST(frenet_trajectory_planner, acceleration_policy_test_initialization) {
-
   using frenet_trajectory_planner::policies::AccelerationPolicy;
   using frenet_trajectory_planner::policies::AccelerationPolicyParameters;
   using frenet_trajectory_planner::LineAdapter;
@@ -47,8 +46,8 @@ TEST(frenet_trajectory_planner, acceleration_policy_test_eliminate_frenet_trajec
   using frenet_trajectory_planner::CartesianPoint;
 
   AccelerationPolicyParameters parameters = {
-    -1.0, // acceleration_min
-    1.0   // acceleration_max
+    -1.0,  // acceleration_min
+    1.0  // acceleration_max
   };
 
   CartesianPoint start_point;
@@ -92,8 +91,8 @@ TEST(frenet_trajectory_planner, acceleration_policy_test_eliminate_cartesian_tra
   using frenet_trajectory_planner::CartesianPoint;
 
   AccelerationPolicyParameters parameters = {
-    -1.0, // acceleration_min
-    1.0   // acceleration_max
+    -1.0,  // acceleration_min
+    1.0  // acceleration_max
   };
 
   CartesianPoint start_point;
