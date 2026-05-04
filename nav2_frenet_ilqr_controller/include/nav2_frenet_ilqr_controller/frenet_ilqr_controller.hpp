@@ -135,9 +135,6 @@ public:
   void addPoliciesFromPlugins();
   void addCostsFromPlugins();
 
-  nav_msgs::msg::Path convertFromCartesianTrajectory(
-    const std::string & frame_id, const CartesianTrajectory & cartesian_trajectory);
-
 protected:
   nav2::LifecycleNode::WeakPtr node_;
   std::shared_ptr<tf2_ros::Buffer> tf_;
@@ -146,16 +143,7 @@ protected:
   nav2_costmap_2d::Costmap2D * costmap_;
   rclcpp::Logger logger_ {rclcpp::get_logger("FrenetILQRController")};
 
-  double goal_dist_tol_;
   double control_duration_;
-  bool cancelling_ = false;
-  bool finished_cancelling_ = false;
-  bool is_rotating_to_heading_ = false;
-
-  std::shared_ptr<nav2::Publisher<nav_msgs::msg::Path>> global_path_pub_;
-  std::shared_ptr<nav2::Publisher<nav_msgs::msg::Path>> truncated_path_pub_;
-  std::shared_ptr<nav2::Publisher<geometry_msgs::msg::PoseStamped>>
-  robot_pose_pub_;
 
   TrajectoryVisualizer trajectory_visualizer_;
   std::unique_ptr<nav2_frenet_ilqr_controller::ParameterHandler> parameter_handler_;

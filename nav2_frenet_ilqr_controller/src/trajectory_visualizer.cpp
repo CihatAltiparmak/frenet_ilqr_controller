@@ -48,13 +48,12 @@ void TrajectoryVisualizer::on_cleanup()
 }
 
 void TrajectoryVisualizer::visualize(
-  const frenet_trajectory_planner::DebugInfo & debug_info)
+  const std::shared_ptr<frenet_trajectory_planner::DebugInfo> debug_info)
 {
   auto marker_list = visualization_msgs::msg::MarkerArray();
 
-  for (size_t i = 0; i < debug_info.cartesian_trajectories.size(); ++i) {
-    const auto & cand_traj = debug_info.cartesian_trajectories[i];
-    const auto & cand_cost = debug_info.costs[i];
+  for (size_t i = 0; i < debug_info->cartesian_trajectories.size(); ++i) {
+    const auto & [cand_traj, cand_cost] = debug_info->cartesian_trajectories[i];
 
     visualization_msgs::msg::Marker marker;
     marker.header.frame_id = frame_id_;
@@ -64,10 +63,10 @@ void TrajectoryVisualizer::visualize(
     marker.type = visualization_msgs::msg::Marker::LINE_STRIP;
     marker.action = visualization_msgs::msg::Marker::ADD;
     marker.pose.orientation.w = 1.0;
-    marker.scale.x = 0.01;      // line width
+    marker.scale.x = 0.01;  // line width
     marker.color = (cand_cost == -1.0) ?
-      createColor(1.0f, 0.0f, 1.0f, 0.6f) :      // magenta for collisions
-      createColor(1.0f, 1.0f, 0.0f, 0.7f);
+      createColor(1.0f, 0.0f, 1.0f, 0.6f) :  // magenta for collisions
+      createColor(1.0f, 1.0f, 0.0f, 10.0 / std::exp(cand_cost));
 
     marker.points.reserve(cand_traj.size());
     for (const auto & cstate : cand_traj) {

@@ -33,6 +33,7 @@ struct Parameters
 {
   bool interpolate_curvature_after_goal;
   double time_discretization;
+  bool visualize_candidate_trajectories;
   int iteration_number;
   double alpha;
   frenet_trajectory_planner::FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config;

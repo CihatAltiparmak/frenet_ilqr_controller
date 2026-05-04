@@ -20,6 +20,7 @@
 #include <Eigen/Dense>
 #include <cmath>
 #include <vector>
+#include <utility>
 
 using namespace Eigen;  // NOLINT
 
@@ -51,8 +52,7 @@ typedef struct FrenetTrajectoryPlannerConfig
 
 struct DebugInfo
 {
-  std::vector<CartesianTrajectory> cartesian_trajectories;
-  std::vector<double> costs;
+  std::vector<std::pair<CartesianTrajectory, double>> cartesian_trajectories;
 };
 
 }  // namespace frenet_trajectory_planner

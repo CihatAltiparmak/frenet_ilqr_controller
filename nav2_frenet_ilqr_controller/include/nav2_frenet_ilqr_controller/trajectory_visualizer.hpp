@@ -41,7 +41,7 @@ public:
   void reset();
 
   void visualize(
-    const frenet_trajectory_planner::DebugInfo & debug_info);
+    const std::shared_ptr<frenet_trajectory_planner::DebugInfo> debug_info);
 
   inline std_msgs::msg::ColorRGBA createColor(float r, float g, float b, float a)
   {

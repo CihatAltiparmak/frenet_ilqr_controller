@@ -57,7 +57,7 @@ void FrenetILQRController::configure(
   plugin_name_ = name;
   logger_ = node->get_logger();
 
-  parameter_handler_ = std::make_unique<nav2_frenet_ilqr_controller::ParameterHandler>(
+  parameter_handler_ = std::make_unique<ParameterHandler>(
     parent,
     plugin_name_);
   params_ = parameter_handler_->getParams();
@@ -68,8 +68,6 @@ void FrenetILQRController::configure(
   double control_frequency = 20.0;
   control_duration_ = 1.0 / control_frequency;
 
-  truncated_path_pub_ = node->create_publisher<nav_msgs::msg::Path>("truncated_plan", 1);
-  robot_pose_pub_ = node->create_publisher<geometry_msgs::msg::PoseStamped>("robot_test_pose", 1);
   trajectory_visualizer_.on_configure(parent, costmap_ros_->getGlobalFrameID());
 }
 
@@ -80,8 +78,6 @@ void FrenetILQRController::cleanup()
     "Cleaning up controller: %s of type"
     " frenet_ilqr_controller::FrenetILQRController",
     plugin_name_.c_str());
-  truncated_path_pub_.reset();
-  robot_pose_pub_.reset();
   trajectory_visualizer_.on_cleanup();
 }
 
@@ -92,8 +88,6 @@ void FrenetILQRController::activate()
     "Activating controller: %s of type "
     "frenet_ilqr_controller::FrenetILQRController",
     plugin_name_.c_str());
-  truncated_path_pub_->on_activate();
-  robot_pose_pub_->on_activate();
   trajectory_visualizer_.on_activate();
 }
 
@@ -104,8 +98,6 @@ void FrenetILQRController::deactivate()
     "Deactivating controller: %s of type "
     "frenet_ilqr_controller::FrenetILQRController",
     plugin_name_.c_str());
-  truncated_path_pub_->on_deactivate();
-  robot_pose_pub_->on_deactivate();
   trajectory_visualizer_.on_deactivate();
 }
 
@@ -282,21 +274,19 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
 
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
     params_->frenet_trajectory_planner_config);
-  auto debug_info = frenet_trajectory_planner::DebugInfo();
+
+  std::shared_ptr<frenet_trajectory_planner::DebugInfo> debug_info;
+  if (params_->visualize_candidate_trajectories) {
+    debug_info = std::make_shared<frenet_trajectory_planner::DebugInfo>();
+  }
+
   auto planned_cartesian_trajectory = frenet_trajectory_planner_.planByWaypoint(
     c_state_robot,
     waypoint_list, debug_info);
 
-  trajectory_visualizer_.visualize(debug_info);
-
-#if 1
-  nav_msgs::msg::Path frenet_plan = convertFromCartesianTrajectory(
-    transformed_global_plan.header.frame_id,
-    planned_cartesian_trajectory);
-
-  truncated_path_pub_->publish(frenet_plan);
-  robot_pose_pub_->publish(robot_pose);
-#endif
+  if (params_->visualize_candidate_trajectories) {
+    trajectory_visualizer_.visualize(debug_info);
+  }
 
   auto u_opt = findOptimalInputForTrajectory(c_state_robot, planned_cartesian_trajectory);
 
@@ -306,28 +296,6 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   cmd_vel.twist.linear.x = u_opt[0];
   cmd_vel.twist.angular.z = u_opt[1];
   return cmd_vel;
-}
-
-nav_msgs::msg::Path FrenetILQRController::convertFromCartesianTrajectory(
-  const std::string & frame_id, const CartesianTrajectory & cartesian_trajectory)
-{
-  nav_msgs::msg::Path plan_msg;
-  plan_msg.header.frame_id = frame_id;
-  for (const auto & cartesian_state : cartesian_trajectory) {
-    geometry_msgs::msg::PoseStamped pose_st;
-    pose_st.header.frame_id = frame_id;
-
-    pose_st.pose.position.x = cartesian_state[0];
-    pose_st.pose.position.y = cartesian_state[3];
-
-    tf2::Quaternion tf2_quat;
-    tf2_quat.setRPY(0.0, 0.0, cartesian_state[6]);
-    pose_st.pose.orientation = tf2::toMsg(tf2_quat);
-
-    plan_msg.poses.push_back(pose_st);
-  }
-
-  return plan_msg;
 }
 
 bool FrenetILQRController::cancel()

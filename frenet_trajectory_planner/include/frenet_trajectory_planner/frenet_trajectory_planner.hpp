@@ -44,7 +44,7 @@ public:
   CartesianTrajectory planByWaypoint(
     const CartesianState & robot_cartesian_state,
     const std::vector<CartesianPoint> & waypoint_list,
-    DebugInfo & debug_info);
+    std::shared_ptr<DebugInfo> debug_info);
 
   void addPolicy(const std::shared_ptr<policies::Policy> & policy);
   void addCost(const std::shared_ptr<costs::Cost> & cost);
@@ -84,7 +84,7 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner(
 CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   const CartesianState & robot_cartesian_state,
   const std::vector<CartesianPoint> & waypoint_list,
-  DebugInfo & debug_info)
+  std::shared_ptr<DebugInfo> debug_info)
 {
   auto frenet_frame_converter = std::make_shared<FrenetFrameConverter>();
   frenet_frame_converter->createSegments(waypoint_list);

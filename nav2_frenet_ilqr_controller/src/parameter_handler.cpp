@@ -40,6 +40,8 @@ ParameterHandler::ParameterHandler(
     node, plugin_name_ + ".interpolate_curvature_after_goal", rclcpp::ParameterValue(false));
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".time_discretization", rclcpp::ParameterValue(0.05));
+  declare_parameter_if_not_declared(
+    node, plugin_name_ + ".visualize_candidate_trajectories", rclcpp::ParameterValue(false));
 
   // for lateral distance
   declare_parameter_if_not_declared(
@@ -102,6 +104,10 @@ ParameterHandler::ParameterHandler(
 
   node->get_parameter(plugin_name_ + ".time_discretization", params_.time_discretization);
   params_.frenet_trajectory_planner_config.dt = params_.time_discretization;
+
+  node->get_parameter(
+    plugin_name_ + ".visualize_candidate_trajectories",
+  params_.visualize_candidate_trajectories);
 
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.min_lateral_distance",
@@ -197,6 +203,8 @@ ParameterHandler::dynamicParametersCallback(
     } else if (name == plugin_name_ + ".time_discretization") {
       params_.time_discretization = parameter.as_double();
       params_.frenet_trajectory_planner_config.dt = params_.time_discretization;
+    } else if (name == plugin_name_ + ".visualize_candidate_trajectories") {
+      params_.visualize_candidate_trajectories = parameter.as_bool();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.min_lateral_distance") {
       params_.frenet_trajectory_planner_config.min_lateral_distance = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.max_lateral_distance") {
