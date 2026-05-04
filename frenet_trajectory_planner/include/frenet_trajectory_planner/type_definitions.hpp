@@ -20,6 +20,7 @@
 #include <Eigen/Dense>
 #include <cmath>
 #include <vector>
+#include <utility>
 
 using namespace Eigen;  // NOLINT
 
@@ -48,5 +49,10 @@ typedef struct FrenetTrajectoryPlannerConfig
   int max_state_in_trajectory = 40;
   double dt = 0.05;  // time discretization
 } FrenetTrajectoryPlannerConfig;
+
+struct DebugInfo
+{
+  std::vector<std::pair<CartesianTrajectory, double>> cartesian_trajectories;
+};
 
 }  // namespace frenet_trajectory_planner
