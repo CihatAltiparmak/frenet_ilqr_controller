@@ -18,10 +18,15 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(frenet_trajectory_planner REQUIRED)
 find_package(ilqr_trajectory_tracker REQUIRED)
+<<<<<<< HEAD
 
 include_directories(
   include
 )
+=======
+find_package(nav2_ros_common REQUIRED)
+find_package(visualization_msgs REQUIRED)
+>>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))
 
 nav2_package()
 
@@ -29,6 +34,7 @@ set(library_name nav2_frenet_ilqr_controller)
 
 add_library(${library_name} SHARED
   src/frenet_ilqr_controller.cpp
+<<<<<<< HEAD
   src/path_handler.cpp
   src/parameter_handler.cpp)
 
@@ -46,6 +52,35 @@ ament_target_dependencies(${library_name}
   frenet_trajectory_planner
   ilqr_trajectory_tracker
   rcl_interfaces
+=======
+  src/parameter_handler.cpp
+  src/trajectory_visualizer.cpp)
+target_include_directories(${library_name}
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+    "$<BUILD_INTERFACE:${nav2_ros_common_INCLUDE_DIRS}>"
+)
+target_link_libraries(${library_name} PUBLIC
+  ${geometry_msgs_TARGETS}
+  ${visualization_msgs_TARGETS}
+  nav2_core::nav2_core
+  nav2_costmap_2d::nav2_costmap_2d_core
+  nav2_util::nav2_util_core
+  ${nav_msgs_TARGETS}
+  pluginlib::pluginlib
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
+  ${rcl_interfaces_TARGETS}
+  ${std_msgs_TARGETS}
+  tf2::tf2
+  tf2_ros::tf2_ros
+  frenet_trajectory_planner::frenet_trajectory_planner_lib
+  ilqr_trajectory_tracker::ilqr_trajectory_tracker_lib
+)
+target_link_libraries(${library_name} PRIVATE
+  angles::angles
+>>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))
 )
 
 add_library(nav2_frenet_ilqr_controller_costs SHARED
@@ -115,6 +150,7 @@ ament_export_include_directories(include/${PROJECT_NAME})
 ament_export_libraries(${library_name})
 ament_export_dependencies(
   geometry_msgs
+  visualization_msgs
   nav2_core
   nav2_costmap_2d
   nav2_util

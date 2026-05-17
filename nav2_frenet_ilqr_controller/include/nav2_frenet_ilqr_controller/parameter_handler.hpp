@@ -36,6 +36,7 @@ struct Parameters
   double max_robot_pose_search_dist;
   double transform_tolerance;
   double time_discretization;
+  bool visualize_candidate_trajectories;
   int iteration_number;
   double alpha;
   frenet_trajectory_planner::FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config;

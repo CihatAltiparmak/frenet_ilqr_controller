@@ -40,7 +40,7 @@ void FrenetILQRController::configure(
   plugin_name_ = name;
   logger_ = node->get_logger();
 
-  parameter_handler_ = std::make_unique<nav2_frenet_ilqr_controller::ParameterHandler>(
+  parameter_handler_ = std::make_unique<ParameterHandler>(
     parent,
     plugin_name_,
     costmap_->getSizeInMetersX());
@@ -56,9 +56,13 @@ void FrenetILQRController::configure(
   double control_frequency = 20.0;
   control_duration_ = 1.0 / control_frequency;
 
+<<<<<<< HEAD
   global_path_pub_ = node->create_publisher<nav_msgs::msg::Path>("received_plan", 1);
   truncated_path_pub_ = node->create_publisher<nav_msgs::msg::Path>("truncated_plan", 1);
   robot_pose_pub_ = node->create_publisher<geometry_msgs::msg::PoseStamped>("robot_test_pose", 1);
+=======
+  trajectory_visualizer_.on_configure(parent, costmap_ros_->getGlobalFrameID());
+>>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))
 }
 
 void FrenetILQRController::cleanup()
@@ -68,9 +72,13 @@ void FrenetILQRController::cleanup()
     "Cleaning up controller: %s of type"
     " frenet_ilqr_controller::FrenetILQRController",
     plugin_name_.c_str());
+<<<<<<< HEAD
   global_path_pub_.reset();
   truncated_path_pub_.reset();
   robot_pose_pub_.reset();
+=======
+  trajectory_visualizer_.on_cleanup();
+>>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))
 }
 
 void FrenetILQRController::activate()
@@ -80,9 +88,13 @@ void FrenetILQRController::activate()
     "Activating controller: %s of type "
     "frenet_ilqr_controller::FrenetILQRController",
     plugin_name_.c_str());
+<<<<<<< HEAD
   global_path_pub_->on_activate();
   truncated_path_pub_->on_activate();
   robot_pose_pub_->on_activate();
+=======
+  trajectory_visualizer_.on_activate();
+>>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))
 }
 
 void FrenetILQRController::deactivate()
@@ -92,9 +104,13 @@ void FrenetILQRController::deactivate()
     "Deactivating controller: %s of type "
     "frenet_ilqr_controller::FrenetILQRController",
     plugin_name_.c_str());
+<<<<<<< HEAD
   global_path_pub_->on_deactivate();
   truncated_path_pub_->on_deactivate();
   robot_pose_pub_->on_deactivate();
+=======
+  trajectory_visualizer_.on_deactivate();
+>>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))
 }
 
 void FrenetILQRController::addPoliciesFromPlugins()
@@ -286,10 +302,17 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
 
   frenet_trajectory_planner_.setFrenetTrajectoryPlannerConfig(
     params_->frenet_trajectory_planner_config);
+
+  std::shared_ptr<frenet_trajectory_planner::DebugInfo> debug_info;
+  if (params_->visualize_candidate_trajectories) {
+    debug_info = std::make_shared<frenet_trajectory_planner::DebugInfo>();
+  }
+
   auto planned_cartesian_trajectory = frenet_trajectory_planner_.planByWaypoint(
     c_state_robot,
-    waypoint_list);
+    waypoint_list, debug_info);
 
+<<<<<<< HEAD
 #if 1
   nav_msgs::msg::Path frenet_plan = convertFromCartesianTrajectory(
     transformed_plan.header.frame_id,
@@ -298,6 +321,11 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   truncated_path_pub_->publish(frenet_plan);
   robot_pose_pub_->publish(robot_pose);
 #endif
+=======
+  if (params_->visualize_candidate_trajectories) {
+    trajectory_visualizer_.visualize(debug_info);
+  }
+>>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))
 
   auto u_opt = findOptimalInputForTrajectory(c_state_robot, planned_cartesian_trajectory);
 
@@ -309,6 +337,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   return cmd_vel;
 }
 
+<<<<<<< HEAD
 nav_msgs::msg::Path FrenetILQRController::convertFromCartesianTrajectory(
   const std::string & frame_id, const CartesianTrajectory & cartesian_trajectory)
 {
@@ -332,6 +361,8 @@ nav_msgs::msg::Path FrenetILQRController::convertFromCartesianTrajectory(
   return plan_msg;
 }
 
+=======
+>>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))
 bool FrenetILQRController::cancel()
 {
   return true;
