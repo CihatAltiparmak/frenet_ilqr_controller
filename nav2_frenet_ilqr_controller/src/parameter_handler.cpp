@@ -60,22 +60,22 @@ ParameterHandler::ParameterHandler(
   // for longtitutal velocity
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.min_longtitutal_velocity",
-      rclcpp::ParameterValue(
+    rclcpp::ParameterValue(
       0.0));
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.max_longtitutal_velocity",
-      rclcpp::ParameterValue(
+    rclcpp::ParameterValue(
       2.0));
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.step_longtitutal_velocity",
-      rclcpp::ParameterValue(
+    rclcpp::ParameterValue(
       0.5));
 
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.time_interval", rclcpp::ParameterValue(1.0));
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory",
-      rclcpp::ParameterValue(
+    rclcpp::ParameterValue(
       2));
 
   declare_parameter_if_not_declared(
@@ -87,19 +87,19 @@ ParameterHandler::ParameterHandler(
 
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min",
-      rclcpp::ParameterValue(std::vector<double>({0.0, -1.5})));
+    rclcpp::ParameterValue(std::vector<double>({0.0, -1.5})));
 
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max",
-      rclcpp::ParameterValue(std::vector<double>({1.0, 1.5})));
+    rclcpp::ParameterValue(std::vector<double>({1.0, 1.5})));
 
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".ilqr_trajectory_tracker.q_coefficients",
-      rclcpp::ParameterValue(std::vector<double>({1.0, 1.0, 1.0, 1.0})));
+    rclcpp::ParameterValue(std::vector<double>({1.0, 1.0, 1.0, 1.0})));
 
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".ilqr_trajectory_tracker.r_coefficients",
-      rclcpp::ParameterValue(std::vector<double>({0.2, 0.2})));
+    rclcpp::ParameterValue(std::vector<double>({0.2, 0.2})));
 
 
   node->get_parameter(
@@ -256,7 +256,7 @@ ParameterHandler::dynamicParametersCallback(
       params_.R = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
         r_coefficients.data(), r_coefficients.size()).asDiagonal();
     }
-}
+  }
 
   result.successful = true;
   return result;

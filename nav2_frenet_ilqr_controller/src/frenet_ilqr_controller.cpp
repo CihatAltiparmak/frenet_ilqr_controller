@@ -237,8 +237,9 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   newton_optimizer.setIterationNumber(params_->iteration_number);
   newton_optimizer.setAlpha(1.0);
   newton_optimizer.setInputConstraints(params_->input_limits_min, params_->input_limits_max);
-  auto U_optimal = newton_optimizer.optimize(x_robot, X_feasible, params_->Q, params_->R,
-      params_->time_discretization);
+  auto U_optimal = newton_optimizer.optimize(
+    x_robot, X_feasible, params_->Q, params_->R,
+    params_->time_discretization);
 
   if (U_optimal.empty()) {
     throw std::runtime_error("Iterative LQR couldn't find any solution!");
@@ -263,7 +264,8 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   // Transform path to robot base frame
   auto transformed_plan = path_handler_->transformGlobalPlan(
     robot_pose, params_->max_robot_pose_search_dist, params_->interpolate_curvature_after_goal);
-  transformed_plan = path_handler_->transformPath(costmap_ros_->getGlobalFrameID(), transformed_plan);
+  transformed_plan =
+    path_handler_->transformPath(costmap_ros_->getGlobalFrameID(), transformed_plan);
 
   double lookahead_distance = 0.3;
   // TODO (CihatAltiparmak) : we should ignore the waypoints whose angles between them equal to zero or extremely large

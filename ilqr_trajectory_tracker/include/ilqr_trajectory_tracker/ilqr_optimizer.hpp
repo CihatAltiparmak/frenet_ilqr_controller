@@ -156,7 +156,8 @@ public:
     double previous_best_trajectory_cost = best_trajectory_cost;
     for (size_t i = 0; i < iteration_number_; ++i) {
       auto K_gain_list = this->backwardPass(x_trajectory, u_optimized, Q, R, dt);
-      auto [x_tracked, u_tracked] = this->forwardPass(x0,
+      auto [x_tracked, u_tracked] = this->forwardPass(
+        x0,
         x_trajectory, u_optimized, K_gain_list, dt,
         alpha);
       u_optimized = u_tracked;

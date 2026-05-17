@@ -46,11 +46,11 @@ int main()
 
   auto frenet_trajectory_generator =
     frenet_trajectory_planner::FrenetTrajectoryGenerator(
-      planner_config);
+    planner_config);
   // TODO(CihatAltiparmak) : eliminate some trajectories in frenet level
   auto all_frenet_trajectories =
     frenet_trajectory_generator.get_all_possible_frenet_trajectories(
-      frenet_state_initial);
+    frenet_state_initial);
 
   auto frenet_trajectory_selector =
     frenet_trajectory_planner::FrenetTrajectorySelector();
@@ -63,14 +63,14 @@ int main()
 
   auto best_frenet_trajectory =
     frenet_trajectory_selector.select_best_frenet_trajectory(
-      all_frenet_trajectories).value();
+    all_frenet_trajectories).value();
   auto frenet2cartesian_converter =
     frenet_trajectory_planner::Frenet2CartesianConverter<frenet_trajectory_planner::LineAdapter>(
     start_point, final_point);
 
   auto best_cartesian_trajectory =
     frenet2cartesian_converter.convert_trajectory(
-      best_frenet_trajectory);
+    best_frenet_trajectory);
 
   return 0;
 }
