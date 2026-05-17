@@ -14,7 +14,7 @@ find_package(ament_cmake_gtest REQUIRED)
 # ament_add_gtest(
 #   acceleration_policy_test
 #   acceleration_policy_test.cpp)
-# 
+#
 # target_link_libraries(acceleration_policy_test  frenet_trajectory_planner_lib)
 
 ament_add_gtest(
@@ -32,7 +32,7 @@ target_link_libraries(quartic_trajectory_planner_test frenet_trajectory_planner_
 # ament_add_gtest(
 #   frenet_trajectory_generator_test
 #   frenet_trajectory_generator_test.cpp)
-# 
+#
 # target_link_libraries(frenet_trajectory_generator_test  frenet_trajectory_planner_lib)
 
 ament_add_gtest(
@@ -50,13 +50,13 @@ target_link_libraries(circle_adapter_test frenet_trajectory_planner_lib)
 # ament_add_gtest(
 #   frenet_frame_converter_test
 #   frenet_frame_converter_test.cpp)
-# 
+#
 # target_link_libraries(frenet_frame_converter_test frenet_trajectory_planner_lib)
 
 # ament_add_gtest(
 #   frenet_trajectory_selector_test
 #   frenet_trajectory_selector_test.cpp)
-# 
+#
 # target_link_libraries(frenet_trajectory_selector_test  frenet_trajectory_planner_lib)
 
 # if(TARGET Eigen3::Eigen)

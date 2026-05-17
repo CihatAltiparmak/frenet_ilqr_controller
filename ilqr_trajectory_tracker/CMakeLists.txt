@@ -25,8 +25,8 @@ target_include_directories(
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
 target_include_directories(
-  ilqr_trajectory_tracker_lib 
-  PUBLIC 
+  ilqr_trajectory_tracker_lib
+  PUBLIC
   ${Eigen3_INCLUDE_DIRS})
 target_link_libraries(ilqr_trajectory_tracker_lib  Eigen3::Eigen frenet_trajectory_planner::frenet_trajectory_planner_lib)
 
@@ -54,4 +54,3 @@ ament_export_dependencies(Eigen3)
 ament_export_targets(ilqr_trajectory_tracker_lib)
 
 ament_package()
-
