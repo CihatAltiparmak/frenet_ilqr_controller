@@ -29,7 +29,8 @@
 namespace nav2_frenet_ilqr_controller
 {
 
-class TrajectoryVisualizer {
+class TrajectoryVisualizer
+{
 public:
   TrajectoryVisualizer() {}
 
@@ -55,7 +56,8 @@ public:
   }
 
 private:
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<visualization_msgs::msg::MarkerArray>> marker_pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<visualization_msgs::msg::MarkerArray>>
+  marker_pub_;
   std::string frame_id_;
   rclcpp::Clock::SharedPtr clock_;
 };

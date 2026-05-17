@@ -117,7 +117,7 @@ ParameterHandler::ParameterHandler(
 
   node->get_parameter(
     plugin_name_ + ".visualize_candidate_trajectories",
-  params_.visualize_candidate_trajectories);
+    params_.visualize_candidate_trajectories);
 
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.min_lateral_distance",
