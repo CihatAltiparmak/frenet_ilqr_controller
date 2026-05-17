@@ -18,6 +18,7 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(frenet_trajectory_planner REQUIRED)
 find_package(ilqr_trajectory_tracker REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 include_directories(
   include
@@ -30,7 +31,8 @@ set(library_name nav2_frenet_ilqr_controller)
 add_library(${library_name} SHARED
   src/frenet_ilqr_controller.cpp
   src/path_handler.cpp
-  src/parameter_handler.cpp)
+  src/parameter_handler.cpp
+  src/trajectory_visualizer.cpp)
 
 ament_target_dependencies(${library_name}
   rclcpp
@@ -46,6 +48,7 @@ ament_target_dependencies(${library_name}
   frenet_trajectory_planner
   ilqr_trajectory_tracker
   rcl_interfaces
+  visualization_msgs
 )
 
 add_library(nav2_frenet_ilqr_controller_costs SHARED
@@ -115,6 +118,7 @@ ament_export_include_directories(include/${PROJECT_NAME})
 ament_export_libraries(${library_name})
 ament_export_dependencies(
   geometry_msgs
+  visualization_msgs
   nav2_core
   nav2_costmap_2d
   nav2_util
