@@ -268,7 +268,8 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     path_handler_->transformPath(costmap_ros_->getGlobalFrameID(), transformed_plan);
 
   double lookahead_distance = 0.3;
-  // TODO (CihatAltiparmak) : we should ignore the waypoints whose angles between them equal to zero or extremely large
+  // TODO(CihatAltiparmak) : we should ignore the waypoints
+  // whose angles between them equal to zero or extremely large
   transformed_plan = truncateGlobalPlanWithLookAheadDist(
     robot_pose, transformed_plan,
     lookahead_distance);
