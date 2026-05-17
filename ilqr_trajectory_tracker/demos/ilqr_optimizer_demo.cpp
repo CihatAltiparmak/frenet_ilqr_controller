@@ -57,11 +57,8 @@ int main(int argc, char ** argv)
   newton_optimizer.setAlpha(alpha);
 
   const auto start{std::chrono::steady_clock::now()};
-<<<<<<< HEAD
-=======
   // TODO(CihatAltiparmak): Fix demo later, we should pass the actual robot pose instead of
   // the beginning pose of the feasible trajectory
->>>>>>> 4094837 (Format code according to ros standard (#71))
   auto u_optimal = newton_optimizer.optimize(x_feasible[0], x_feasible, Q, R, dt);
   const auto end{std::chrono::steady_clock::now()};
 
