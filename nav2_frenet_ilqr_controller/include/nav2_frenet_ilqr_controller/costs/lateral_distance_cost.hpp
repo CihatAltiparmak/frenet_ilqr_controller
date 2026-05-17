@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
 // Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
 // Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
@@ -17,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
->>>>>>> 4094837 (Format code according to ros standard (#71))
 #ifndef NAV2_FRENET_ILQR_CONTROLLER__COSTS__LATERAL_DISTANCE_COST_HPP_
 #define NAV2_FRENET_ILQR_CONTROLLER__COSTS__LATERAL_DISTANCE_COST_HPP_
 
 #include <memory>
-<<<<<<< HEAD
-#include "nav2_util/node_utils.hpp"
-=======
 #include <string>
-#include "nav2_ros_common/node_utils.hpp"
->>>>>>> 4094837 (Format code according to ros standard (#71))
+#include "nav2_util/node_utils.hpp"
 #include "nav2_frenet_ilqr_controller/costs/rclcpp_node_cost.hpp"
 
 using nav2_util::declare_parameter_if_not_declared;

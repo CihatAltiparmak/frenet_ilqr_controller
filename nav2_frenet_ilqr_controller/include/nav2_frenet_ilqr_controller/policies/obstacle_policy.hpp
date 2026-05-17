@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifndef NAV2_FRENET_ILQR_CONTROLLER__POLICIES__OBSTACLE_POLICY_HPP_
-#define NAV2_FRENET_ILQR_CONTROLLER__POLICIES__OBSTACLE_POLICY_HPP_
-
-#include "nav2_frenet_ilqr_controller/policies/rclcpp_node_policy.hpp"
-#include "nav2_costmap_2d/footprint_collision_checker.hpp"
-=======
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
 // Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
 // Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
@@ -25,10 +18,10 @@
 #ifndef NAV2_FRENET_ILQR_CONTROLLER__POLICIES__OBSTACLE_POLICY_HPP_
 #define NAV2_FRENET_ILQR_CONTROLLER__POLICIES__OBSTACLE_POLICY_HPP_
 
->>>>>>> 4094837 (Format code according to ros standard (#71))
 #include <memory>
 #include <string>
 #include "nav2_frenet_ilqr_controller/policies/rclcpp_node_policy.hpp"
+#include "nav2_costmap_2d/footprint_collision_checker.hpp"
 
 namespace nav2_frenet_ilqr_controller
 {

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
 // Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
 // Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
@@ -17,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
->>>>>>> 4094837 (Format code according to ros standard (#71))
 #pragma once
 
 #include <Eigen/Dense>
@@ -29,12 +26,7 @@
 #include <vector>
 #include "frenet_trajectory_planner/type_definitions.hpp"
 
-<<<<<<< HEAD
-#include <limits>
-using namespace Eigen;
-=======
 using namespace Eigen;  // NOLINT
->>>>>>> 4094837 (Format code according to ros standard (#71))
 
 namespace ilqr_trajectory_tracker
 {
@@ -61,12 +53,8 @@ public:
   using ControlMatrixT = typename RobotModel::ControlMatrixT;
 
   template<typename ... RobotModelParams>
-<<<<<<< HEAD
-  NewtonOptimizer(const RobotModelParams ... model_params);
-=======
   explicit NewtonOptimizer(const RobotModelParams ... model_params);
 
->>>>>>> 4094837 (Format code according to ros standard (#71))
   std::vector<MatrixXd> backwardPass(
     const std::vector<StateT> & x_feasible,
     const std::vector<InputT> & u_feasible,
@@ -271,9 +259,5 @@ void NewtonOptimizer<RobotModel>::setInputConstraints(
 {
   robot_model_->setLimits(input_limits_min, input_limits_max);
 }
-<<<<<<< HEAD
-}
-=======
 
 }  // namespace ilqr_trajectory_tracker
->>>>>>> 4094837 (Format code according to ros standard (#71))

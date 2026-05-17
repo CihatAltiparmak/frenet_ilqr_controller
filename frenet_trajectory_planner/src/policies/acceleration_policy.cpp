@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
 // Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
 // Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
@@ -17,5 +15,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
->>>>>>> 4094837 (Format code according to ros standard (#71))
 #include <frenet_trajectory_planner/policies/acceleration_policy.hpp>

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
 // Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
 // Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
@@ -19,7 +17,6 @@
 
 #include <gtest/gtest.h>
 
->>>>>>> 4094837 (Format code according to ros standard (#71))
 #include <frenet_trajectory_planner/type_definitions.hpp>
 #include <frenet_trajectory_planner/frenet_frame_converter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/line_adapter.hpp>
