@@ -33,15 +33,6 @@
 
 # target_link_libraries(circle_adapter_demo frenet_trajectory_planner_lib)
 
-<<<<<<< HEAD
-install(TARGETS 
-        # generate_all_possible_trajectories_demo
-        # select_best_trajectory_demo
-        # plan_trajectory_demo
-        plan_through_waypoint_demo
-        circle_adapter_demo
-        DESTINATION lib/frenet_trajectory_planner)
-=======
 # install(TARGETS
 #         # generate_all_possible_trajectories_demo
 #         # select_best_trajectory_demo
@@ -49,4 +40,3 @@ install(TARGETS
 #         plan_through_waypoint_demo
 #         circle_adapter_demo
 #         DESTINATION lib/frenet_trajectory_planner)
->>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))

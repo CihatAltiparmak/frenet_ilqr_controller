@@ -2,11 +2,8 @@
 
 #include <Eigen/Dense>
 #include <cmath>
-<<<<<<< HEAD
-=======
 #include <vector>
 #include <utility>
->>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))
 
 using namespace Eigen;
 
@@ -36,13 +33,9 @@ typedef struct FrenetTrajectoryPlannerConfig
   double dt = 0.05; // time discretization
 } FrenetTrajectoryPlannerConfig;
 
-<<<<<<< HEAD
-}
-=======
 struct DebugInfo
 {
   std::vector<std::pair<CartesianTrajectory, double>> cartesian_trajectories;
 };
 
 }  // namespace frenet_trajectory_planner
->>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))

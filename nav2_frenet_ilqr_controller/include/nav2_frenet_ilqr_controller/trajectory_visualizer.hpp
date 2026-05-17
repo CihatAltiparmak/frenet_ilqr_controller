@@ -23,7 +23,8 @@
 #include "visualization_msgs/msg/marker.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
 #include "frenet_trajectory_planner/type_definitions.hpp"
-#include "nav2_ros_common/lifecycle_node.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
 
 namespace nav2_frenet_ilqr_controller
 {
@@ -33,7 +34,7 @@ public:
   TrajectoryVisualizer() {}
 
   void on_configure(
-    const nav2::LifecycleNode::WeakPtr & parent,
+    const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
     const std::string & frame_id);
   void on_activate();
   void on_deactivate();
@@ -54,7 +55,7 @@ public:
   }
 
 private:
-  std::shared_ptr<nav2::Publisher<visualization_msgs::msg::MarkerArray>> marker_pub_;
+  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<visualization_msgs::msg::MarkerArray>> marker_pub_;
   std::string frame_id_;
   rclcpp::Clock::SharedPtr clock_;
 };

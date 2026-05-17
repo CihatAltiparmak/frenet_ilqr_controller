@@ -21,12 +21,12 @@ namespace nav2_frenet_ilqr_controller
 {
 
 void TrajectoryVisualizer::on_configure(
-  const nav2::LifecycleNode::WeakPtr & parent,
+  const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
   const std::string & frame_id)
 {
   frame_id_ = frame_id;
 
-  nav2::LifecycleNode::SharedPtr node = parent.lock();
+  rclcpp_lifecycle::LifecycleNode::SharedPtr node = parent.lock();
   clock_ = node->get_clock();
   marker_pub_ =
     node->create_publisher<visualization_msgs::msg::MarkerArray>("candidate_trajectories", 1);

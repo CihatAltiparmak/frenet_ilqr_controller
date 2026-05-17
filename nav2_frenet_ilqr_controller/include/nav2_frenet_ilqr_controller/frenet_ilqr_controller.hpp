@@ -128,15 +128,8 @@ protected:
 
   double control_duration_;
 
-<<<<<<< HEAD
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::Path>> global_path_pub_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::Path>> truncated_path_pub_;
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::PoseStamped>>
-  robot_pose_pub_;
   std::unique_ptr<nav2_frenet_ilqr_controller::PathHandler> path_handler_;
-=======
   TrajectoryVisualizer trajectory_visualizer_;
->>>>>>> e96ef68 (Added trajectory visualization to better debug (#72))
   std::unique_ptr<nav2_frenet_ilqr_controller::ParameterHandler> parameter_handler_;
   frenet_trajectory_planner::FrenetTrajectoryPlanner frenet_trajectory_planner_;
   Parameters * params_;
