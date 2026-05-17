@@ -19,6 +19,7 @@ find_package(tf2_ros REQUIRED)
 find_package(frenet_trajectory_planner REQUIRED)
 find_package(ilqr_trajectory_tracker REQUIRED)
 find_package(nav2_ros_common REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 nav2_package()
 
@@ -26,7 +27,8 @@ set(library_name nav2_frenet_ilqr_controller)
 
 add_library(${library_name} SHARED
   src/frenet_ilqr_controller.cpp
-  src/parameter_handler.cpp)
+  src/parameter_handler.cpp
+  src/trajectory_visualizer.cpp)
 target_include_directories(${library_name}
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
@@ -35,6 +37,7 @@ target_include_directories(${library_name}
 )
 target_link_libraries(${library_name} PUBLIC
   ${geometry_msgs_TARGETS}
+  ${visualization_msgs_TARGETS}
   nav2_core::nav2_core
   nav2_costmap_2d::nav2_costmap_2d_core
   nav2_util::nav2_util_core
@@ -130,6 +133,7 @@ ament_export_include_directories(include/${PROJECT_NAME})
 ament_export_libraries(${library_name})
 ament_export_dependencies(
   geometry_msgs
+  visualization_msgs
   nav2_core
   nav2_costmap_2d
   nav2_util
