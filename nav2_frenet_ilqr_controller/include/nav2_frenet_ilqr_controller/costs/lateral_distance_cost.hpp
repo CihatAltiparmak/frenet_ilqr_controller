@@ -1,7 +1,25 @@
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 #ifndef NAV2_FRENET_ILQR_CONTROLLER__COSTS__LATERAL_DISTANCE_COST_HPP_
 #define NAV2_FRENET_ILQR_CONTROLLER__COSTS__LATERAL_DISTANCE_COST_HPP_
 
 #include <memory>
+#include <string>
 #include "nav2_util/node_utils.hpp"
 #include "nav2_frenet_ilqr_controller/costs/rclcpp_node_cost.hpp"
 
@@ -15,7 +33,6 @@ namespace costs
 
 class LateralDistanceCost : public RclcppNodeCost
 {
-
 public:
   LateralDistanceCost();
   void initialize(
@@ -30,7 +47,7 @@ protected:
   double K_lateral_distance_;
 };
 
-}
-}
+}  // namespace costs
+}  // namespace nav2_frenet_ilqr_controller
 
-#endif
+#endif  // NAV2_FRENET_ILQR_CONTROLLER__COSTS__LATERAL_DISTANCE_COST_HPP_
