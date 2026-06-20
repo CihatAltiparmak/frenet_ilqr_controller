@@ -13,5 +13,9 @@
       <description>frenet trajectory planner cost checker for obstacle costs</description>
     </class>
 
+    <class type="nav2_frenet_ilqr_controller::costs::LatLonBalanceCost" base_class_type="nav2_frenet_ilqr_controller::costs::RclcppNodeCost">
+      <description>frenet trajectory planner cost checker for balancing lateral and longtitutal costs</description>
+    </class>
+
   </library>
 </class_libraries>
