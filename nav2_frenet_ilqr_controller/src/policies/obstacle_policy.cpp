@@ -42,6 +42,13 @@ bool ObstaclePolicy::checkIfFeasible(
   const CartesianTrajectory & cartesian_trajectory)
 {
   for (auto cartesian_state : cartesian_trajectory) {
+    double vel = cartesian_state[1] * cartesian_state[1] + cartesian_state[4] * cartesian_state[4];
+    double acc = cartesian_state[2] * cartesian_state[2] + cartesian_state[5] * cartesian_state[5];
+
+    if (vel > 1.0 || acc > 1.0) {
+      return false;
+    }
+
     if (isCollides(cartesian_state)) {
       return false;
     }

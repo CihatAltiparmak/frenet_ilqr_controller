@@ -206,6 +206,14 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   using ilqr_trajectory_tracker::DiffDriveRobotModel;
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
 
+  for (size_t i = 1; i < robot_cartesian_trajectory.size(); ++i) {
+    double vel_yaw = std::abs(robot_cartesian_trajectory[i][6] - robot_cartesian_trajectory[i - 1][6]) / params_->time_discretization;
+    if (vel_yaw > 1.0) {
+      RCLCPP_INFO_STREAM(logger_, "Vel_yaw limit exceeded " << vel_yaw << " | " << robot_cartesian_trajectory[i] << " // " << robot_cartesian_trajectory[i - 1]);
+    }
+  }
+  RCLCPP_INFO(logger_, "**************");
+
   auto x_robot = DiffDriveRobotModel::fromFrenetCartesianState(c_state_robot);
   auto X_feasible = newton_optimizer.fromFrenetCartesianTrajectory(robot_cartesian_trajectory);
 

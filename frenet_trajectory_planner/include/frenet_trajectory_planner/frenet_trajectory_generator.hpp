@@ -41,7 +41,8 @@ public:
   FrenetTrajectory getFrenetTrajectory(
     const FrenetState & frenet_state_initial,
     const FrenetState & frenet_state_final,
-    const size_t max_state_number);
+    const size_t max_state_number,
+    const double t_interval);
 
 private:
   FrenetTrajectoryPlannerConfig frenet_planner_config_;
