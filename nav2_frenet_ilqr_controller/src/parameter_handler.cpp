@@ -67,9 +67,21 @@ ParameterHandler::ParameterHandler(
     node, plugin_name_ + ".frenet_trajectory_planner.step_longtitutal_velocity",
       rclcpp::ParameterValue(
       0.5));
-
+  
+  // for longtitutal velocity
   declare_parameter_if_not_declared(
-    node, plugin_name_ + ".frenet_trajectory_planner.time_interval", rclcpp::ParameterValue(1.0));
+    node, plugin_name_ + ".frenet_trajectory_planner.min_time_interval",
+      rclcpp::ParameterValue(
+      0.7));
+  declare_parameter_if_not_declared(
+    node, plugin_name_ + ".frenet_trajectory_planner.max_time_interval",
+      rclcpp::ParameterValue(
+      1.4));
+  declare_parameter_if_not_declared(
+    node, plugin_name_ + ".frenet_trajectory_planner.step_time_interval",
+      rclcpp::ParameterValue(
+      0.1));
+
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory",
       rclcpp::ParameterValue(
@@ -130,8 +142,15 @@ ParameterHandler::ParameterHandler(
     params_.frenet_trajectory_planner_config.step_longtitutal_velocity);
 
   node->get_parameter(
-    plugin_name_ + ".frenet_trajectory_planner.time_interval",
-    params_.frenet_trajectory_planner_config.time_interval);
+    plugin_name_ + ".frenet_trajectory_planner.min_time_interval",
+    params_.frenet_trajectory_planner_config.min_time_interval);
+  node->get_parameter(
+    plugin_name_ + ".frenet_trajectory_planner.max_time_interval",
+    params_.frenet_trajectory_planner_config.max_time_interval);
+  node->get_parameter(
+    plugin_name_ + ".frenet_trajectory_planner.step_time_interval",
+    params_.frenet_trajectory_planner_config.step_time_interval);
+
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory",
     params_.frenet_trajectory_planner_config.max_state_in_trajectory);
@@ -217,8 +236,12 @@ ParameterHandler::dynamicParametersCallback(
       params_.frenet_trajectory_planner_config.max_longtitutal_velocity = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.step_longtitutal_velocity") {
       params_.frenet_trajectory_planner_config.step_longtitutal_velocity = parameter.as_double();
-    } else if (name == plugin_name_ + ".frenet_trajectory_planner.time_interval") {
-      params_.frenet_trajectory_planner_config.time_interval = parameter.as_double();
+    } else if (name == plugin_name_ + ".frenet_trajectory_planner.min_time_interval") {
+      params_.frenet_trajectory_planner_config.min_time_interval = parameter.as_double();
+    } else if (name == plugin_name_ + ".frenet_trajectory_planner.max_time_interval") {
+      params_.frenet_trajectory_planner_config.max_time_interval = parameter.as_double();
+    } else if (name == plugin_name_ + ".frenet_trajectory_planner.step_time_interval") {
+      params_.frenet_trajectory_planner_config.step_time_interval = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory") {
       if (parameter.as_int() < 1) {
         params_.frenet_trajectory_planner_config.max_state_in_trajectory = 2;
