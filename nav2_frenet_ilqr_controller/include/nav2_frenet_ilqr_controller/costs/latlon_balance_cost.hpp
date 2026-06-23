@@ -20,10 +20,10 @@
 
 #include <memory>
 #include <string>
-#include "nav2_ros_common/node_utils.hpp"
+#include "nav2_util/node_utils.hpp"
 #include "nav2_frenet_ilqr_controller/costs/rclcpp_node_cost.hpp"
 
-using nav2::declare_parameter_if_not_declared;
+using nav2_util::declare_parameter_if_not_declared;
 using rcl_interfaces::msg::ParameterType;
 
 namespace nav2_frenet_ilqr_controller
@@ -37,7 +37,7 @@ public:
   LatLonBalanceCost();
   void initialize(
     const std::string & cost_plugin_name,
-    const nav2::LifecycleNode::WeakPtr & node,
+    const rclcpp_lifecycle::LifecycleNode::WeakPtr & node,
     std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros) override;
   double cost(
     const FrenetTrajectory & frenet_trajectory,
