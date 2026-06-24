@@ -5,5 +5,9 @@
       <description>frenet trajectory planner policy for obstacle avoidance</description>
     </class>
 
+    <class type="nav2_frenet_ilqr_controller::policies::ConstraintsPolicy" base_class_type="nav2_frenet_ilqr_controller::policies::RclcppNodePolicy">
+      <description>frenet trajectory planner policy to disable trajectories which does not obey constraints</description>
+    </class>
+
   </library>
 </class_libraries>
