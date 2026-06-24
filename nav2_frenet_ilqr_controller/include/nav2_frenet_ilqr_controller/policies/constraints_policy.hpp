@@ -20,7 +20,11 @@
 
 #include <memory>
 #include <string>
+#include "nav2_util/node_utils.hpp"
 #include "nav2_frenet_ilqr_controller/policies/rclcpp_node_policy.hpp"
+
+using nav2_util::declare_parameter_if_not_declared;
+using rcl_interfaces::msg::ParameterType;
 
 namespace nav2_frenet_ilqr_controller
 {
@@ -33,7 +37,7 @@ public:
   ConstraintsPolicy();
   void initialize(
     const std::string & policy_plugin_name,
-    const nav2::LifecycleNode::WeakPtr & parent,
+    const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
     std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros) override;
   bool checkIfFeasible(
     const FrenetTrajectory & frenet_trajectory,

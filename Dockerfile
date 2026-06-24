@@ -5,11 +5,7 @@ WORKDIR /root/nav2_ws
 RUN cd src && \
     git clone https://github.com/CihatAltiparmak/frenet_ilqr_controller.git -b humble
 
-<<<<<<< HEAD
-RUN wget https://gist.githubusercontent.com/CihatAltiparmak/b7fb6000309beb057d354fa4ac4a8b9a/raw/9080e04524ddaa35aad36052a403f3f27b85d21f/nav2_param_frenet_ilqr_controller_demo_humble.yaml -O src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
-=======
-RUN wget https://gist.githubusercontent.com/CihatAltiparmak/7171fbb514287501ce91e9c45c69dab2/raw/65927e0f29ab3c266701913766f5f917ce6bbb30/nav2_param_frenet_ilqr_controller_demo.yaml -O src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
->>>>>>> dbbecab (Add constraints policy to eliminate trajectories that does not obey (#79))
+RUN wget https://gist.githubusercontent.com/CihatAltiparmak/b7fb6000309beb057d354fa4ac4a8b9a/raw/e8e39a5b1119e4ad4605e556b0ed8fcf4e065af2/nav2_param_frenet_ilqr_controller_demo_humble.yaml -O src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
 
 RUN . /opt/ros/humble/setup.sh && \
     colcon build --packages-select nav2_bringup nav2_frenet_ilqr_controller frenet_trajectory_planner ilqr_trajectory_tracker --cmake-args -DCMAKE_BUILD_TYPE=Release
