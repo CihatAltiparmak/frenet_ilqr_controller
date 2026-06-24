@@ -32,7 +32,8 @@ std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::getAllPossibleFrenetTra
   std::vector<FrenetTrajectory> frenet_trajectories;
   for (double time_interval = frenet_planner_config_.min_time_interval;
     time_interval <= frenet_planner_config_.max_time_interval;
-    time_interval += frenet_planner_config_.step_time_interval) {
+    time_interval += frenet_planner_config_.step_time_interval)
+  {
     for (double longtitutal_velocity_final = frenet_planner_config_.min_longtitutal_velocity;
       longtitutal_velocity_final <= frenet_planner_config_.max_longtitutal_velocity;
       longtitutal_velocity_final += frenet_planner_config_.step_longtitutal_velocity)
