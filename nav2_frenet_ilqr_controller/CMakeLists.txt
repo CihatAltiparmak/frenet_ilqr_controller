@@ -74,7 +74,8 @@ ament_target_dependencies(nav2_frenet_ilqr_controller_costs
 )
 
 add_library(nav2_frenet_ilqr_controller_policies SHARED
-  src/policies/obstacle_policy.cpp)
+  src/policies/obstacle_policy.cpp
+  src/policies/constraints_policy.cpp)
 
 ament_target_dependencies(nav2_frenet_ilqr_controller_policies
   rclcpp

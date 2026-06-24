@@ -35,7 +35,8 @@ namespace policies
 class RclcppNodePolicy : public Policy
 {
 public:
-  RclcppNodePolicy();
+  RclcppNodePolicy()
+  : Policy() {}
   virtual void initialize(
     const std::string & policy_plugin_name,
     const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
@@ -56,11 +57,6 @@ protected:
   std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros_;
   nav2_costmap_2d::Costmap2D * costmap_{nullptr};
 };
-
-RclcppNodePolicy::RclcppNodePolicy()
-: Policy()
-{
-}
 
 }  // namespace policies
 }  // namespace nav2_frenet_ilqr_controller

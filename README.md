@@ -103,10 +103,23 @@ docker exec -it frenet_ilqr_controller_demo bash
 | distance_to_approach       | double | Default: 0.8. longtitutal approach distance to goal along path. When robot approached the finish of the path, the robot starts to decelerate to set velocity of robot as `desired_velocity_to_approach`|
 | desired_velocity_to_approach | double | Default: 0.1. The desired velocity when robot approached the finish of the path by `distance_to_approach` distance |
 
+#### Lat Lon Balance Cost Checker
+| Parameter                  | Type   | Definition |
+| ---------------------      | -------| ------------------------------- |
+| K_latlon_balance           | double | Default: 10.0. Cost Coefficient for punishing trajectories which has high lateral and longtitutal velocity at the same time |
+
 
 #### Obstacle Policy
 
 Eliminates the frenet trajectories that collides any obstacle using costmap.
+
+#### Constraints Policy
+
+Eliminates the cartesian trajectories that exceeds speed and acceleration limits
+| Parameter                  | Type   | Definition |
+| ---------------------      | -------| ------------------------------- |
+| max_speed                  | double | Default: 0.5. Max speed the trajectory can have |
+| max_acceleration           | double | Default: 2.5. Max acceleration the trajectory can have |
 
 ### XML configuration example
 
@@ -145,9 +158,13 @@ controller_server:
         distance_to_approach: 0.8
         desired_velocity_to_approach: 0.1
 
-      policy_plugins: ["ObstaclePolicy"]
+      policy_plugins: ["ObstaclePolicy", "ConstraintsPolicy"]
       ObstaclePolicy:
         plugin: "nav2_frenet_ilqr_controller::policies::ObstaclePolicy"
+      ConstraintsPolicy:
+        plugin: "nav2_frenet_ilqr_controller::policies::ConstraintsPolicy"
+        max_speed: 0.5
+        max_acceleration: 2.5
 ```
 
 # Citation
