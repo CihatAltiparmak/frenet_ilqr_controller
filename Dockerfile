@@ -5,7 +5,11 @@ WORKDIR /root/nav2_ws
 RUN cd src && \
     git clone https://github.com/CihatAltiparmak/frenet_ilqr_controller.git -b humble
 
+<<<<<<< HEAD
 RUN wget https://gist.githubusercontent.com/CihatAltiparmak/b7fb6000309beb057d354fa4ac4a8b9a/raw/9080e04524ddaa35aad36052a403f3f27b85d21f/nav2_param_frenet_ilqr_controller_demo_humble.yaml -O src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
+=======
+RUN wget https://gist.githubusercontent.com/CihatAltiparmak/7171fbb514287501ce91e9c45c69dab2/raw/253715db39b1517f0eb1d3df7e5b944e671835e0/nav2_param_frenet_ilqr_controller_demo.yaml -O src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
+>>>>>>> c020c15 (Generate trajectories using various time intervals too as in paper (#77))
 
 RUN . /opt/ros/humble/setup.sh && \
     colcon build --packages-select nav2_bringup nav2_frenet_ilqr_controller frenet_trajectory_planner ilqr_trajectory_tracker --cmake-args -DCMAKE_BUILD_TYPE=Release
