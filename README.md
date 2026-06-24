@@ -75,8 +75,10 @@ docker exec -it frenet_ilqr_controller_demo bash
 | step_lateral_distance      | double | Default: +0.05.  Increasing rate for producing lateral distance trajectories in Frenet Frame |
 | min_longitital_velocity    | double | Default:  0.0. Minimum longitutal velocity along interpolated curve. |
 | max_longitital_velocity    | double | Default: +0.5. Maximum longitutal velocity along interpolated curve. |
-| step_lateral_distance      | double | Default: +0.05.  Increasing rate for producing longtitutal velocity trajectories in Frenet Frame |
-| time_interval              | double | Default: 1.5.  time (s) required to achieve corresponding frenet state. Used by polynomial trajectory planning for both velocity planning and lateral distance planning, (e.g time (s) required to increase speed from 1.0 m/s to 2 m/s)|
+| step_longtitutal_velocity  | double | Default: +0.05.  Increasing rate for producing longtitutal velocity trajectories in Frenet Frame |
+| min_time_interval          | double | Default:  0.7 (s). Minimum time interval the trajectory is able to be planned |
+| max_time_interval          | double | Default: +0.8. (s) Maximum time interval the trajectory is able to be planned |
+| step_time_interval         | double | Default: +0.1.  Increasing rate of time_interval from min_time_interval to max_time_interval |
 | max_state_in_trajectory    | int | Default: 40.  the number of how many state the generated trajectory can have at most.  |
 
 #### Iterative Linear Quadratic Regulator
@@ -125,7 +127,9 @@ controller_server:
         min_longtitutal_velocity: 0.0
         max_longtitutal_velocity: 0.5
         step_longtitutal_velocity: 0.05
-        time_interval: 1.5
+        min_time_interval: 0.7
+        max_time_interval: 0.8
+        step_time_interval: 0.1
         max_state_in_trajectory: 40
       ilqr_trajectory_tracker:
         q_coefficients: [1.0, 1.0, 1.0, 1.0]
