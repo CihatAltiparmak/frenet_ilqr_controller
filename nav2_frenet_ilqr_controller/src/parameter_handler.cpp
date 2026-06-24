@@ -76,15 +76,15 @@ ParameterHandler::ParameterHandler(
   // for longtitutal velocity
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.min_time_interval",
-      rclcpp::ParameterValue(
+    rclcpp::ParameterValue(
       0.7));
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.max_time_interval",
-      rclcpp::ParameterValue(
+    rclcpp::ParameterValue(
       1.4));
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".frenet_trajectory_planner.step_time_interval",
-      rclcpp::ParameterValue(
+    rclcpp::ParameterValue(
       0.1));
 
   declare_parameter_if_not_declared(
