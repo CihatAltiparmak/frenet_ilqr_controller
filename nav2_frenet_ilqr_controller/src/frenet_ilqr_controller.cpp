@@ -176,20 +176,41 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
   const nav_msgs::msg::Path & path,
   const double lookahead_distance)
 {
-  // TODO(CihatAltiparmak) : find better algorithm to handle this
-  size_t lookahead_index = 0;
-  for (size_t index = 0; index < path.poses.size(); ++index) {
-    if (euclidean_distance(
-        path.poses[index].pose.position,
-        pose_stamped.pose.position) < lookahead_distance)
-    {
-      lookahead_index = index;
+  double best_index = 0;
+  double best_dist = std::numeric_limits<double>::infinity();
+  for (size_t i = 1; i < path.poses.size(); ++i) {
+    double xc = pose_stamped.pose.position.x;
+    double yc = pose_stamped.pose.position.y;
+    double x1 = path.poses[i - 1].pose.position.x;
+    double y1 = path.poses[i - 1].pose.position.y;
+    double x2 = path.poses[i].pose.position.x;
+    double y2 = path.poses[i].pose.position.y;
+    double a = y2 - y1;
+    double b = x1 - x2;
+    double c = -a * x1 - b * y1;
+
+    double fraq = (a * xc + b * yc + c) / (a*a + b*b);
+    double xp = xc - a * fraq;
+    double yp = yc - b * fraq;
+
+    double dist2firstp = std::hypot(xp - x1, yp - y1);
+    double dist2secondp = std::hypot(xp - x2, yp - y2);
+    double dist_path = std::hypot(x2 - x1, y2 - y1);
+
+    if ((dist2firstp > dist_path || dist2secondp > dist_path) && (dist2secondp < dist2firstp)) {
+      continue;
+    } else {
+      double distToLine = std::hypot(xp - xc, yp - yc);
+        if (distToLine <=  best_dist) {
+          best_dist = distToLine;
+          best_index = i;
+        }
     }
   }
 
   nav_msgs::msg::Path truncated_path;
   truncated_path.header = path.header;
-  for (auto index = lookahead_index; index < path.poses.size(); ++index) {
+  for (auto index = best_index; index < path.poses.size(); ++index) {
     truncated_path.poses.push_back(path.poses[index]);
   }
   return truncated_path;
