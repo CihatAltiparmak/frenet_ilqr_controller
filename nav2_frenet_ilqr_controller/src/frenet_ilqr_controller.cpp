@@ -222,7 +222,6 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   }
 
   newton_optimizer.setIterationNumber(params_->iteration_number);
-  newton_optimizer.setAlpha(1.0);
   newton_optimizer.setInputConstraints(params_->input_limits_min, params_->input_limits_max);
   auto U_optimal = newton_optimizer.optimize(x_robot, X_feasible, params_->Q, params_->R,
       params_->time_discretization);

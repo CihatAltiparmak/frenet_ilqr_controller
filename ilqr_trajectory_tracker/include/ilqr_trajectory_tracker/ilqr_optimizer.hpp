@@ -114,7 +114,7 @@ public:
     const StateT & x0,
     const std::vector<StateT> & x_feasible,
     const std::vector<InputT> & u_feasible,
-    const std::vector<MatrixXd> & K_gains, const double dt, const double alpha)
+    const std::vector<MatrixXd> & K_gains, const double dt)
   {
     auto trajectory_size = x_feasible.size();
     std::vector<StateT> x_tracked(trajectory_size);
@@ -127,7 +127,7 @@ public:
     for (size_t i = 0; i < x_feasible.size() - 1; ++i) {
       auto x_error = x_tracked[i] - x_feasible[i];
       VectorXd z_error(StateDim + 1);
-      z_error << x_error, alpha;
+      z_error << x_error, 1.0;
 
       u_applied[i] = u_feasible[i] + K_gains[i] * z_error;
       u_applied[i] = robot_model_->applyLimits(u_applied[i]);
@@ -145,9 +145,6 @@ public:
     const double dt)
   {
     // assert trajectory_size > 0
-
-    double alpha = alpha_;
-
     std::vector<StateT> x_best_trajectory;
     std::vector<InputT> u_best_trajectory;
     std::vector<InputT> u_optimized(x_trajectory.size() - 1, InputT::Zero());
@@ -157,8 +154,7 @@ public:
     for (size_t i = 0; i < iteration_number_; ++i) {
       auto K_gain_list = this->backwardPass(x_trajectory, u_optimized, Q, R, dt);
       auto [x_tracked, u_tracked] = this->forwardPass(x0,
-        x_trajectory, u_optimized, K_gain_list, dt,
-        alpha);
+        x_trajectory, u_optimized, K_gain_list, dt);
       u_optimized = u_tracked;
 
       double trajectory_cost = this->cost(x_tracked, x_trajectory);
@@ -171,10 +167,6 @@ public:
         if (std::abs(previous_best_trajectory_cost - best_trajectory_cost) < 0.0001) {
           break;
         }
-
-        alpha *= 0.5;
-      } else {
-        alpha /= 0.5;
       }
     }
 
@@ -218,15 +210,12 @@ public:
 
   void setIterationNumber(const size_t iteration_number);
 
-  void setAlpha(const double alpha);
-
   void setInputConstraints(
     InputT input_limits_min,
     InputT input_limits_max);
 
 private:
   std::unique_ptr<RobotModel> robot_model_;
-  double alpha_;
   size_t iteration_number_;
 };
 
@@ -242,12 +231,6 @@ template<typename RobotModel>
 void NewtonOptimizer<RobotModel>::setIterationNumber(const size_t iteration_number)
 {
   iteration_number_ = iteration_number;
-}
-
-template<typename RobotModel>
-void NewtonOptimizer<RobotModel>::setAlpha(const double alpha)
-{
-  alpha_ = alpha;
 }
 
 template<typename RobotModel>
