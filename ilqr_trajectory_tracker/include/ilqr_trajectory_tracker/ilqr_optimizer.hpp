@@ -153,15 +153,8 @@ public:
     double previous_best_trajectory_cost = best_trajectory_cost;
     for (size_t i = 0; i < iteration_number_; ++i) {
       auto K_gain_list = this->backwardPass(x_trajectory, u_optimized, Q, R, dt);
-<<<<<<< HEAD
-      auto [x_tracked, u_tracked] = this->forwardPass(
-        x0,
-        x_trajectory, u_optimized, K_gain_list, dt,
-        alpha);
-=======
       auto [x_tracked, u_tracked] = this->forwardPass(x0,
         x_trajectory, u_optimized, K_gain_list, dt);
->>>>>>> 9d60e9f (Don't make offset adaptive according to converging optimal. This can give rise to make the state space model incompetent for optimal control. In the beginning, it was inspired from page 23 of https://people.eecs.berkeley.edu/~pabbeel/cs287-fa19/slides/Lec5-LQR.pdf You can represent offset term with affine state space systems. (#81))
       u_optimized = u_tracked;
 
       double trajectory_cost = this->cost(x_tracked, x_trajectory);
@@ -216,10 +209,6 @@ public:
   }
 
   void setIterationNumber(const size_t iteration_number);
-<<<<<<< HEAD
-  void setAlpha(const double alpha);
-=======
->>>>>>> 9d60e9f (Don't make offset adaptive according to converging optimal. This can give rise to make the state space model incompetent for optimal control. In the beginning, it was inspired from page 23 of https://people.eecs.berkeley.edu/~pabbeel/cs287-fa19/slides/Lec5-LQR.pdf You can represent offset term with affine state space systems. (#81))
 
   void setInputConstraints(
     InputT input_limits_min,
@@ -245,18 +234,6 @@ void NewtonOptimizer<RobotModel>::setIterationNumber(const size_t iteration_numb
 }
 
 template<typename RobotModel>
-<<<<<<< HEAD
-void NewtonOptimizer<RobotModel>::setAlpha(const double alpha)
-{
-  alpha_ = alpha;
-}
-
-
-template<typename RobotModel>
-
-
-=======
->>>>>>> 9d60e9f (Don't make offset adaptive according to converging optimal. This can give rise to make the state space model incompetent for optimal control. In the beginning, it was inspired from page 23 of https://people.eecs.berkeley.edu/~pabbeel/cs287-fa19/slides/Lec5-LQR.pdf You can represent offset term with affine state space systems. (#81))
 void NewtonOptimizer<RobotModel>::setInputConstraints(
   InputT input_limits_min,
   InputT input_limits_max)
