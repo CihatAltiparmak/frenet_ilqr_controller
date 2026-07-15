@@ -149,7 +149,6 @@ protected:
   std::unique_ptr<nav2_frenet_ilqr_controller::ParameterHandler> parameter_handler_;
   frenet_trajectory_planner::FrenetTrajectoryPlanner frenet_trajectory_planner_;
   Parameters * params_;
-  frenet_trajectory_planner::FrenetTrajectoryPlannerConfig config_;
 };
 
 }  // namespace nav2_frenet_ilqr_controller
