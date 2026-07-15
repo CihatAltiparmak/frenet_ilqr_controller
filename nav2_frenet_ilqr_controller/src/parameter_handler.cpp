@@ -112,59 +112,59 @@ ParameterHandler::ParameterHandler(
 
   node->get_parameter(
     plugin_name_ + ".interpolate_curvature_after_goal",
-    params_.interpolate_curvature_after_goal);
+    base_params_.interpolate_curvature_after_goal);
 
-  node->get_parameter(plugin_name_ + ".time_discretization", params_.time_discretization);
-  params_.frenet_trajectory_planner_config.dt = params_.time_discretization;
+  node->get_parameter(plugin_name_ + ".time_discretization", base_params_.time_discretization);
+  base_params_.frenet_trajectory_planner_config.dt = base_params_.time_discretization;
 
   node->get_parameter(
     plugin_name_ + ".visualize_candidate_trajectories",
-  params_.visualize_candidate_trajectories);
+  base_params_.visualize_candidate_trajectories);
 
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.min_lateral_distance",
-    params_.frenet_trajectory_planner_config.min_lateral_distance);
+    base_params_.frenet_trajectory_planner_config.min_lateral_distance);
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.max_lateral_distance",
-    params_.frenet_trajectory_planner_config.max_lateral_distance);
+    base_params_.frenet_trajectory_planner_config.max_lateral_distance);
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.step_lateral_distance",
-    params_.frenet_trajectory_planner_config.step_lateral_distance);
+    base_params_.frenet_trajectory_planner_config.step_lateral_distance);
 
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.min_longtitutal_velocity",
-    params_.frenet_trajectory_planner_config.min_longtitutal_velocity);
+    base_params_.frenet_trajectory_planner_config.min_longtitutal_velocity);
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.max_longtitutal_velocity",
-    params_.frenet_trajectory_planner_config.max_longtitutal_velocity);
+    base_params_.frenet_trajectory_planner_config.max_longtitutal_velocity);
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.step_longtitutal_velocity",
-    params_.frenet_trajectory_planner_config.step_longtitutal_velocity);
+    base_params_.frenet_trajectory_planner_config.step_longtitutal_velocity);
 
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.min_time_interval",
-    params_.frenet_trajectory_planner_config.min_time_interval);
+    base_params_.frenet_trajectory_planner_config.min_time_interval);
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.max_time_interval",
-    params_.frenet_trajectory_planner_config.max_time_interval);
+    base_params_.frenet_trajectory_planner_config.max_time_interval);
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.step_time_interval",
-    params_.frenet_trajectory_planner_config.step_time_interval);
+    base_params_.frenet_trajectory_planner_config.step_time_interval);
 
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory",
-    params_.frenet_trajectory_planner_config.max_state_in_trajectory);
+    base_params_.frenet_trajectory_planner_config.max_state_in_trajectory);
 
   node->get_parameter(
     plugin_name_ + ".ilqr_trajectory_tracker.iteration_number",
-    params_.iteration_number);
-  node->get_parameter(plugin_name_ + ".ilqr_trajectory_tracker.alpha", params_.alpha);
+    base_params_.iteration_number);
+  node->get_parameter(plugin_name_ + ".ilqr_trajectory_tracker.alpha", base_params_.alpha);
 
   {
     std::vector<double> input_limits_min;
     node->get_parameter(
       plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min", input_limits_min);
-    params_.input_limits_min = Eigen::Map<Eigen::VectorXd,
+    base_params_.input_limits_min = Eigen::Map<Eigen::VectorXd,
         Eigen::Unaligned>(input_limits_min.data(), input_limits_min.size());
   }
 
@@ -172,7 +172,7 @@ ParameterHandler::ParameterHandler(
     std::vector<double> input_limits_max;
     node->get_parameter(
       plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max", input_limits_max);
-    params_.input_limits_max = Eigen::Map<Eigen::VectorXd,
+    base_params_.input_limits_max = Eigen::Map<Eigen::VectorXd,
         Eigen::Unaligned>(input_limits_max.data(), input_limits_max.size());
   }
 
@@ -180,7 +180,7 @@ ParameterHandler::ParameterHandler(
     std::vector<double> q_coefficients;
     node->get_parameter(
       plugin_name_ + ".ilqr_trajectory_tracker.q_coefficients", q_coefficients);
-    params_.Q = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
+    base_params_.Q = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
       q_coefficients.data(), q_coefficients.size()).asDiagonal();
   }
 
@@ -188,9 +188,11 @@ ParameterHandler::ParameterHandler(
     std::vector<double> r_coefficients;
     node->get_parameter(
       plugin_name_ + ".ilqr_trajectory_tracker.r_coefficients", r_coefficients);
-    params_.R = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
+    base_params_.R = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
       r_coefficients.data(), r_coefficients.size()).asDiagonal();
   }
+
+  setParamsToDefaults();
 
   dynamic_params_handler_ = node->add_on_set_parameters_callback(
     std::bind(
@@ -218,63 +220,67 @@ ParameterHandler::dynamicParametersCallback(
     const auto & name = parameter.get_name();
 
     if (name == plugin_name_ + ".interpolate_curvature_after_goal") {
-      params_.interpolate_curvature_after_goal = parameter.as_double();
+      base_params_.interpolate_curvature_after_goal = parameter.as_double();
     } else if (name == plugin_name_ + ".time_discretization") {
-      params_.time_discretization = parameter.as_double();
-      params_.frenet_trajectory_planner_config.dt = params_.time_discretization;
+      base_params_.time_discretization = parameter.as_double();
+      base_params_.frenet_trajectory_planner_config.dt = base_params_.time_discretization;
     } else if (name == plugin_name_ + ".visualize_candidate_trajectories") {
-      params_.visualize_candidate_trajectories = parameter.as_bool();
+      base_params_.visualize_candidate_trajectories = parameter.as_bool();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.min_lateral_distance") {
-      params_.frenet_trajectory_planner_config.min_lateral_distance = parameter.as_double();
+      base_params_.frenet_trajectory_planner_config.min_lateral_distance = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.max_lateral_distance") {
-      params_.frenet_trajectory_planner_config.max_lateral_distance = parameter.as_double();
+      base_params_.frenet_trajectory_planner_config.max_lateral_distance = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.step_lateral_distance") {
-      params_.frenet_trajectory_planner_config.step_lateral_distance = parameter.as_double();
+      base_params_.frenet_trajectory_planner_config.step_lateral_distance = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.min_longtitutal_velocity") {
-      params_.frenet_trajectory_planner_config.min_longtitutal_velocity = parameter.as_double();
+      base_params_.frenet_trajectory_planner_config.min_longtitutal_velocity =
+        parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.max_longtitutal_velocity") {
-      params_.frenet_trajectory_planner_config.max_longtitutal_velocity = parameter.as_double();
+      base_params_.frenet_trajectory_planner_config.max_longtitutal_velocity =
+        parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.step_longtitutal_velocity") {
-      params_.frenet_trajectory_planner_config.step_longtitutal_velocity = parameter.as_double();
+      base_params_.frenet_trajectory_planner_config.step_longtitutal_velocity =
+        parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.min_time_interval") {
-      params_.frenet_trajectory_planner_config.min_time_interval = parameter.as_double();
+      base_params_.frenet_trajectory_planner_config.min_time_interval = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.max_time_interval") {
-      params_.frenet_trajectory_planner_config.max_time_interval = parameter.as_double();
+      base_params_.frenet_trajectory_planner_config.max_time_interval = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.step_time_interval") {
-      params_.frenet_trajectory_planner_config.step_time_interval = parameter.as_double();
+      base_params_.frenet_trajectory_planner_config.step_time_interval = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.max_state_in_trajectory") {
       if (parameter.as_int() < 1) {
-        params_.frenet_trajectory_planner_config.max_state_in_trajectory = 2;
+        base_params_.frenet_trajectory_planner_config.max_state_in_trajectory = 2;
       } else {
-        params_.frenet_trajectory_planner_config.max_state_in_trajectory = parameter.as_int();
+        base_params_.frenet_trajectory_planner_config.max_state_in_trajectory = parameter.as_int();
       }
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.iteration_number") {
       if (parameter.as_int() < 0) {
-        params_.iteration_number = 20;
+        base_params_.iteration_number = 20;
       } else {
-        params_.iteration_number = parameter.as_int();
+        base_params_.iteration_number = parameter.as_int();
       }
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.alpha") {
-      params_.alpha = parameter.as_double();
+      base_params_.alpha = parameter.as_double();
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.input_limits_min") {
       auto input_limits_min = parameter.as_double_array();
-      params_.input_limits_min = Eigen::Map<Eigen::VectorXd,
+      base_params_.input_limits_min = Eigen::Map<Eigen::VectorXd,
           Eigen::Unaligned>(input_limits_min.data(), input_limits_min.size());
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.input_limits_max") {
       auto input_limits_max = parameter.as_double_array();
-      params_.input_limits_max = Eigen::Map<Eigen::VectorXd,
+      base_params_.input_limits_max = Eigen::Map<Eigen::VectorXd,
           Eigen::Unaligned>(input_limits_max.data(), input_limits_max.size());
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.q_coefficients") {
       auto q_coefficients = parameter.as_double_array();
-      params_.Q = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
+      base_params_.Q = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
         q_coefficients.data(), q_coefficients.size()).asDiagonal();
     } else if (name == plugin_name_ + ".ilqr_trajectory_tracker.r_coefficients") {
       auto r_coefficients = parameter.as_double_array();
-      params_.R = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
+      base_params_.R = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(
         r_coefficients.data(), r_coefficients.size()).asDiagonal();
     }
   }
 
+  setParamsToDefaults();
   result.successful = true;
   return result;
 }
