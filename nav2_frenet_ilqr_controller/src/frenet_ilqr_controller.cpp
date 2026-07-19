@@ -330,11 +330,32 @@ void FrenetILQRController::setPlan(const nav_msgs::msg::Path & path)
 }
 
 void FrenetILQRController::setSpeedLimit(
-  const double & /*speed_limit*/,
-  const bool & /*percentage*/)
+  const double & speed_limit,
+  const bool & percentage)
 {
   std::lock_guard<std::mutex> lock_reinit(parameter_handler_->getMutex());
-  return;
+  if (speed_limit == nav2_costmap_2d::NO_SPEED_LIMIT) {
+    // Restore default value
+    parameter_handler_->setParamsToDefaults();
+  } else {
+    parameter_handler_->setParamsToDefaults();
+    if (percentage) {
+      // Speed limit is expressed in % from maximum speed of robot
+      double rate = speed_limit / 100.0;
+      params_->frenet_trajectory_planner_config.max_longtitutal_velocity *= rate;
+      params_->frenet_trajectory_planner_config.min_longtitutal_velocity *= rate;
+      params_->frenet_trajectory_planner_config.step_longtitutal_velocity *= rate;
+    } else {
+      // Speed limit is expressed in absolute value
+      double rate = speed_limit /
+        params_->frenet_trajectory_planner_config.max_longtitutal_velocity;
+      if (rate < 1.0) {
+        params_->frenet_trajectory_planner_config.max_longtitutal_velocity *= rate;
+        params_->frenet_trajectory_planner_config.min_longtitutal_velocity *= rate;
+        params_->frenet_trajectory_planner_config.step_longtitutal_velocity *= rate;
+      }
+    }
+  }
 }
 
 void FrenetILQRController::reset()

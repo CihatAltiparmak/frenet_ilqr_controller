@@ -72,10 +72,16 @@ public:
 
   Parameters * getParams() {return &params_;}
 
+  void setParamsToDefaults()
+  {
+    params_ = base_params_;
+  }
+
 protected:
   rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
   std::string plugin_name_;
   Parameters params_;
+  Parameters base_params_;
   /**
    * @brief Callback executed when a parameter change is detected
    * @param event ParameterEvent message
