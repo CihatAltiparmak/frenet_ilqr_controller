@@ -118,26 +118,18 @@ ParameterHandler::ParameterHandler(
 
   node->get_parameter(
     plugin_name_ + ".interpolate_curvature_after_goal",
-<<<<<<< HEAD
-    params_.interpolate_curvature_after_goal);
+    base_params_.interpolate_curvature_after_goal);
   node->get_parameter(
     plugin_name_ + ".max_robot_pose_search_dist",
-    params_.max_robot_pose_search_dist);
-  node->get_parameter(plugin_name_ + ".transform_tolerance", params_.transform_tolerance);
-=======
-    base_params_.interpolate_curvature_after_goal);
->>>>>>> daaa0e1 (Implemented setSpeedLimit method to make the controller informed about the feedbacks of speed zone etc. (#83))
+    base_params_.max_robot_pose_search_dist);
+  node->get_parameter(plugin_name_ + ".transform_tolerance", base_params_.transform_tolerance);
 
   node->get_parameter(plugin_name_ + ".time_discretization", base_params_.time_discretization);
   base_params_.frenet_trajectory_planner_config.dt = base_params_.time_discretization;
 
   node->get_parameter(
     plugin_name_ + ".visualize_candidate_trajectories",
-<<<<<<< HEAD
-    params_.visualize_candidate_trajectories);
-=======
-  base_params_.visualize_candidate_trajectories);
->>>>>>> daaa0e1 (Implemented setSpeedLimit method to make the controller informed about the feedbacks of speed zone etc. (#83))
+    base_params_.visualize_candidate_trajectories);
 
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.min_lateral_distance",
@@ -238,15 +230,11 @@ ParameterHandler::dynamicParametersCallback(
     const auto & name = parameter.get_name();
 
     if (name == plugin_name_ + ".interpolate_curvature_after_goal") {
-<<<<<<< HEAD
-      params_.interpolate_curvature_after_goal = parameter.as_double();
-    } else if (name == plugin_name_ + ".max_robot_pose_search_dist") {
-      params_.max_robot_pose_search_dist = parameter.as_double();
-    } else if (name == plugin_name_ + ".transform_tolerance") {
-      params_.transform_tolerance = parameter.as_double();
-=======
       base_params_.interpolate_curvature_after_goal = parameter.as_double();
->>>>>>> daaa0e1 (Implemented setSpeedLimit method to make the controller informed about the feedbacks of speed zone etc. (#83))
+    } else if (name == plugin_name_ + ".max_robot_pose_search_dist") {
+      base_params_.max_robot_pose_search_dist = parameter.as_double();
+    } else if (name == plugin_name_ + ".transform_tolerance") {
+      base_params_.transform_tolerance = parameter.as_double();
     } else if (name == plugin_name_ + ".time_discretization") {
       base_params_.time_discretization = parameter.as_double();
       base_params_.frenet_trajectory_planner_config.dt = base_params_.time_discretization;
