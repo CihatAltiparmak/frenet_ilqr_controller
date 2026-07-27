@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <omp.h>
 #include <vector>
 #include <memory>
 #include <optional>
@@ -25,8 +26,6 @@
 #include <frenet_trajectory_planner/policies/base_policy.hpp>
 #include <frenet_trajectory_planner/costs/base_cost.hpp>
 #include <frenet_trajectory_planner/frenet_frame_converter.hpp>
-
-#include <omp.h>      //OpenMP
 
 namespace frenet_trajectory_planner
 {

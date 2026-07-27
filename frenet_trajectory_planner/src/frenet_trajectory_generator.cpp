@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <omp.h>
 #include <frenet_trajectory_planner/frenet_trajectory_generator.hpp>
 #include <frenet_trajectory_planner/type_definitions.hpp>
-#include <omp.h>      //OpenMP
 
 namespace frenet_trajectory_planner
 {
