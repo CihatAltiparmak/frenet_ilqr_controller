@@ -30,27 +30,30 @@ FrenetTrajectoryGenerator::FrenetTrajectoryGenerator(
 std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::getAllPossibleFrenetTrajectories(
   const FrenetState & frenet_state_initial, size_t max_state_number)
 {
-  int max_t_inc = (frenet_planner_config_.max_time_interval - frenet_planner_config_.min_time_interval) / frenet_planner_config_.step_time_interval;
-  int max_lon_inc = (frenet_planner_config_.max_longtitutal_velocity - frenet_planner_config_.min_longtitutal_velocity) / frenet_planner_config_.step_longtitutal_velocity;
-  int max_lat_inc = (frenet_planner_config_.max_lateral_distance - frenet_planner_config_.min_lateral_distance) / frenet_planner_config_.step_lateral_distance;
+  int max_t_inc = (frenet_planner_config_.max_time_interval -
+    frenet_planner_config_.min_time_interval) / frenet_planner_config_.step_time_interval;
+  int max_lon_inc = (frenet_planner_config_.max_longtitutal_velocity -
+    frenet_planner_config_.min_longtitutal_velocity) /
+    frenet_planner_config_.step_longtitutal_velocity;
+  int max_lat_inc = (frenet_planner_config_.max_lateral_distance -
+    frenet_planner_config_.min_lateral_distance) / frenet_planner_config_.step_lateral_distance;
 
   std::vector<FrenetTrajectory> frenet_trajectories(max_t_inc * max_lon_inc * max_lat_inc);
   #pragma omp parallel for
-  for (int t = 0; t < max_t_inc; ++t)
-  {
-    for (int lon = 0; lon < max_lon_inc; ++lon)
-    {
-      for (int lat = 0; lat < max_lat_inc; ++lat)
-      {
+  for (int t = 0; t < max_t_inc; ++t) {
+    for (int lon = 0; lon < max_lon_inc; ++lon) {
+      for (int lat = 0; lat < max_lat_inc; ++lat) {
         StateLongtitutal state_longtitutal_final;
-        state_longtitutal_final << 
+        state_longtitutal_final <<
           0,
-          frenet_planner_config_.min_longtitutal_velocity + lon * frenet_planner_config_.step_longtitutal_velocity,
+          frenet_planner_config_.min_longtitutal_velocity + lon *
+          frenet_planner_config_.step_longtitutal_velocity,
           0;
 
         StateLateral state_lateral_final;
-        state_lateral_final << 
-          frenet_planner_config_.min_lateral_distance + lat * frenet_planner_config_.step_lateral_distance,
+        state_lateral_final <<
+          frenet_planner_config_.min_lateral_distance + lat *
+          frenet_planner_config_.step_lateral_distance,
           0,
           0;
 
@@ -58,9 +61,12 @@ std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::getAllPossibleFrenetTra
         frenet_state_final << state_longtitutal_final, state_lateral_final;
         auto frenet_trajectory = getFrenetTrajectory(
           frenet_state_initial, frenet_state_final,
-          max_state_number, frenet_planner_config_.min_time_interval + t * frenet_planner_config_.step_time_interval);
-        
-        frenet_trajectories[t * max_lat_inc * max_lon_inc + lon * max_lat_inc + lat] = frenet_trajectory;
+          max_state_number,
+            frenet_planner_config_.min_time_interval + t *
+            frenet_planner_config_.step_time_interval);
+
+        frenet_trajectories[t * max_lat_inc * max_lon_inc + lon * max_lat_inc +
+          lat] = frenet_trajectory;
       }
     }
   }
