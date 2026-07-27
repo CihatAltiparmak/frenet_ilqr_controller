@@ -16,6 +16,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(angles REQUIRED)
+find_package(OpenMP REQUIRED)
 
 add_library(frenet_trajectory_planner_lib SHARED
   src/frenet_trajectory_generator.cpp
@@ -32,7 +33,9 @@ target_include_directories(frenet_trajectory_planner_lib PUBLIC ${Eigen3_INCLUDE
 target_link_libraries(frenet_trajectory_planner_lib PUBLIC Eigen3::Eigen)
 target_link_libraries(frenet_trajectory_planner_lib PRIVATE
   angles::angles
+  OpenMP::OpenMP_CXX
 )
+target_compile_options(frenet_trajectory_planner_lib PRIVATE -fopenmp)
 
 install(
   TARGETS frenet_trajectory_planner_lib
