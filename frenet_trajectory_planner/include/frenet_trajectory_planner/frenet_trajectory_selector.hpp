@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <omp.h>
 #include <vector>
 #include <memory>
 #include <optional>
@@ -102,11 +103,16 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajec
 
   std::optional<FrenetTrajectory> best_frenet_trajectory = std::nullopt;
   double best_cost = std::numeric_limits<double>::infinity();
+  #pragma omp parallel for
   for (const auto & frenet_trajectory : frenet_trajectories) {
+    if (frenet_trajectory.empty()) {
+      continue;
+    }
     CartesianTrajectory cartesian_trajectory = frenet_frame_converter_->convertFrenet2Cartesian(
       frenet_trajectory);
     if (!policy_checker(frenet_trajectory, cartesian_trajectory)) {
       if (debug_info) {
+        #pragma omp critical
         debug_info->cartesian_trajectories.push_back({cartesian_trajectory, -1});
       }
       continue;
@@ -116,9 +122,11 @@ std::optional<FrenetTrajectory> FrenetTrajectorySelector::selectBestFrenetTrajec
     double trajectory_cost = get_trajectory_cost(frenet_trajectory, cartesian_trajectory);
 
     if (debug_info) {
+      #pragma omp critical
       debug_info->cartesian_trajectories.push_back({cartesian_trajectory, trajectory_cost});
     }
 
+    #pragma omp critical
     if (trajectory_cost < best_cost) {
       best_cost = trajectory_cost;
       best_frenet_trajectory = std::optional<FrenetTrajectory>{frenet_trajectory};

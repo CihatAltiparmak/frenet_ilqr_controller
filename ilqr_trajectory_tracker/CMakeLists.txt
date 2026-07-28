@@ -10,12 +10,16 @@ if(NOT Eigen3_FOUND)
   find_package(Eigen3 REQUIRED)
 endif()
 
-# if(NOT "${CMAKE_CXX_STANDARD}")
-#     set(CMAKE_CXX_STANDARD 17)
-#   endif()
-
 find_package(ament_cmake REQUIRED)
 find_package(frenet_trajectory_planner REQUIRED)
+
+include(CheckCXXCompilerFlag)
+
+check_cxx_compiler_flag("-mfma" COMPILER_SUPPORTS_FMA)
+
+if(COMPILER_SUPPORTS_FMA)
+  add_compile_options(-mfma)
+endif()
 
 add_library(ilqr_trajectory_tracker_lib SHARED src/models/diff_robot_model.cpp)
 
