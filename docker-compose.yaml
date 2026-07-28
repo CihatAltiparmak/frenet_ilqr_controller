@@ -1,0 +1,27 @@
+services:
+  navigation:
+    image: ghcr.io/cihataltiparmak/frenet_ilqr_controller:main
+    container_name: frenet_ilqr_controller
+    network_mode: "host"
+    shm_size: '1gb'
+    privileged: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - ${XAUTHORITY}:/root/.Xauthority
+      - /tmp/.gazebo/:/root/.gazebo/
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./:/root/nav2_ws/src/frenet_ilqr_controller
+    tty: true
+    command: ros2 launch nav2_bringup tb3_simulation_launch.py params_file:=/root/nav2_ws/src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
