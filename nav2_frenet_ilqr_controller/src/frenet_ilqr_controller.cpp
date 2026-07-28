@@ -265,18 +265,11 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     robot_pose, transformed_plan,
     lookahead_distance);
 
-  if (transformed_plan.poses.size() == 1) {
-    transformed_plan.poses.insert(transformed_plan.poses.begin(), robot_pose);
-  }
-
-  if (transformed_plan.poses.size() == 0) {
-    // if there is no path to track, stop the robot
-    geometry_msgs::msg::TwistStamped cmd_vel;
-    cmd_vel.header = pose.header;
-    return cmd_vel;
-  }
-
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
+  frenet_trajectory_planner::CartesianPoint c_robot_point;
+  c_robot_point << robot_pose.pose.position.x, robot_pose.pose.position.y;
+  waypoint_list.push_back(c_robot_point);
+
   for (const auto & pose_stamped : transformed_plan.poses) {
     frenet_trajectory_planner::CartesianPoint point;
     point << pose_stamped.pose.position.x, pose_stamped.pose.position.y;
