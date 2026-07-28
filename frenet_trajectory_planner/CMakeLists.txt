@@ -10,12 +10,18 @@ if(NOT Eigen3_FOUND)
   find_package(Eigen3 REQUIRED)
 endif()
 
-# if(NOT "${CMAKE_CXX_STANDARD}")
-#     set(CMAKE_CXX_STANDARD 17)
-#   endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(angles REQUIRED)
+find_package(OpenMP REQUIRED)
+
+include(CheckCXXCompilerFlag)
+
+check_cxx_compiler_flag("-mfma" COMPILER_SUPPORTS_FMA)
+
+if(COMPILER_SUPPORTS_FMA)
+  add_compile_options(-mfma)
+endif()
 
 add_library(frenet_trajectory_planner_lib SHARED
   src/frenet_trajectory_generator.cpp
@@ -32,7 +38,9 @@ target_include_directories(frenet_trajectory_planner_lib PUBLIC ${Eigen3_INCLUDE
 target_link_libraries(frenet_trajectory_planner_lib PUBLIC Eigen3::Eigen)
 target_link_libraries(frenet_trajectory_planner_lib PRIVATE
   angles::angles
+  OpenMP::OpenMP_CXX
 )
+target_compile_options(frenet_trajectory_planner_lib PRIVATE -fopenmp)
 
 install(
   TARGETS frenet_trajectory_planner_lib

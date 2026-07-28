@@ -26,6 +26,14 @@ include_directories(
 
 nav2_package()
 
+include(CheckCXXCompilerFlag)
+
+check_cxx_compiler_flag("-mfma" COMPILER_SUPPORTS_FMA)
+
+if(COMPILER_SUPPORTS_FMA)
+  add_compile_options(-mfma)
+endif()
+
 set(library_name nav2_frenet_ilqr_controller)
 
 add_library(${library_name} SHARED
