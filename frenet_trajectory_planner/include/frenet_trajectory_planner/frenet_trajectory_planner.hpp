@@ -115,7 +115,6 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
     if (!best_frenet_trajectory_optional.has_value()) {
       break;
     }
-
     auto best_frenet_trajectory = best_frenet_trajectory_optional.value();
     if (best_frenet_trajectory.size() <= 1) {
       break;
