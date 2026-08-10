@@ -131,6 +131,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   auto planned_cartesian_trajectory =
     frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 
+  planned_cartesian_trajectory[0] = robot_cartesian_state;
   // arrange yaw to make it feasible to follow by iterative lqr
   for (size_t i = 1; i < planned_cartesian_trajectory.size(); ++i) {
     double yaw_diff_min = angles::shortest_angular_distance(
