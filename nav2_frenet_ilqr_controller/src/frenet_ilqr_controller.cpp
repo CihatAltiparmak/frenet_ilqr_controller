@@ -195,10 +195,11 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
   return truncated_path;
 }
 
-Vector2d FrenetILQRController::findOptimalInputForTrajectory(
+Vector3d FrenetILQRController::findOptimalInputForTrajectory(
   const frenet_trajectory_planner::CartesianState & c_state_robot,
   const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
 {
+<<<<<<< HEAD
   if (robot_cartesian_trajectory.empty()) {
     throw std::runtime_error("There is no trajectory to be tracked!");
   }
@@ -237,6 +238,16 @@ Vector2d FrenetILQRController::findOptimalInputForTrajectory(
   }
 
   return newton_optimizer.getTwistCommand(x_robot, U_optimal[0], params_->time_discretization);
+=======
+  if (params_->vehicle_type == "diff_drive_robot") {
+    auto trajectory_handler =
+      std::make_unique<trajectory_handlers::DiffDriveTrajectoryHandler>(*params_);
+    return trajectory_handler->processTrajectory(c_state_robot, robot_cartesian_trajectory);
+  } else {
+    throw nav2_core::NoValidControl(std::string(
+        "Unknown model is selected. Cannot processing! vehicle_type = ") + params_->vehicle_type);
+  }
+>>>>>>> 5ed0faa (Implement TrajectoryHandler class to create more modular vehicle type selection and possible adaptive behaviors. (#91))
 }
 
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
@@ -308,7 +319,8 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   geometry_msgs::msg::TwistStamped cmd_vel;
   cmd_vel.header = pose.header;
   cmd_vel.twist.linear.x = u_opt[0];
-  cmd_vel.twist.angular.z = u_opt[1];
+  cmd_vel.twist.linear.y = u_opt[1];
+  cmd_vel.twist.angular.z = u_opt[2];
   return cmd_vel;
 }
 

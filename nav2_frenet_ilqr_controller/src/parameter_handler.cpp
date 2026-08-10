@@ -47,6 +47,8 @@ ParameterHandler::ParameterHandler(
     node, plugin_name_ + ".time_discretization", rclcpp::ParameterValue(0.05));
   declare_parameter_if_not_declared(
     node, plugin_name_ + ".visualize_candidate_trajectories", rclcpp::ParameterValue(false));
+  declare_parameter_if_not_declared(
+    node, plugin_name_ + ".vehicle_type", rclcpp::ParameterValue("diff_drive_robot"));
 
   // for lateral distance
   declare_parameter_if_not_declared(
@@ -130,6 +132,13 @@ ParameterHandler::ParameterHandler(
   node->get_parameter(
     plugin_name_ + ".visualize_candidate_trajectories",
     base_params_.visualize_candidate_trajectories);
+<<<<<<< HEAD
+=======
+
+  node->get_parameter(
+    plugin_name_ + ".vehicle_type",
+    base_params_.vehicle_type);
+>>>>>>> 5ed0faa (Implement TrajectoryHandler class to create more modular vehicle type selection and possible adaptive behaviors. (#91))
 
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.min_lateral_distance",
@@ -240,6 +249,8 @@ ParameterHandler::dynamicParametersCallback(
       base_params_.frenet_trajectory_planner_config.dt = base_params_.time_discretization;
     } else if (name == plugin_name_ + ".visualize_candidate_trajectories") {
       base_params_.visualize_candidate_trajectories = parameter.as_bool();
+    } else if (name == plugin_name_ + ".vehicle_type") {
+      base_params_.vehicle_type = parameter.as_string();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.min_lateral_distance") {
       base_params_.frenet_trajectory_planner_config.min_lateral_distance = parameter.as_double();
     } else if (name == plugin_name_ + ".frenet_trajectory_planner.max_lateral_distance") {

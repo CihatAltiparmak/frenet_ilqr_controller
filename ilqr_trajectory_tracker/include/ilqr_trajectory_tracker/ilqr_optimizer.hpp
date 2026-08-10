@@ -174,7 +174,7 @@ public:
     return u_best_trajectory;
   }
 
-  Vector2d getTwistCommand(
+  Vector3d getTwistCommand(
     const StateT & x_initial,
     const InputT & u,
     const double dt
