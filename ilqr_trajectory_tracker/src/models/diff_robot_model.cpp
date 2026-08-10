@@ -86,7 +86,7 @@ Vector3d DiffDriveRobotModel::getTwistCommand(
   // velocity_new = velocity_robot + acceleration * dt
   twist[0] = x_initial[3] + u[0] * dt;
   twist[1] = 0.0;
-  twist[1] = u[1];
+  twist[2] = u[1];
   return twist;
 }
 

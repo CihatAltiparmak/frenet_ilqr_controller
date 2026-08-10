@@ -199,7 +199,7 @@ Vector3d FrenetILQRController::findOptimalInputForTrajectory(
       std::make_unique<trajectory_handlers::DiffDriveTrajectoryHandler>(*params_);
     return trajectory_handler->processTrajectory(c_state_robot, robot_cartesian_trajectory);
   } else {
-    throw std::runtime_error(std::string(
+    throw nav2_core::NoValidControl(std::string(
         "Unknown model is selected. Cannot processing! vehicle_type = ") + params_->vehicle_type);
   }
 }
@@ -264,7 +264,8 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   geometry_msgs::msg::TwistStamped cmd_vel;
   cmd_vel.header = robot_pose.header;
   cmd_vel.twist.linear.x = u_opt[0];
-  cmd_vel.twist.angular.z = u_opt[1];
+  cmd_vel.twist.linear.y = u_opt[1];
+  cmd_vel.twist.angular.z = u_opt[2];
   return cmd_vel;
 }
 
