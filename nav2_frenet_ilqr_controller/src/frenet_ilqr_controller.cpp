@@ -30,8 +30,6 @@
 #include "nav2_costmap_2d/costmap_filters/filter_values.hpp"
 #include <pluginlib/class_loader.hpp>
 
-#include <iostream>
-
 using std::hypot;
 using std::min;
 using std::max;
@@ -199,6 +197,10 @@ Vector3d FrenetILQRController::findOptimalInputForTrajectory(
   if (params_->vehicle_type == "diff_drive_robot") {
     auto trajectory_handler =
       std::make_unique<trajectory_handlers::DiffDriveTrajectoryHandler>(*params_);
+    return trajectory_handler->processTrajectory(c_state_robot, robot_cartesian_trajectory);
+  } else if (params_->vehicle_type == "omni_drive_robot") {
+    auto trajectory_handler =
+      std::make_unique<trajectory_handlers::OmniDriveTrajectoryHandler>(*params_);
     return trajectory_handler->processTrajectory(c_state_robot, robot_cartesian_trajectory);
   } else {
     throw nav2_core::NoValidControl(std::string(

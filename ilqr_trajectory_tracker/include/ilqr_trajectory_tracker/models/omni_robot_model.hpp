@@ -1,6 +1,6 @@
 // Copyright (C) 2024 Cihat Kurtuluş Altıparmak
-// Copyright (C) 2024 Prof. Tufan Kumbasar, Istanbul Technical University Artificial Intelligence and Intelligent Systems (AI2S) Laboratory
-// Copyright (C) 2024 Prof. Behçet Uğur Töreyin
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,29 +17,33 @@
 
 #pragma once
 
-#include <ilqr_trajectory_tracker/models/base_model.hpp>
-
 #include <Eigen/Dense>
 #include <cmath>
+#include <ilqr_trajectory_tracker/models/base_model.hpp>
+#include "frenet_trajectory_planner/type_definitions.hpp"
 
-using namespace Eigen;
+using namespace Eigen;  // NOLINT
 
 namespace ilqr_trajectory_tracker
 {
 
-using OmniDriveRobotModelState = Vector3d;
-using OmniDriveRobotModelInput = Vector3d;
+using OmniRobotModelState = Vector4d;
+using OmniRobotModelInput = Vector2d;
 
-class OmniDriveRobotModel : public Model<OmniDriveRobotModelState, OmniDriveRobotModelInput>
+class OmniRobotModel : public Model<5, 3>
 {
 public:
-  using StateT = OmniDriveRobotModelState;
-  using InputT = OmniDriveRobotModelInput;
-  OmniDriveRobotModel();
-  OmniDriveRobotModelState applySystemDynamics(const StateT & x, const InputT & u, const double dt) override;
+  OmniRobotModel();
+  StateT applySystemDynamics(const StateT & x, const InputT & u, const double dt) override;
   InputT applyLimits(const InputT & u) override;
-  MatrixXd getStateMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
-  MatrixXd getControlMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
+  StateMatrixT getStateMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
+  ControlMatrixT getControlMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
+  Vector3d getTwistCommand(
+    const StateT & x_initial,
+    const InputT & u,
+    const double dt);
+
+  static StateT fromFrenetCartesianState(const frenet_trajectory_planner::CartesianState & c_state);
 };
 
-}
+}  // namespace ilqr_trajectory_tracker

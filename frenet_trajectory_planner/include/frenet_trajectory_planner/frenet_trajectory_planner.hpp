@@ -116,10 +116,6 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
       break;
     }
 
-    // for (auto miku : best_frenet_trajectory_optional.value()) {
-    //   std::cout << "MIKU : " << miku[1] << " | " << miku[4] << " | " << std::hypot(miku[1], miku[4]) << std::endl;
-    // }
-
     auto best_frenet_trajectory = best_frenet_trajectory_optional.value();
     if (best_frenet_trajectory.size() <= 1) {
       break;
