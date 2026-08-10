@@ -36,7 +36,8 @@ set(library_name nav2_frenet_ilqr_controller)
 add_library(${library_name} SHARED
   src/frenet_ilqr_controller.cpp
   src/parameter_handler.cpp
-  src/trajectory_visualizer.cpp)
+  src/trajectory_visualizer.cpp
+  src/trajectory_handlers/diff_drive_trajectory_handler.cpp)
 target_include_directories(${library_name}
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"

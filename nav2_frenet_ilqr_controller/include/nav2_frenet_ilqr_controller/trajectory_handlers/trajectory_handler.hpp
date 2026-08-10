@@ -18,32 +18,31 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <cmath>
-#include <ilqr_trajectory_tracker/models/base_model.hpp>
 #include "frenet_trajectory_planner/type_definitions.hpp"
+#include "nav2_frenet_ilqr_controller/parameter_handler.hpp"
 
-using namespace Eigen;  // NOLINT
-
-namespace ilqr_trajectory_tracker
+namespace nav2_frenet_ilqr_controller
+{
+namespace trajectory_handlers
 {
 
-using DiffDriveRobotModelState = Vector4d;
-using DiffDriveRobotModelInput = Vector2d;
+using frenet_trajectory_planner::CartesianState;
+using frenet_trajectory_planner::CartesianTrajectory;
 
-class DiffDriveRobotModel : public Model<4, 2>
-{
+class TrajectoryHandler {
 public:
-  DiffDriveRobotModel();
-  StateT applySystemDynamics(const StateT & x, const InputT & u, const double dt) override;
-  InputT applyLimits(const InputT & u) override;
-  StateMatrixT getStateMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
-  ControlMatrixT getControlMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
-  Vector3d getTwistCommand(
-    const StateT & x_initial,
-    const InputT & u,
-    const double dt);
+  explicit TrajectoryHandler(const Parameters & params)
+  {
+    params_ = params;
+  }
 
-  static StateT fromFrenetCartesianState(const frenet_trajectory_planner::CartesianState & c_state);
+  virtual ~TrajectoryHandler() = default;
+  virtual Vector3d processTrajectory(
+    const CartesianState & c_state_robot,
+    const CartesianTrajectory & c_trajectory_robot) = 0;
+
+protected:
+  Parameters params_;
 };
-
-}  // namespace ilqr_trajectory_tracker
+}  // namespace trajectory_handlers
+}  // namespace nav2_frenet_ilqr_controller

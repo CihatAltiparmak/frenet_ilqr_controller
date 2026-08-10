@@ -52,7 +52,7 @@ public:
     const StateT & x_eq, const InputT & u_eq,
     const double dt) = 0;
 
-  virtual Vector2d getTwistCommand(
+  virtual Vector3d getTwistCommand(
     const StateT & x_initial,
     const InputT & u,
     const double dt) = 0;
