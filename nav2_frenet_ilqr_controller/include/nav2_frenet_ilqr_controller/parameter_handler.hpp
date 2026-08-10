@@ -41,6 +41,7 @@ struct Parameters
   Eigen::VectorXd input_limits_max;
   Eigen::MatrixXd Q;
   Eigen::MatrixXd R;
+  std::string vehicle_type;
 };
 
 namespace nav2_frenet_ilqr_controller

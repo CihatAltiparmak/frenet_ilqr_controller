@@ -38,7 +38,7 @@ public:
   InputT applyLimits(const InputT & u) override;
   StateMatrixT getStateMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
   ControlMatrixT getControlMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
-  Vector2d getTwistCommand(
+  Vector3d getTwistCommand(
     const StateT & x_initial,
     const InputT & u,
     const double dt);
