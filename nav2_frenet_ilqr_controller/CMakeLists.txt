@@ -41,6 +41,7 @@ add_library(${library_name} SHARED
   src/path_handler.cpp
   src/parameter_handler.cpp
   src/trajectory_visualizer.cpp
+<<<<<<< HEAD
   src/trajectory_handlers/diff_drive_trajectory_handler.cpp)
 
 ament_target_dependencies(${library_name}
@@ -58,6 +59,35 @@ ament_target_dependencies(${library_name}
   ilqr_trajectory_tracker
   rcl_interfaces
   visualization_msgs
+=======
+  src/trajectory_handlers/diff_drive_trajectory_handler.cpp
+  src/trajectory_handlers/omni_drive_trajectory_handler.cpp)
+target_include_directories(${library_name}
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+    "$<BUILD_INTERFACE:${nav2_ros_common_INCLUDE_DIRS}>"
+)
+target_link_libraries(${library_name} PUBLIC
+  ${geometry_msgs_TARGETS}
+  ${visualization_msgs_TARGETS}
+  nav2_core::nav2_core
+  nav2_costmap_2d::nav2_costmap_2d_core
+  nav2_util::nav2_util_core
+  ${nav_msgs_TARGETS}
+  pluginlib::pluginlib
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
+  ${rcl_interfaces_TARGETS}
+  ${std_msgs_TARGETS}
+  tf2::tf2
+  tf2_ros::tf2_ros
+  frenet_trajectory_planner::frenet_trajectory_planner_lib
+  ilqr_trajectory_tracker::ilqr_trajectory_tracker_lib
+)
+target_link_libraries(${library_name} PRIVATE
+  angles::angles
+>>>>>>> fff0fb5 (Add experimental omni drive robot support (#45))
 )
 
 add_library(nav2_frenet_ilqr_controller_costs SHARED
