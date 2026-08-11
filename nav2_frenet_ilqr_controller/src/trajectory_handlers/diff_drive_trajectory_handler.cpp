@@ -17,7 +17,6 @@
 
 #include "nav2_frenet_ilqr_controller/trajectory_handlers/diff_drive_trajectory_handler.hpp"
 
-#include "nav2_core/controller_exceptions.hpp"
 #include "ilqr_trajectory_tracker/models/diff_robot_model.hpp"
 #include "ilqr_trajectory_tracker/ilqr_optimizer.hpp"
 
@@ -39,7 +38,7 @@ Vector3d DiffDriveTrajectoryHandler::processTrajectory(
   const CartesianTrajectory & c_trajectory_robot)
 {
   if (c_trajectory_robot.empty()) {
-    throw nav2_core::NoValidControl("There is no trajectory to be tracked!");
+    throw std::runtime_error("There is no trajectory to be tracked!");
   }
 
   ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
@@ -70,7 +69,7 @@ Vector3d DiffDriveTrajectoryHandler::processTrajectory(
       params_.time_discretization);
 
   if (U_optimal.empty()) {
-    throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
+    throw std::runtime_error("Iterative LQR couldn't find any solution!");
   }
 
   return newton_optimizer.getTwistCommand(x_robot, U_optimal[0], params_.time_discretization);

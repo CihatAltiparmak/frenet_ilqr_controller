@@ -132,13 +132,10 @@ ParameterHandler::ParameterHandler(
   node->get_parameter(
     plugin_name_ + ".visualize_candidate_trajectories",
     base_params_.visualize_candidate_trajectories);
-<<<<<<< HEAD
-=======
 
   node->get_parameter(
     plugin_name_ + ".vehicle_type",
     base_params_.vehicle_type);
->>>>>>> 5ed0faa (Implement TrajectoryHandler class to create more modular vehicle type selection and possible adaptive behaviors. (#91))
 
   node->get_parameter(
     plugin_name_ + ".frenet_trajectory_planner.min_lateral_distance",
