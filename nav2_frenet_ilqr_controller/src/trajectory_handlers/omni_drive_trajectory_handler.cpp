@@ -75,8 +75,7 @@ Vector3d OmniDriveTrajectoryHandler::processTrajectory(
     throw nav2_core::NoValidControl("Iterative LQR couldn't find any solution!");
   }
 
-  auto twist = newton_optimizer.getTwistCommand(x_robot, U_optimal[0], params_.time_discretization);
-  return twist;
+  return newton_optimizer.getTwistCommand(x_robot, U_optimal[0], params_.time_discretization);
 }
 
 }  // namespace trajectory_handlers
