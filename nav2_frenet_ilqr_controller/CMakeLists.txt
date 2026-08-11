@@ -40,7 +40,8 @@ add_library(${library_name} SHARED
   src/frenet_ilqr_controller.cpp
   src/path_handler.cpp
   src/parameter_handler.cpp
-  src/trajectory_visualizer.cpp)
+  src/trajectory_visualizer.cpp
+  src/trajectory_handlers/diff_drive_trajectory_handler.cpp)
 
 ament_target_dependencies(${library_name}
   rclcpp

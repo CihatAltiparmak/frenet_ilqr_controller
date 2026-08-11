@@ -76,17 +76,17 @@ DiffDriveRobotModel::ControlMatrixT DiffDriveRobotModel::getControlMatrix(
   return control_matrix;
 }
 
-Vector2d DiffDriveRobotModel::getTwistCommand(
+Vector3d DiffDriveRobotModel::getTwistCommand(
   const StateT & x_initial,
   const InputT & u,
   const double dt
 )
 {
-  Vector2d twist;
+  Vector3d twist;
   // velocity_new = velocity_robot + acceleration * dt
   twist[0] = x_initial[3] + u[0] * dt;
-
-  twist[1] = u[1];
+  twist[1] = 0.0;
+  twist[2] = u[1];
   return twist;
 }
 
