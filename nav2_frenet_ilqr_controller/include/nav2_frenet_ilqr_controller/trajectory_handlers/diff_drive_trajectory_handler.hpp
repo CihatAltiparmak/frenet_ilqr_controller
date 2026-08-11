@@ -19,7 +19,6 @@
 
 #include "nav2_frenet_ilqr_controller/trajectory_handlers/trajectory_handler.hpp"
 
-#include "nav2_core/controller.hpp"
 #include "ilqr_trajectory_tracker/models/diff_robot_model.hpp"
 #include "ilqr_trajectory_tracker/ilqr_optimizer.hpp"
 
