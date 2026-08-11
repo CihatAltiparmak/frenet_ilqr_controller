@@ -19,7 +19,7 @@
 
 #include "nav2_frenet_ilqr_controller/trajectory_handlers/trajectory_handler.hpp"
 
-#include "ilqr_trajectory_tracker/models/diff_robot_model.hpp"
+#include "ilqr_trajectory_tracker/models/omni_robot_model.hpp"
 #include "ilqr_trajectory_tracker/ilqr_optimizer.hpp"
 
 namespace nav2_frenet_ilqr_controller
@@ -29,12 +29,12 @@ namespace trajectory_handlers
 
 using frenet_trajectory_planner::CartesianState;
 using frenet_trajectory_planner::CartesianTrajectory;
-using ilqr_trajectory_tracker::DiffDriveRobotModel;
+using ilqr_trajectory_tracker::OmniRobotModel;
 
-class DiffDriveTrajectoryHandler : public TrajectoryHandler
+class OmniDriveTrajectoryHandler : public TrajectoryHandler
 {
 public:
-  explicit DiffDriveTrajectoryHandler(const Parameters & params);
+  explicit OmniDriveTrajectoryHandler(const Parameters & params);
   Vector3d processTrajectory(
     const CartesianState & c_state_robot,
     const CartesianTrajectory & c_trajectory_robot) override;

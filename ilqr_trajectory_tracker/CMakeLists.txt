@@ -21,7 +21,10 @@ if(COMPILER_SUPPORTS_FMA)
   add_compile_options(-mfma)
 endif()
 
-add_library(ilqr_trajectory_tracker_lib SHARED src/models/diff_robot_model.cpp)
+add_library(ilqr_trajectory_tracker_lib 
+  SHARED
+  src/models/diff_robot_model.cpp
+  src/models/omni_robot_model.cpp)
 
 target_include_directories(
   ilqr_trajectory_tracker_lib

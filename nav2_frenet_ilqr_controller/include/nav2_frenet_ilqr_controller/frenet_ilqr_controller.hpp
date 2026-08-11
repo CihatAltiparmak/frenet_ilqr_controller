@@ -34,6 +34,7 @@
 #include "nav2_frenet_ilqr_controller/policies/rclcpp_node_policy.hpp"
 #include "nav2_frenet_ilqr_controller/costs/rclcpp_node_cost.hpp"
 #include "nav2_frenet_ilqr_controller/trajectory_handlers/diff_drive_trajectory_handler.hpp"
+#include "nav2_frenet_ilqr_controller/trajectory_handlers/omni_drive_trajectory_handler.hpp"
 #include "frenet_trajectory_planner/type_definitions.hpp"
 #include "frenet_trajectory_planner/frenet_trajectory_planner.hpp"
 #include "ilqr_trajectory_tracker/ilqr_optimizer.hpp"
