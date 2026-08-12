@@ -203,6 +203,10 @@ Vector3d FrenetILQRController::findOptimalInputForTrajectory(
     auto trajectory_handler =
       std::make_unique<trajectory_handlers::DiffDriveTrajectoryHandler>(*params_);
     return trajectory_handler->processTrajectory(c_state_robot, robot_cartesian_trajectory);
+  } else if (params_->vehicle_type == "omni_drive_robot") {
+    auto trajectory_handler =
+      std::make_unique<trajectory_handlers::OmniDriveTrajectoryHandler>(*params_);
+    return trajectory_handler->processTrajectory(c_state_robot, robot_cartesian_trajectory);
   } else {
     throw std::runtime_error(std::string(
         "Unknown model is selected. Cannot processing! vehicle_type = ") + params_->vehicle_type);
