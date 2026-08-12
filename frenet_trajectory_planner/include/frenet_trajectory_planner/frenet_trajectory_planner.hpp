@@ -46,6 +46,10 @@ public:
     const std::vector<CartesianPoint> & waypoint_list,
     std::shared_ptr<DebugInfo> debug_info);
 
+  void makeYawTrajectoryFeasible(
+    const CartesianState & c_state_robot,
+    CartesianTrajectory & c_trajectory);
+
   void addPolicy(const std::shared_ptr<policies::Policy> & policy);
   void addCost(const std::shared_ptr<costs::Cost> & cost);
 
@@ -98,11 +102,9 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   FrenetState robot_frenet_state =
     frenet_frame_converter->convertCartesian2FrenetForSegment(robot_cartesian_state, 0);
 
-  FrenetTrajectory planned_frenet_trajectory = {robot_frenet_state};
-  size_t remaining_state_number_ = frenet_trajectory_planner_config_.max_state_in_trajectory - 1;
+  FrenetTrajectory planned_frenet_trajectory;
+  size_t remaining_state_number_ = frenet_trajectory_planner_config_.max_state_in_trajectory;
   while (remaining_state_number_ > 0) {
-    robot_frenet_state = planned_frenet_trajectory.back();
-
     // TODO(CihatAltiparmak) : eliminate some trajectories in frenet level
     auto all_frenet_trajectories =
       frenet_trajectory_generator_->getAllPossibleFrenetTrajectories(
@@ -126,21 +128,34 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
 
     remaining_state_number_ = frenet_trajectory_planner_config_.max_state_in_trajectory -
       planned_frenet_trajectory.size();
+    robot_frenet_state = planned_frenet_trajectory.back();
   }
 
   auto planned_cartesian_trajectory =
     frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 
-  planned_cartesian_trajectory[0] = robot_cartesian_state;
   // arrange yaw to make it feasible to follow by iterative lqr
-  for (size_t i = 1; i < planned_cartesian_trajectory.size(); ++i) {
-    double yaw_diff_min = angles::shortest_angular_distance(
-      planned_cartesian_trajectory[i - 1][6], planned_cartesian_trajectory[i][6]);
-    planned_cartesian_trajectory[i][6] =
-      planned_cartesian_trajectory[i - 1][6] + yaw_diff_min;
-  }
+  makeYawTrajectoryFeasible(robot_cartesian_state, planned_cartesian_trajectory);
 
   return planned_cartesian_trajectory;
+}
+
+void FrenetTrajectoryPlanner::makeYawTrajectoryFeasible(
+  const CartesianState & c_state_robot,
+  CartesianTrajectory & c_trajectory)
+{
+  if (c_trajectory.empty()) {
+    return;
+  }
+
+  double yaw_diff_min = angles::shortest_angular_distance(
+      c_state_robot[6], c_trajectory[0][6]);
+  c_trajectory[0][6] = c_state_robot[6] + yaw_diff_min;
+  for (size_t i = 1; i < c_trajectory.size(); ++i) {
+    double yaw_diff_min = angles::shortest_angular_distance(
+      c_trajectory[i - 1][6], c_trajectory[i][6]);
+    c_trajectory[i][6] = c_trajectory[i - 1][6] + yaw_diff_min;
+  }
 }
 
 void FrenetTrajectoryPlanner::addPolicy(const std::shared_ptr<policies::Policy> & policy)
