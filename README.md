@@ -29,20 +29,10 @@ Clone repository
 git clone https://github.com/CihatAltiparmak/frenet_ilqr_controller.git
 ```
 
-Build dockerfile by going to the directory of cloned repository.
+Build and run dockerized system via docker-compose by going to the directory of cloned repository.
 ```sh
 cd frenet_ilqr_controller
-docker build -t frenet_ilqr_controller_demo .
-```
-
-Run below command not to fail gui works.
-```sh
-xhost +
-```
-
-Run docker image
-```sh
-docker run -it --gpus=all -e NVIDIA_DRIVER_CAPABILITIES=all --runtime=nvidia --rm --net=host --privileged --volume="${XAUTHORITY}:/root/.Xauthority" --env="DISPLAY=$DISPLAY" -v="/tmp/.gazebo/:/root/.gazebo/" -v /tmp/.X11-unix:/tmp/.X11-unix:rw --shm-size=1000mb frenet_ilqr_controller_demo ros2 launch nav2_bringup tb3_simulation_launch.py params_file:=/root/nav2_ws/src/navigation2/nav2_bringup/params/nav2_param_frenet_ilqr_controller_demo.yaml
+docker compose up
 ```
 
 # Configurations
