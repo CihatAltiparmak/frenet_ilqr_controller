@@ -53,7 +53,7 @@ double LateralDistanceCost::cost(
     trajectory_cost += std::abs(frenet_state[3]);
   }
 
-  return K_lateral_distance_ * trajectory_cost;
+  return K_lateral_distance_ * trajectory_cost / frenet_trajectory.size();
 }
 
 }  // namespace costs
