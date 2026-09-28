@@ -47,6 +47,13 @@ Vector3d DiffDriveTrajectoryHandler::processTrajectory(
   auto x_robot = DiffDriveRobotModel::fromFrenetCartesianState(c_state_robot);
   auto X_feasible = newton_optimizer.fromFrenetCartesianTrajectory(c_trajectory_robot);
 
+  // Shift velocities so that error between robot's state and the first desired state
+  // is made up of only velocity error and angular velocity error
+  for (size_t i = 1; i < X_feasible.size(); ++i) {
+    X_feasible[i - 1][2] = X_feasible[i][2];
+    X_feasible[i - 1][3] = X_feasible[i][3];
+  }
+
   // TODO(CihatAltiparmak) : add behavior mode into frenet_trajectory_planner.
   // The velocity trajectory
   // can be planned using Quinctic Polynom instead of Quartic Polynom  which takes into account
