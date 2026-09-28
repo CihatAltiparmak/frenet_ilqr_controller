@@ -103,6 +103,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
     frenet_frame_converter->convertCartesian2FrenetForSegment(robot_cartesian_state, 0);
 
   FrenetTrajectory planned_frenet_trajectory;
+  planned_frenet_trajectory.push_back(robot_frenet_state);
   size_t remaining_state_number_ = frenet_trajectory_planner_config_.max_state_in_trajectory;
   while (remaining_state_number_ > 0) {
     // TODO(CihatAltiparmak) : eliminate some trajectories in frenet level
@@ -134,6 +135,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   auto planned_cartesian_trajectory =
     frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 
+  planned_cartesian_trajectory[0] = robot_cartesian_state;
   // arrange yaw to make it feasible to follow by iterative lqr
   makeYawTrajectoryFeasible(robot_cartesian_state, planned_cartesian_trajectory);
 
