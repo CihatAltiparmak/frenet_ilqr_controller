@@ -1,0 +1,129 @@
+// Copyright (C) 2024 Cihat Kurtuluş Altıparmak
+// Copyright (C) 2024 Prof. Dr. Tufan Kumbasar, ITU AI2S Lab
+// Copyright (C) 2024 Prof. Dr. Behçet Uğur Töreyin
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#include <frenet_trajectory_planner/strategies/merge_and_stop_strategy.hpp>
+
+namespace frenet_trajectory_planner
+{
+namespace strategies
+{
+
+MergeAndStopStrategy::MergeAndStopStrategy(
+  const FrenetTrajectoryPlannerConfig & frenet_planner_config,
+  const double arclength)
+: Strategy(frenet_planner_config)
+{
+  arclength_ = arclength;
+}
+
+std::vector<FrenetTrajectory>
+MergeAndStopStrategy::generateFrenetTrajectories(
+  const FrenetState & f_state_initial, const size_t max_state_number)
+{
+  int max_t_inc = (frenet_planner_config_.max_time_interval -
+    frenet_planner_config_.min_time_interval) / frenet_planner_config_.step_time_interval;
+  int max_lat_inc = (frenet_planner_config_.max_lateral_distance -
+    frenet_planner_config_.min_lateral_distance) / frenet_planner_config_.step_lateral_distance;
+
+  std::vector<FrenetTrajectory> frenet_trajectories(max_t_inc * max_lat_inc);
+  #pragma omp parallel for
+  for (int t = 0; t < max_t_inc; ++t) {
+    for (int lat = 0; lat < max_lat_inc; ++lat) {
+      StateLongtitutal state_longtitutal_final;
+      state_longtitutal_final <<
+        arclength_,
+        0.0,
+        0.0;
+
+      StateLateral state_lateral_final;
+      state_lateral_final <<
+        frenet_planner_config_.min_lateral_distance + lat *
+        frenet_planner_config_.step_lateral_distance,
+        0,
+        0;
+
+      FrenetState f_state_final;
+      f_state_final << state_longtitutal_final, state_lateral_final;
+      auto frenet_trajectory = getFrenetTrajectory(
+        f_state_initial, f_state_final,
+        max_state_number,
+          frenet_planner_config_.min_time_interval + t *
+          frenet_planner_config_.step_time_interval);
+
+      frenet_trajectories[t * max_lat_inc + lat] = frenet_trajectory;
+    }
+  }
+
+  return frenet_trajectories;
+}
+
+FrenetTrajectory
+MergeAndStopStrategy::getFrenetTrajectory(
+  const FrenetState & f_state_initial,
+  const FrenetState & f_state_final,
+  const size_t max_state_number,
+  const double time_interval)
+{
+  auto longtitual_state_initial = f_state_initial(seq(0, 2));
+  auto longtitual_state_final = f_state_final(seq(0, 2));
+  auto longtitutal_distance_planner = QuinticTrajectoryPlanner();
+  if (!longtitutal_distance_planner.setCoefficientsOrReturnFalse(
+      longtitual_state_initial[0], longtitual_state_initial[1], longtitual_state_initial[2],
+      longtitual_state_final[1], longtitual_state_final[2], longtitual_state_final[3],
+      0, time_interval))
+  {
+    return {};
+  }
+
+  auto lateral_state_initial = f_state_initial(seq(3, 5));
+  auto lateral_state_final = f_state_final(seq(3, 5));
+  auto lateral_distance_planner = QuinticTrajectoryPlanner();
+  if (!lateral_distance_planner.setCoefficientsOrReturnFalse(
+      lateral_state_initial[0], lateral_state_initial[1], lateral_state_initial[2],
+      lateral_state_final[0], lateral_state_final[1], lateral_state_final[2],
+      0, time_interval))
+  {
+    return {};
+  }
+
+  FrenetTrajectory frenet_trajectory;
+
+  // assert dt is smaller than time_interval
+  double maximum_time_interval = std::min(
+    frenet_planner_config_.dt * max_state_number,
+    time_interval);
+  for (double t = 0; t <= maximum_time_interval; t += frenet_planner_config_.dt) {
+    StateLongtitutal state_longtitutal;
+    state_longtitutal[0] = longtitutal_distance_planner.x(t);
+    state_longtitutal[1] = longtitutal_distance_planner.dx(t);
+    state_longtitutal[2] = longtitutal_distance_planner.ddx(t);
+
+    StateLateral state_lateral;
+    state_lateral[0] = lateral_distance_planner.x(t);
+    state_lateral[1] = lateral_distance_planner.dx(t);
+    state_lateral[2] = lateral_distance_planner.ddx(t);
+
+    FrenetState frenet_state;
+    frenet_state << state_longtitutal, state_lateral;
+    frenet_trajectory.push_back(frenet_state);
+  }
+
+  return frenet_trajectory;
+}
+
+}  // namespace strategies
+}  // namespace frenet_trajectory_planner
