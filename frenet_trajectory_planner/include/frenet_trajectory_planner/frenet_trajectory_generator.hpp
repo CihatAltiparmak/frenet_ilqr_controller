@@ -17,12 +17,10 @@
 
 #pragma once
 
-#include <Eigen/Dense>
-#include <cmath>
 #include <vector>
+#include <memory>
 #include <frenet_trajectory_planner/type_definitions.hpp>
-#include <frenet_trajectory_planner/quartic_trajectory_planner.hpp>
-#include <frenet_trajectory_planner/quintic_trajectory_planner.hpp>
+#include <frenet_trajectory_planner/strategies/strategy.hpp>
 
 using namespace Eigen;  // NOLINT
 
@@ -32,20 +30,15 @@ namespace frenet_trajectory_planner
 class FrenetTrajectoryGenerator
 {
 public:
-  explicit FrenetTrajectoryGenerator(
-    const FrenetTrajectoryPlannerConfig & frenet_planner_config);
+  FrenetTrajectoryGenerator();
 
   std::vector<FrenetTrajectory> getAllPossibleFrenetTrajectories(
-    const FrenetState & frenet_state_initial, const size_t max_state_number);
+    const FrenetState & f_state_initial, const size_t max_state_number);
 
-  FrenetTrajectory getFrenetTrajectory(
-    const FrenetState & frenet_state_initial,
-    const FrenetState & frenet_state_final,
-    const size_t max_state_number,
-    const double time_interval);
+  void setStrategy(std::unique_ptr<strategies::Strategy> strategy);
 
 private:
-  FrenetTrajectoryPlannerConfig frenet_planner_config_;
+  std::unique_ptr<strategies::Strategy> strategy_;
 };
 
 }  // namespace frenet_trajectory_planner
