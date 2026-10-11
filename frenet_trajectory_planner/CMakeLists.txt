@@ -26,7 +26,9 @@ endif()
 add_library(frenet_trajectory_planner_lib SHARED
   src/frenet_trajectory_generator.cpp
   src/quartic_trajectory_planner.cpp
-  src/quintic_trajectory_planner.cpp)
+  src/quintic_trajectory_planner.cpp
+  src/strategies/keep_velocity_strategy.cpp
+  src/strategies/merge_and_stop_strategy.cpp)
 
 target_include_directories(
   frenet_trajectory_planner_lib
