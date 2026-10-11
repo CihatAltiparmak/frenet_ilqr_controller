@@ -19,7 +19,6 @@
 
 #include <memory>
 #include <vector>
-#include <iostream>
 #include <string>
 #include <frenet_trajectory_planner/type_definitions.hpp>
 #include <frenet_trajectory_planner/frenet_trajectory_selector.hpp>
@@ -117,7 +116,6 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   while (remaining_state_number_ > 0) {
     // TODO(CihatAltiparmak) : eliminate some trajectories in frenet level
     std::vector<FrenetTrajectory> all_frenet_trajectories;
-    std::cout << "CURRENT_BEHAVIOR -> " << current_behavior << std::endl;
     if (current_behavior == "keep_velocity") {
       frenet_trajectory_generator_->setStrategy(
         std::make_unique<strategies::KeepVelocityStrategy>(
@@ -161,11 +159,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
       planned_frenet_trajectory.size();
     robot_frenet_state = planned_frenet_trajectory.back();
   }
-  std::cout << "--------------------" << std::endl;
 
-  // for (auto f_state : planned_frenet_trajectory) {
-  //   std::cout << f_state[0] << ", " << f_state[1] << ", " << f_state[2] << std::endl;
-  // }
   auto planned_cartesian_trajectory =
     frenet_frame_converter->convertFrenet2Cartesian(planned_frenet_trajectory);
 
@@ -183,7 +177,7 @@ bool FrenetTrajectoryPlanner::shouldMergeAndStop(
   if (!longtitutal_distance_planner.setCoefficientsOrReturnFalse(
       f_state[0], f_state[1], f_state[2],
       0.0, 0.0,
-      0, 5.0 * time_interval))
+      0, time_interval))
   {
     return false;
   }
