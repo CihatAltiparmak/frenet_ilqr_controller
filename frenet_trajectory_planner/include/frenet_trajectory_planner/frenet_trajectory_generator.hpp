@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include <Eigen/Dense>
-#include <cmath>
 #include <vector>
 #include <memory>
 #include <frenet_trajectory_planner/type_definitions.hpp>
@@ -32,8 +30,7 @@ namespace frenet_trajectory_planner
 class FrenetTrajectoryGenerator
 {
 public:
-  explicit FrenetTrajectoryGenerator(
-    const FrenetTrajectoryPlannerConfig & frenet_planner_config);
+  FrenetTrajectoryGenerator();
 
   std::vector<FrenetTrajectory> getAllPossibleFrenetTrajectories(
     const FrenetState & f_state_initial, const size_t max_state_number);
@@ -41,7 +38,6 @@ public:
   void setStrategy(std::unique_ptr<strategies::Strategy> strategy);
 
 private:
-  FrenetTrajectoryPlannerConfig frenet_planner_config_;
   std::unique_ptr<strategies::Strategy> strategy_;
 };
 

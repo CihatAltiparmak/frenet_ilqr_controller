@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <omp.h>
 #include <frenet_trajectory_planner/frenet_trajectory_generator.hpp>
 #include <frenet_trajectory_planner/type_definitions.hpp>
 #include <frenet_trajectory_planner/strategies/strategy.hpp>
@@ -23,10 +22,7 @@
 namespace frenet_trajectory_planner
 {
 
-FrenetTrajectoryGenerator::FrenetTrajectoryGenerator(
-  const FrenetTrajectoryPlannerConfig & frenet_planner_config)
-: frenet_planner_config_(frenet_planner_config)
-{}
+FrenetTrajectoryGenerator::FrenetTrajectoryGenerator() {}
 
 std::vector<FrenetTrajectory> FrenetTrajectoryGenerator::getAllPossibleFrenetTrajectories(
   const FrenetState & f_state_initial, size_t max_state_number)

@@ -57,7 +57,7 @@ public:
   void addCost(const std::shared_ptr<costs::Cost> & cost);
 
   void setFrenetTrajectoryPlannerConfig(
-    const FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config);
+    const FrenetTrajectoryPlannerConfig & frenet_trajectory_planner_config);
 
   bool shouldMergeAndStop(
     const FrenetState f_state, double arclength, double time_interval);
@@ -65,7 +65,7 @@ public:
 private:
   FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config_;
   FrenetTrajectorySelector frenet_trajectory_selector_;
-  std::shared_ptr<FrenetTrajectoryGenerator> frenet_trajectory_generator_;
+  FrenetTrajectoryGenerator frenet_trajectory_generator_;
 };
 
 // TODO(CihatAltiparmak) : move the source parts of FrenetTrajectoryPlanner to cpp file.
@@ -78,18 +78,12 @@ FrenetTrajectoryPlanner::FrenetTrajectoryPlanner()
   frenet_trajectory_planner_config_.min_longtitutal_velocity = 0;
   frenet_trajectory_planner_config_.max_longtitutal_velocity = 0.5;
   frenet_trajectory_planner_config_.step_longtitutal_velocity = 0.125;
-
-  frenet_trajectory_generator_ =
-    std::make_shared<FrenetTrajectoryGenerator>(frenet_trajectory_planner_config_);
 }
 
 FrenetTrajectoryPlanner::FrenetTrajectoryPlanner(
   const FrenetTrajectoryPlannerConfig & frenet_trajectory_planner_config)
 : frenet_trajectory_planner_config_(frenet_trajectory_planner_config)
-{
-  frenet_trajectory_generator_ =
-    std::make_shared<FrenetTrajectoryGenerator>(frenet_trajectory_planner_config_);
-}
+{}
 
 CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
   const CartesianState & robot_cartesian_state,
@@ -117,18 +111,18 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
     // TODO(CihatAltiparmak) : eliminate some trajectories in frenet level
     std::vector<FrenetTrajectory> all_frenet_trajectories;
     if (current_behavior == "keep_velocity") {
-      frenet_trajectory_generator_->setStrategy(
+      frenet_trajectory_generator_.setStrategy(
         std::make_unique<strategies::KeepVelocityStrategy>(
           frenet_trajectory_planner_config_));
       all_frenet_trajectories =
-        frenet_trajectory_generator_->getAllPossibleFrenetTrajectories(
+        frenet_trajectory_generator_.getAllPossibleFrenetTrajectories(
         robot_frenet_state, remaining_state_number_);
     } else {
-      frenet_trajectory_generator_->setStrategy(
+      frenet_trajectory_generator_.setStrategy(
         std::make_unique<strategies::MergeAndStopStrategy>(
           frenet_trajectory_planner_config_, info.arclength));
       all_frenet_trajectories =
-        frenet_trajectory_generator_->getAllPossibleFrenetTrajectories(
+        frenet_trajectory_generator_.getAllPossibleFrenetTrajectories(
         robot_frenet_state, remaining_state_number_);
     }
 
@@ -214,11 +208,9 @@ void FrenetTrajectoryPlanner::addCost(const std::shared_ptr<costs::Cost> & cost)
 }
 
 void FrenetTrajectoryPlanner::setFrenetTrajectoryPlannerConfig(
-  const FrenetTrajectoryPlannerConfig frenet_trajectory_planner_config)
+  const FrenetTrajectoryPlannerConfig & frenet_trajectory_planner_config)
 {
   frenet_trajectory_planner_config_ = frenet_trajectory_planner_config;
-  frenet_trajectory_generator_ =
-    std::make_shared<FrenetTrajectoryGenerator>(frenet_trajectory_planner_config_);
 }
 
 }  // namespace frenet_trajectory_planner
