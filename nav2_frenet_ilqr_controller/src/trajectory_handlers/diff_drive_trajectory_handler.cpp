@@ -50,8 +50,9 @@ Vector3d DiffDriveTrajectoryHandler::processTrajectory(
   // Shift velocities so that error between robot's state and the first desired state
   // is made up of only velocity error and angular velocity error
   for (size_t i = 1; i < X_feasible.size(); ++i) {
-    X_feasible[i - 1][2] = X_feasible[i][2];
-    X_feasible[i - 1][3] = X_feasible[i][3];
+    X_feasible[i - 1] = X_feasible[i];
+    // X_feasible[i - 1][2] = X_feasible[i][2];
+    // X_feasible[i - 1][3] = X_feasible[i][3];
   }
 
   // TODO(CihatAltiparmak) : add behavior mode into frenet_trajectory_planner.

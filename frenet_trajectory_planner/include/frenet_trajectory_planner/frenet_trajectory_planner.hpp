@@ -141,12 +141,12 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
     for (size_t i = 1; i < best_frenet_trajectory.size(); ++i) {
       const auto & f_state = best_frenet_trajectory[i];
       planned_frenet_trajectory.push_back(f_state);
-      if (shouldMergeAndStop(f_state, info.arclength,
-          frenet_trajectory_planner_config_.max_time_interval))
-      {
-        current_behavior = "merge_and_stop";
-        break;
-      }
+      // if (shouldMergeAndStop(f_state, info.arclength,
+      //     frenet_trajectory_planner_config_.max_time_interval))
+      // {
+      //   current_behavior = "merge_and_stop";
+      //   break;
+      // }
     }
 
     remaining_state_number_ = frenet_trajectory_planner_config_.max_state_in_trajectory -

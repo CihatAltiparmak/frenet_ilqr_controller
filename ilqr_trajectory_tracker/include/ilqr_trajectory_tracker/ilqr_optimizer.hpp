@@ -25,6 +25,7 @@
 #include <limits>
 #include <vector>
 #include "frenet_trajectory_planner/type_definitions.hpp"
+#include <iostream>
 
 using namespace Eigen;  // NOLINT
 
@@ -149,13 +150,27 @@ public:
     std::vector<InputT> u_best_trajectory;
     std::vector<InputT> u_optimized(x_trajectory.size() - 1, InputT::Zero());
 
+    // for (size_t i = 1; i < u_optimized.size(); ++i) {
+    //   u_optimized[i][0] = (x_trajectory[i][3] - x_trajectory[i - 1][3]) / dt;
+    //   u_optimized[i][1] = (x_trajectory[i][2] - x_trajectory[i - 1][2]) / dt;
+    // }
+    // u_optimized[0][0] = (x_trajectory[0][3] - x0[3]) / dt;
+    // u_optimized[0][1] = (x_trajectory[0][2] - x0[2]) / dt;
+    // std::cout << "PREDICTED: " << u_optimized[0][0] << ", " << u_optimized[0][1] << std::endl;
+
     double best_trajectory_cost = std::numeric_limits<double>::infinity();
     double previous_best_trajectory_cost = best_trajectory_cost;
+
+    std::vector<StateT> x_traj_last;
+    std::vector<InputT> u_traj_last;
     for (size_t i = 0; i < iteration_number_; ++i) {
       auto K_gain_list = this->backwardPass(x_trajectory, u_optimized, Q, R, dt);
       auto [x_tracked, u_tracked] = this->forwardPass(x0,
         x_trajectory, u_optimized, K_gain_list, dt);
       u_optimized = u_tracked;
+
+      x_traj_last = x_tracked;
+      u_traj_last = u_tracked;
 
       double trajectory_cost = this->cost(x_tracked, x_trajectory);
       if (trajectory_cost < best_trajectory_cost) {
@@ -164,11 +179,37 @@ public:
         x_best_trajectory = x_tracked;
         u_best_trajectory = u_tracked;
 
-        if (std::abs(previous_best_trajectory_cost - best_trajectory_cost) < 0.0001) {
-          break;
-        }
+        // if (std::abs(previous_best_trajectory_cost - best_trajectory_cost) < 0.0001) {
+        //   break;
+        // }
       }
     }
+
+    if (u_best_trajectory.empty()) {
+      for (size_t i = 0; i < x_trajectory.size(); ++i) {
+        std::cout 
+          << x_trajectory[i][0] << ", "
+          << x_trajectory[i][1] << ", "
+          << x_trajectory[i][2] << ", "
+          << x_trajectory[i][3] << std::endl;
+        std::cout 
+          << x_traj_last[i][0] << ", "
+          << x_traj_last[i][1] << ", "
+          << x_traj_last[i][2] << ", "
+          << x_traj_last[i][3] << std::endl;
+        std::cout << "**************" << std::endl;
+      }
+      std::cout << "##############" << std::endl; 
+      for (size_t i = 0; i < u_traj_last.size(); ++i) {
+        std::cout 
+          << u_traj_last[i][0] << ", "
+          << u_traj_last[i][1] << std::endl;
+      }
+      std::cout << "--------------" << std::endl;
+       std::cout.flush();
+    }
+
+    std::cout << "OPTIMIZED: " << u_best_trajectory[0][0] << ", " << u_best_trajectory[0][1] << std::endl;
 
     return u_best_trajectory;
   }
