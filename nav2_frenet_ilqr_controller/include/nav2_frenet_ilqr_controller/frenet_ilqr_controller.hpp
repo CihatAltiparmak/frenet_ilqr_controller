@@ -110,10 +110,6 @@ public:
     const nav_msgs::msg::Path & transformed_global_plan,
     const geometry_msgs::msg::PoseStamped & global_goal) override;
 
-  Vector3d findOptimalInputForTrajectory(
-    const frenet_trajectory_planner::CartesianState & c_state_robot,
-    const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory);
-
   bool cancel() override;
 
   /**
@@ -149,6 +145,7 @@ protected:
   TrajectoryVisualizer trajectory_visualizer_;
   std::unique_ptr<nav2_frenet_ilqr_controller::ParameterHandler> parameter_handler_;
   frenet_trajectory_planner::FrenetTrajectoryPlanner frenet_trajectory_planner_;
+  std::unique_ptr<trajectory_handlers::TrajectoryHandler> trajectory_handler_;
   Parameters * params_;
 };
 

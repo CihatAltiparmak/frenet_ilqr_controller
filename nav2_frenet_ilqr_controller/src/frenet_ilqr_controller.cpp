@@ -64,6 +64,17 @@ void FrenetILQRController::configure(
 
   addPoliciesFromPlugins();
   addCostsFromPlugins();
+  if (params_->vehicle_type == "diff_drive_robot") {
+    trajectory_handler_ =
+      std::make_unique<trajectory_handlers::DiffDriveTrajectoryHandler>(node_, plugin_name_,
+        *params_);
+  } else if (params_->vehicle_type == "omni_drive_robot") {
+    trajectory_handler_ =
+      std::make_unique<trajectory_handlers::OmniDriveTrajectoryHandler>(*params_);
+  } else {
+    throw nav2_core::NoValidControl(std::string(
+        "Unknown model is selected. Cannot processing! vehicle_type = ") + params_->vehicle_type);
+  }
 
   double control_frequency = 20.0;
   control_duration_ = 1.0 / control_frequency;
@@ -190,24 +201,6 @@ nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
   return truncated_path;
 }
 
-Vector3d FrenetILQRController::findOptimalInputForTrajectory(
-  const frenet_trajectory_planner::CartesianState & c_state_robot,
-  const frenet_trajectory_planner::CartesianTrajectory & robot_cartesian_trajectory)
-{
-  if (params_->vehicle_type == "diff_drive_robot") {
-    auto trajectory_handler =
-      std::make_unique<trajectory_handlers::DiffDriveTrajectoryHandler>(*params_);
-    return trajectory_handler->processTrajectory(c_state_robot, robot_cartesian_trajectory);
-  } else if (params_->vehicle_type == "omni_drive_robot") {
-    auto trajectory_handler =
-      std::make_unique<trajectory_handlers::OmniDriveTrajectoryHandler>(*params_);
-    return trajectory_handler->processTrajectory(c_state_robot, robot_cartesian_trajectory);
-  } else {
-    throw nav2_core::NoValidControl(std::string(
-        "Unknown model is selected. Cannot processing! vehicle_type = ") + params_->vehicle_type);
-  }
-}
-
 geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   const geometry_msgs::msg::PoseStamped & robot_pose,
   const geometry_msgs::msg::Twist & speed,
@@ -262,7 +255,7 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
     trajectory_visualizer_.visualize(debug_info);
   }
 
-  auto u_opt = findOptimalInputForTrajectory(c_state_robot, planned_cartesian_trajectory);
+  auto u_opt = trajectory_handler_->processTrajectory(c_state_robot, planned_cartesian_trajectory);
 
   // populate and return message
   geometry_msgs::msg::TwistStamped cmd_vel;

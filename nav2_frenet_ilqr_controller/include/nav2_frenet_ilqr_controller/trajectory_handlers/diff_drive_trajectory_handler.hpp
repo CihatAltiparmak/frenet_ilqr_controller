@@ -17,7 +17,9 @@
 
 #pragma once
 
+#include <string>
 #include "nav2_frenet_ilqr_controller/trajectory_handlers/trajectory_handler.hpp"
+#include "nav2_ros_common/node_utils.hpp"
 
 #include "ilqr_trajectory_tracker/models/diff_robot_model.hpp"
 #include "ilqr_trajectory_tracker/ilqr_optimizer.hpp"
@@ -34,10 +36,16 @@ using ilqr_trajectory_tracker::DiffDriveRobotModel;
 class DiffDriveTrajectoryHandler : public TrajectoryHandler
 {
 public:
-  explicit DiffDriveTrajectoryHandler(const Parameters & params);
+  explicit DiffDriveTrajectoryHandler(
+    const nav2::LifecycleNode::WeakPtr & parent,
+    const std::string & plugin_name,
+    const Parameters & params);
   Vector3d processTrajectory(
     const CartesianState & c_state_robot,
     const CartesianTrajectory & c_trajectory_robot) override;
+
+private:
+  double curvature_term_;
 };
 
 }  // namespace trajectory_handlers
