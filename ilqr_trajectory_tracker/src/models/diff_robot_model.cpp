@@ -24,8 +24,8 @@ using namespace Eigen;  // NOLINT
 namespace ilqr_trajectory_tracker
 {
 
-DiffDriveRobotModel::DiffDriveRobotModel()
-: Model<4, 2>()
+DiffDriveRobotModel::DiffDriveRobotModel(const double curvature_coeff)
+: Model<4, 2>(), curvature_coeff_(curvature_coeff)
 {
 }
 
@@ -88,6 +88,26 @@ Vector3d DiffDriveRobotModel::getTwistCommand(
   twist[1] = 0.0;
   twist[2] = u[1];
   return twist;
+}
+
+DiffDriveRobotModel::InputT DiffDriveRobotModel::getAdditionalCostTerms(
+  const StateT & x,
+  const InputT & u)
+{
+  return this->getCurvatureCostTerm(x, u);
+}
+
+DiffDriveRobotModel::InputT DiffDriveRobotModel::getCurvatureCostTerm(
+  const StateT & x,
+  const InputT & u)
+{
+  InputT curvature_term = InputT::Zero();
+  double cost_derivative = (2 * u[1]) / (x[3] * x[3]);
+  if (std::isfinite(cost_derivative)) {
+    curvature_term[InputDim - 1] = cost_derivative;
+  }
+
+  return curvature_coeff_ * curvature_term;
 }
 
 DiffDriveRobotModel::StateT

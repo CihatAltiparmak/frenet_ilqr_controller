@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <limits>
 #include <vector>
+#include <utility>
 #include "frenet_trajectory_planner/type_definitions.hpp"
 
 using namespace Eigen;  // NOLINT
@@ -55,7 +56,7 @@ public:
   template<typename ... RobotModelParams>
   explicit NewtonOptimizer(const RobotModelParams ... model_params);
 
-  std::vector<MatrixXd> backwardPass(
+  std::vector<std::tuple<MatrixXd, VectorXd>> backwardPass(
     const std::vector<StateT> & x_feasible,
     const std::vector<InputT> & u_feasible,
     const Matrix<double, StateDim, StateDim> & Q,
@@ -65,8 +66,10 @@ public:
     MatrixXd P_tilda = MatrixXd::Identity(StateDim + 1, StateDim + 1);
     P_tilda.topLeftCorner(StateDim, StateDim) = Q;
 
-    std::vector<MatrixXd> K_gain(x_feasible.size() - 1,
-      MatrixXd::Zero(InputDim, StateDim + 1));
+    VectorXd p_tilda = Q(0, 0) * VectorXd::Ones(StateDim + 1);
+
+    std::vector<std::tuple<MatrixXd, VectorXd>> K_gain(x_feasible.size() - 1,
+      std::make_pair(MatrixXd::Zero(InputDim, StateDim + 1), VectorXd::Zero(StateDim + 1)));
 
     // assert trajectory_size > 1
     for (size_t i = x_feasible.size() - 1; i > 0; --i) {
@@ -87,26 +90,31 @@ public:
 
       MatrixXd R_tilda = R;
 
-      std::tie(K_gain[i - 1], P_tilda) = solveDiscreteLQRProblem(
+      std::tie(K_gain[i - 1], P_tilda, p_tilda) = solveDiscreteLQRProblem(
         A_tilda, B_tilda, Q_tilda, R_tilda,
-        P_tilda);
+        P_tilda, p_tilda, x_feasible[i - 1], u_feasible[i - 1]);
     }
 
     return K_gain;
   }
 
-  std::tuple<MatrixXd, MatrixXd> solveDiscreteLQRProblem(
+  std::tuple<std::tuple<MatrixXd, VectorXd>, MatrixXd, VectorXd> solveDiscreteLQRProblem(
     const MatrixXd & A, const MatrixXd & B,
     const MatrixXd & Q, const MatrixXd & R,
-    const MatrixXd & P)
+    const MatrixXd & P, const VectorXd & p,
+    const VectorXd x,
+    const VectorXd u)
   {
     auto BTmP = B.transpose() * P;
-    auto K = -(R + BTmP * B).completeOrthogonalDecomposition().pseudoInverse() * BTmP * A;
+    auto S = -(R + BTmP * B).completeOrthogonalDecomposition().pseudoInverse();
+    auto K = S * BTmP * A;
+    auto k = S * B.transpose() * p - robot_model_->getAdditionalCostTerms(x, u);
 
     auto ApBK = (A + B * K);
     auto P_new = Q + K.transpose() * R * K + ApBK.transpose() * P * ApBK;
+    auto p_new = K.transpose() * R * k + ApBK.transpose() * (P * B * k + p);
 
-    return {K, P_new};
+    return {std::make_pair(K, k), P_new, p_new};
   }
 
   std::tuple<std::vector<StateT>,
@@ -114,7 +122,7 @@ public:
     const StateT & x0,
     const std::vector<StateT> & x_feasible,
     const std::vector<InputT> & u_feasible,
-    const std::vector<MatrixXd> & K_gains, const double dt)
+    const std::vector<std::tuple<MatrixXd, VectorXd>> & K_gains, const double dt)
   {
     auto trajectory_size = x_feasible.size();
     std::vector<StateT> x_tracked(trajectory_size);
@@ -129,7 +137,11 @@ public:
       VectorXd z_error(StateDim + 1);
       z_error << x_error, 1.0;
 
-      u_applied[i] = u_feasible[i] + K_gains[i] * z_error;
+      auto [K, k] = K_gains[i];
+      #pragma GCC diagnostic push
+      #pragma GCC diagnostic ignored "-Wnull-dereference"
+      u_applied[i] = u_feasible[i] + K * z_error + k;
+      #pragma GCC diagnostic pop
       u_applied[i] = robot_model_->applyLimits(u_applied[i]);
       x_tracked[i + 1] = robot_model_->applySystemDynamics(x_tracked[i], u_applied[i], dt);
     }

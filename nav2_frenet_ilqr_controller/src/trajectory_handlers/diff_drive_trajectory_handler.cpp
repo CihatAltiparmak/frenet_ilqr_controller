@@ -30,9 +30,21 @@ using frenet_trajectory_planner::CartesianState;
 using frenet_trajectory_planner::CartesianTrajectory;
 using ilqr_trajectory_tracker::DiffDriveRobotModel;
 
-DiffDriveTrajectoryHandler::DiffDriveTrajectoryHandler(const Parameters & params)
+DiffDriveTrajectoryHandler::DiffDriveTrajectoryHandler(
+  const nav2::LifecycleNode::WeakPtr & parent,
+  const std::string & plugin_name,
+  const Parameters & params)
 : TrajectoryHandler(params)
-{}
+{
+  auto node = parent.lock();
+  declare_parameter_if_not_declared(
+    node, plugin_name + ".ilqr_trajectory_tracker.additional_cost_terms.curvature_term",
+        rclcpp::ParameterValue(0.0));
+
+  node->get_parameter(
+    plugin_name + ".ilqr_trajectory_tracker.additional_cost_terms.curvature_term",
+    curvature_term_);
+}
 
 Vector3d DiffDriveTrajectoryHandler::processTrajectory(
   const CartesianState & c_state_robot,
@@ -42,7 +54,7 @@ Vector3d DiffDriveTrajectoryHandler::processTrajectory(
     throw nav2_core::NoValidControl("There is no trajectory to be tracked!");
   }
 
-  ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer;
+  ilqr_trajectory_tracker::NewtonOptimizer<DiffDriveRobotModel> newton_optimizer(curvature_term_);
 
   auto x_robot = DiffDriveRobotModel::fromFrenetCartesianState(c_state_robot);
   auto X_feasible = newton_optimizer.fromFrenetCartesianTrajectory(c_trajectory_robot);

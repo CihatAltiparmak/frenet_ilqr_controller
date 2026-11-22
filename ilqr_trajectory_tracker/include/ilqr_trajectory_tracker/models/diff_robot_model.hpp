@@ -33,7 +33,7 @@ using DiffDriveRobotModelInput = Vector2d;
 class DiffDriveRobotModel : public Model<4, 2>
 {
 public:
-  DiffDriveRobotModel();
+  explicit DiffDriveRobotModel(const double curvature_coeff);
   StateT applySystemDynamics(const StateT & x, const InputT & u, const double dt) override;
   InputT applyLimits(const InputT & u) override;
   StateMatrixT getStateMatrix(const StateT & x_eq, const InputT & u_eq, const double dt);
@@ -43,7 +43,13 @@ public:
     const InputT & u,
     const double dt);
 
+  InputT getAdditionalCostTerms(const StateT & x, const InputT & u) override;
+  InputT getCurvatureCostTerm(const StateT & x, const InputT & u);
+
   static StateT fromFrenetCartesianState(const frenet_trajectory_planner::CartesianState & c_state);
+
+private:
+  double curvature_coeff_;
 };
 
 }  // namespace ilqr_trajectory_tracker

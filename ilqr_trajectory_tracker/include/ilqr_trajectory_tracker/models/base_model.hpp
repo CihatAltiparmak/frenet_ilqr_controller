@@ -57,6 +57,11 @@ public:
     const InputT & u,
     const double dt) = 0;
 
+  virtual InputT getAdditionalCostTerms(const StateT & x, const InputT & u)
+  {
+    return InputT::Zero();
+  }
+
   static size_t getStateDim();
   static size_t getInputDim();
 
