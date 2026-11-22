@@ -16,6 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <frenet_trajectory_planner/strategies/keep_velocity_strategy.hpp>
+#include <iostream>
 
 namespace frenet_trajectory_planner
 {
@@ -81,49 +82,71 @@ FrenetTrajectory KeepVelocityStrategy::getFrenetTrajectory(
   const size_t max_state_number,
   const double time_interval)
 {
-  auto longtitual_state_initial = f_state_initial(seq(0, 2));
-  auto longtitual_state_final = f_state_final(seq(0, 2));
-  auto longtitutal_velocity_planner = QuarticTrajectoryPlanner();
-  if (!longtitutal_velocity_planner.setCoefficientsOrReturnFalse(
-      longtitual_state_initial[0], longtitual_state_initial[1], longtitual_state_initial[2],
-      longtitual_state_final[1], longtitual_state_final[2],
-      0, time_interval))
-  {
-    return {};
+  FrenetTrajectory frenet_trajectory(max_state_number);
+
+  StateLongtitutal lon_state_start = f_state_initial(seq(0, 2));
+  StateLongtitutal lon_state_final = f_state_final(seq(0, 2));
+  size_t lon_state_num = 0;
+  frenet_trajectory[0]({0, 1, 2}) = lon_state_start;
+  while (lon_state_num < max_state_number) {
+    lon_state_start = frenet_trajectory[lon_state_num](seq(0, 2));
+    auto longtitutal_velocity_planner = QuarticTrajectoryPlanner();
+    if (!longtitutal_velocity_planner.setCoefficientsOrReturnFalse(
+        lon_state_start[0], lon_state_start[1], lon_state_start[2],
+        lon_state_final[1], lon_state_final[2],
+        0, time_interval))
+    {
+      return {};
+    }
+
+    for (double t = frenet_planner_config_.dt; t <= time_interval; t += frenet_planner_config_.dt) {
+      lon_state_num++;
+      if (lon_state_num >= max_state_number) {
+        break;
+      }
+      frenet_trajectory[lon_state_num][0] = longtitutal_velocity_planner.x(t);
+      frenet_trajectory[lon_state_num][1] = longtitutal_velocity_planner.dx(t);
+      frenet_trajectory[lon_state_num][2] = longtitutal_velocity_planner.ddx(t);
+    }
   }
 
-  auto lateral_state_initial = f_state_initial(seq(3, 5));
-  auto lateral_state_final = f_state_final(seq(3, 5));
-  auto lateral_distance_planner = QuinticTrajectoryPlanner();
-  if (!lateral_distance_planner.setCoefficientsOrReturnFalse(
-      lateral_state_initial[0], lateral_state_initial[1], lateral_state_initial[2],
-      lateral_state_final[0], lateral_state_final[1], lateral_state_final[2],
-      0, time_interval))
-  {
-    return {};
+  StateLateral lat_state_start = f_state_initial(seq(3, 5));
+  StateLateral lat_state_final = f_state_final(seq(3, 5));
+  size_t lat_state_num = 0;
+  frenet_trajectory[0](seq(3, 5)) = lat_state_start;
+  while (lat_state_num < max_state_number) {
+    lat_state_start = frenet_trajectory[lat_state_num](seq(3, 5));
+    auto lateral_distance_planner = QuinticTrajectoryPlanner();
+    if (!lateral_distance_planner.setCoefficientsOrReturnFalse(
+        lat_state_start[0], lat_state_start[1], lat_state_start[2],
+        lat_state_final[0], lat_state_final[1], lat_state_final[2],
+        0, time_interval))
+    {
+      return {};
+    }
+
+    for (double t = frenet_planner_config_.dt; t <= time_interval; t += frenet_planner_config_.dt) {
+      lat_state_num++;
+      if (lat_state_num >= max_state_number) {
+        break;
+      }
+      frenet_trajectory[lat_state_num][3] = lateral_distance_planner.x(t);
+      frenet_trajectory[lat_state_num][4] = lateral_distance_planner.dx(t);
+      frenet_trajectory[lat_state_num][5] = lateral_distance_planner.ddx(t);
+    }
   }
 
-  FrenetTrajectory frenet_trajectory;
-
-  // assert dt is smaller than time_interval
-  double maximum_time_interval = std::min(
-    frenet_planner_config_.dt * max_state_number,
-    time_interval);
-  for (double t = 0; t <= maximum_time_interval; t += frenet_planner_config_.dt) {
-    StateLongtitutal state_longtitutal;
-    state_longtitutal[0] = longtitutal_velocity_planner.x(t);
-    state_longtitutal[1] = longtitutal_velocity_planner.dx(t);
-    state_longtitutal[2] = longtitutal_velocity_planner.ddx(t);
-
-    StateLateral state_lateral;
-    state_lateral[0] = lateral_distance_planner.x(t);
-    state_lateral[1] = lateral_distance_planner.dx(t);
-    state_lateral[2] = lateral_distance_planner.ddx(t);
-
-    FrenetState frenet_state;
-    frenet_state << state_longtitutal, state_lateral;
-    frenet_trajectory.push_back(frenet_state);
-  }
+  // std::cout << "**************" << std::endl;
+  // for (auto fstate : frenet_trajectory) {
+  //   std::cout
+  //     << fstate[0] << ", "
+  //     << fstate[1] << ", "
+  //     << fstate[2] << ", "
+  //     << fstate[3] << ", "
+  //     << fstate[4] << ", "
+  //     << fstate[5] << std::endl;
+  // }
+  // std::cout << "--------------" << std::endl;
 
   return frenet_trajectory;
 }

@@ -152,6 +152,7 @@ CartesianTrajectory FrenetTrajectoryPlanner::planByWaypoint(
     remaining_state_number_ = frenet_trajectory_planner_config_.max_state_in_trajectory -
       planned_frenet_trajectory.size();
     robot_frenet_state = planned_frenet_trajectory.back();
+    break;
   }
 
   auto planned_cartesian_trajectory =

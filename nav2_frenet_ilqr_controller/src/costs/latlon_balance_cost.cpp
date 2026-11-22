@@ -45,12 +45,12 @@ void LatLonBalanceCost::initialize(
 
 double LatLonBalanceCost::cost(
   [[maybe_unused]] const FrenetTrajectory & frenet_trajectory,
-  const CartesianTrajectory & cartesian_trajectory)
+  [[maybe_unused]] const CartesianTrajectory & cartesian_trajectory)
 {
   double trajectory_cost = 0;
 
   double max_curvature = 0.0;
-  for (auto c_state : cartesian_trajectory) {
+  for (auto c_state : frenet_trajectory) {
     double up = std::abs(c_state[1] * c_state[5] - c_state[2] * c_state[4]);
     double down = std::hypot(c_state[1], c_state[4]);
     double curvature= up / (down * down * down);
