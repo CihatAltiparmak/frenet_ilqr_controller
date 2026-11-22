@@ -23,6 +23,7 @@
 #include <frenet_trajectory_planner/conversion_adapters/base_adapter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/line_adapter.hpp>
 #include <frenet_trajectory_planner/conversion_adapters/circle_adapter.hpp>
+#include <iostream>
 
 namespace frenet_trajectory_planner
 {
@@ -52,6 +53,7 @@ FrenetFrameConverter::FrenetFrameConverter()
 
 void FrenetFrameConverter::createSegments(const std::vector<CartesianPoint> & waypoint_list)
 {
+  double max_curvature = 0;
   // assert that waypoint_list size must be at least 2
   CartesianPoint last_waypoint = waypoint_list[0];
   for (auto waypoint_it = waypoint_list.begin() + 1; (waypoint_it + 1) != waypoint_list.end();
@@ -84,7 +86,7 @@ void FrenetFrameConverter::createSegments(const std::vector<CartesianPoint> & wa
     CartesianPoint new_q3 = ci + ri * (xi * std::cos(alphai) + yi * std::sin(alphai));
 
     // if three points nearly present line, just ignore to smooth with circle adapter
-    if (alphai < 0.1 || std::isnan(alphai)) {
+    if (ri < 0.1 || alphai < 0.1 || std::isnan(alphai)) {
       segments_.push_back(
         std::make_unique<LineAdapter>(new_q1, qi)
       );
@@ -97,8 +99,11 @@ void FrenetFrameConverter::createSegments(const std::vector<CartesianPoint> & wa
       segments_.push_back(
         std::make_unique<CircleAdapter>(new_q2, new_q3, ci, ri, xi, yi, alphai, sign_indicactor));
       last_waypoint = new_q3;
+      max_curvature = std::max(max_curvature, 1 / ri);
     }
   }
+
+  std::cout << "max curvature: " << max_curvature << std::endl;
 
   segments_.push_back(
     std::make_unique<LineAdapter>(last_waypoint, waypoint_list.back()));

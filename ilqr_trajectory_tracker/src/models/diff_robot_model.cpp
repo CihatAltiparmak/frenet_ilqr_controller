@@ -35,8 +35,8 @@ DiffDriveRobotModel::StateT DiffDriveRobotModel::applySystemDynamics(
 {
   StateT x_final;
   x_final <<
-    x[0] + x[3] * std::cos(x[2]) * dt,
-    x[1] + x[3] * std::sin(x[2]) * dt,
+    x[0] + x[3] * std::cos(x[2]) * dt + 0.5 * u[0] * std::cos(x[2]) * dt * dt,
+    x[1] + x[3] * std::sin(x[2]) * dt + 0.5 * u[0] * std::sin(x[2]) * dt * dt,
     x[2] + u[1] * dt,
     x[3] + u[0] * dt;
 
@@ -54,8 +54,8 @@ DiffDriveRobotModel::StateMatrixT DiffDriveRobotModel::getStateMatrix(
 {
   StateMatrixT state_matrix;
   state_matrix <<
-    1, 0, -x_eq[3] * std::sin(x_eq[2]) * dt, std::cos(x_eq[2]) * dt,
-    0, 1, +x_eq[3] * std::cos(x_eq[2]) * dt, std::sin(x_eq[2]) * dt,
+    1, 0, -x_eq[3] * std::sin(x_eq[2]) * dt - 0.5 * u_eq[0] * std::sin(x_eq[2]) * dt * dt, std::cos(x_eq[2]) * dt,
+    0, 1, +x_eq[3] * std::cos(x_eq[2]) * dt + 0.5 * u_eq[0] * std::cos(x_eq[2]) * dt * dt, std::sin(x_eq[2]) * dt,
     0, 0, 1, 0,
     0, 0, 0, 1;
 
@@ -68,8 +68,8 @@ DiffDriveRobotModel::ControlMatrixT DiffDriveRobotModel::getControlMatrix(
 {
   ControlMatrixT control_matrix;
   control_matrix <<
-    0, 0,
-    0, 0,
+    0.5 * std::cos(x_eq[2]) * dt * dt, 0,
+    0.5 * std::sin(x_eq[2]) * dt * dt, 0,
     0, dt,
     dt, 0;
 

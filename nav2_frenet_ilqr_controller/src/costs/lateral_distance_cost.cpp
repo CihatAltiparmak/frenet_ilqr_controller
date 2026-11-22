@@ -49,7 +49,8 @@ double LateralDistanceCost::cost(
 {
   double trajectory_cost = 0;
 
-  for (auto frenet_state : frenet_trajectory) {
+  if (!frenet_trajectory.empty()) {
+    const auto & frenet_state = frenet_trajectory.back();
     trajectory_cost += std::abs(frenet_state[3]);
   }
 

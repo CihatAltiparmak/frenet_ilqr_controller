@@ -44,13 +44,26 @@ void LatLonBalanceCost::initialize(
 }
 
 double LatLonBalanceCost::cost(
-  const FrenetTrajectory & frenet_trajectory,
-  const CartesianTrajectory & /*cartesian_trajectory*/)
+  [[maybe_unused]] const FrenetTrajectory & frenet_trajectory,
+  [[maybe_unused]] const CartesianTrajectory & cartesian_trajectory)
 {
   double trajectory_cost = 0;
-  for (auto frenet_state : frenet_trajectory) {
-    trajectory_cost += std::abs(frenet_state[1] * frenet_state[4]);
+
+  double max_curvature = 0.0;
+  for (auto c_state : frenet_trajectory) {
+    double up = std::abs(c_state[1] * c_state[5] - c_state[2] * c_state[4]);
+    double down = std::hypot(c_state[1], c_state[4]);
+    double curvature= up / (down * down * down);
+
+    max_curvature = std::max(max_curvature, curvature);
   }
+
+  trajectory_cost = max_curvature;
+
+  // if (!frenet_trajectory.empty()) {
+  //   const auto & frenet_state = frenet_trajectory.back();
+  //   trajectory_cost += std::abs(frenet_state[4]) * max_curvature;
+  // }
 
   return K_latlon_balance_ * trajectory_cost;
 }

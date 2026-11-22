@@ -167,24 +167,24 @@ void FrenetILQRController::addCostsFromPlugins()
 }
 
 nav_msgs::msg::Path FrenetILQRController::truncateGlobalPlanWithLookAheadDist(
-  const geometry_msgs::msg::PoseStamped & pose_stamped,
-  const nav_msgs::msg::Path & path,
-  const double lookahead_distance)
+  [[maybe_unused]] const geometry_msgs::msg::PoseStamped & pose_stamped,
+  [[maybe_unused]] const nav_msgs::msg::Path & path,
+  [[maybe_unused]] const double lookahead_distance)
 {
-  // TODO(CihatAltiparmak) : find better algorithm to handle this
-  size_t lookahead_index = 0;
-  for (size_t index = 0; index < path.poses.size(); ++index) {
-    if (euclidean_distance(
-        path.poses[index].pose.position,
-        pose_stamped.pose.position) < lookahead_distance)
-    {
-      lookahead_index = index;
-    }
-  }
+  // // TODO(CihatAltiparmak) : find better algorithm to handle this
+  // size_t lookahead_index = 0;
+  // for (size_t index = 0; index < path.poses.size(); ++index) {
+  //   if (euclidean_distance(
+  //       path.poses[index].pose.position,
+  //       pose_stamped.pose.position) < lookahead_distance)
+  //   {
+  //     lookahead_index = index;
+  //   }
+  // }
 
   nav_msgs::msg::Path truncated_path;
   truncated_path.header = path.header;
-  for (auto index = lookahead_index; index < path.poses.size(); ++index) {
+  for (size_t index = 2; index < path.poses.size(); ++index) {
     truncated_path.poses.push_back(path.poses[index]);
   }
   return truncated_path;
@@ -228,13 +228,20 @@ geometry_msgs::msg::TwistStamped FrenetILQRController::computeVelocityCommands(
   std::vector<frenet_trajectory_planner::CartesianPoint> waypoint_list;
   frenet_trajectory_planner::CartesianPoint c_robot_point;
   c_robot_point << robot_pose.pose.position.x, robot_pose.pose.position.y;
-  waypoint_list.push_back(c_robot_point);
+  // waypoint_list.push_back(c_robot_point);
 
   for (const auto & pose_stamped : clipped_plan.poses) {
     frenet_trajectory_planner::CartesianPoint point;
     point << pose_stamped.pose.position.x, pose_stamped.pose.position.y;
     waypoint_list.push_back(point);
   }
+
+  if (waypoint_list.size() <= 1) {
+    throw nav2_core::NoValidControl(std::string(
+      "No waypoint ulannnn"));
+  }
+
+  // double abra_kadabra_yaw = std::atan2(waypoint_list[1][1] - waypoint_list[0][1], waypoint_list[1][0] - waypoint_list[0][0]);
 
   frenet_trajectory_planner::CartesianState c_state_robot =
     frenet_trajectory_planner::CartesianState::Zero();
