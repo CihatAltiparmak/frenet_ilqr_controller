@@ -43,6 +43,9 @@ public:
     const InputT & u,
     const double dt);
 
+  InputT getAdditionalCostTerms(const StateT & x, const InputT & u) override;
+  InputT getCurvatureCostTerm(const StateT & x, const InputT & u);
+
   static StateT fromFrenetCartesianState(const frenet_trajectory_planner::CartesianState & c_state);
 };
 

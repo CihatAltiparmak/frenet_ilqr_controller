@@ -90,6 +90,26 @@ Vector3d DiffDriveRobotModel::getTwistCommand(
   return twist;
 }
 
+DiffDriveRobotModel::InputT DiffDriveRobotModel::getAdditionalCostTerms(
+  const StateT & x,
+  const InputT & u)
+{
+  return this->getCurvatureCostTerm(x, u);
+}
+
+DiffDriveRobotModel::InputT DiffDriveRobotModel::getCurvatureCostTerm(
+  const StateT & x,
+  const InputT & u)
+{
+  InputT curvature_term = InputT::Zero();
+  double cost_derivative = 1.0 * ((2 * u[1]) / (x[3] * x[3]));
+  if (std::isfinite(cost_derivative)) {
+    curvature_term[InputDim - 1] = cost_derivative;
+  }
+
+  return curvature_term;
+}
+
 DiffDriveRobotModel::StateT
 DiffDriveRobotModel::fromFrenetCartesianState(
   const frenet_trajectory_planner::CartesianState & c_state)
